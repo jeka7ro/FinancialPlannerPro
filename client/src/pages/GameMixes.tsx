@@ -22,6 +22,8 @@ export default function GameMixes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingGameMix, setEditingGameMix] = useState<any>(null);
   const [selectedGameMixes, setSelectedGameMixes] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
