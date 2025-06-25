@@ -147,12 +147,8 @@ export default function Providers() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Providers</h1>
-          <p className="text-slate-400">Equipment and service providers</p>
-        </div>
+      {/* Actions */}
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <ImportExportDialog module="providers" moduleName="Providers">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">

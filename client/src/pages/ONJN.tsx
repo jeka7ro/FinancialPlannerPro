@@ -136,12 +136,8 @@ export default function ONJN() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">ONJN</h1>
-          <p className="text-slate-400">Romanian gambling authority compliance</p>
-        </div>
+      {/* Actions */}
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <ImportExportDialog module="onjn-reports" moduleName="ONJN Reports">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">

@@ -139,12 +139,8 @@ export default function Legal() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Legal</h1>
-          <p className="text-slate-400">Legal compliance and documentation</p>
-        </div>
+      {/* Actions */}
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <ImportExportDialog module="legal-documents" moduleName="Legal Documents">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
