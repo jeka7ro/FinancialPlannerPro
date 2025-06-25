@@ -130,11 +130,11 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       <div className="w-full max-w-md">
         <Card className="glass-card border-white/10">
           <CardHeader className="text-center">
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center mb-8">
               <img 
                 src={cashpotLogo} 
                 alt="CASHPOT" 
-                className="h-24 w-auto"
+                className="h-32 w-auto"
               />
             </div>
           </CardHeader>
