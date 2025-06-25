@@ -29,14 +29,13 @@ export default function Sidebar({ className }: SidebarProps) {
 
   return (
     <div className={cn("sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0", className)}>
-      <div className="flex items-center justify-center h-16 px-4 border-b border-white/10">
-        <div className="flex items-center space-x-3">
+      <div className="flex items-center justify-center h-20 px-6 border-b border-white/10">
+        <div className="flex items-center justify-center w-full">
           <img 
             src={cashpotLogo} 
             alt="CASHPOT" 
-            className="h-8 w-auto"
+            className="h-12 w-auto"
           />
-
         </div>
       </div>
       
