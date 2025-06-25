@@ -136,6 +136,8 @@ export const invoices = pgTable("invoices", {
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
   paidDate: timestamp("paid_date"),
+  serialNumbers: text("serial_numbers"), // Space-separated serial numbers
+  licenseDate: timestamp("license_date"), // Date for ONJN license connection
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -183,6 +185,8 @@ export const onjnReports = pgTable("onjn_reports", {
   locationId: integer("location_id").references(() => locations.id),
   submissionDate: timestamp("submission_date"),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
+  serialNumber: varchar("serial_number", { length: 100 }), // Connection to Invoice serial numbers
+  licenseDate: timestamp("license_date"), // Connection to Invoice license date
   reportData: jsonb("report_data"),
   filePath: varchar("file_path", { length: 500 }),
   createdAt: timestamp("created_at").defaultNow(),

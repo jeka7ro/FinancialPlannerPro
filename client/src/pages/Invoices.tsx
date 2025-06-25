@@ -333,6 +333,46 @@ export default function Invoices() {
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="serialNumbers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Serial Numbers</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            value={field.value || ""} 
+                            className="form-input" 
+                            placeholder="Enter serial numbers separated by spaces"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="licenseDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">License Date</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="date" 
+                            className="form-input"
+                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
@@ -478,6 +518,8 @@ export default function Invoices() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amount</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Due Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
@@ -505,6 +547,22 @@ export default function Invoices() {
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {invoice.locationId ? `Location ${invoice.locationId}` : 'No location'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.serialNumbers ? (
+                            <div className="flex flex-wrap gap-1">
+                              {invoice.serialNumbers.split(' ').filter((sn: string) => sn.trim()).map((serialNumber: string, index: number) => (
+                                <Badge key={index} variant="outline" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/50">
+                                  {serialNumber}
+                                </Badge>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-slate-500">No serials</span>
+                          )}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.licenseDate ? new Date(invoice.licenseDate).toLocaleDateString() : 'No license date'}
                         </td>
                         <td className="py-4 px-4 text-sm font-semibold text-white">
                           €{Number(invoice.totalAmount).toLocaleString()}

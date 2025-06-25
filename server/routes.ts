@@ -597,6 +597,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const invoiceData = insertInvoiceSchema.parse(req.body);
       const invoice = await storage.createInvoice(invoiceData);
+      
+      // If invoice has license date and serial numbers, create ONJN report
+      if (invoiceData.licenseDate && invoiceData.serialNumbers) {
+        const serialNumbers = invoiceData.serialNumbers.split(' ').filter(sn => sn.trim());
+        
+        for (const serialNumber of serialNumbers) {
+          try {
+            await storage.createOnjnReport({
+              reportType: 'license',
+              reportPeriod: new Date().getFullYear().toString(),
+              companyId: invoiceData.companyId,
+              locationId: invoiceData.locationId,
+              serialNumber: serialNumber,
+              licenseDate: invoiceData.licenseDate,
+              status: 'pending'
+            });
+          } catch (onjnError) {
+            console.error(`Failed to create ONJN report for serial ${serialNumber}:`, onjnError);
+          }
+        }
+      }
+      
       res.status(201).json(invoice);
     } catch (error) {
       if (error instanceof ZodError) {
