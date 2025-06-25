@@ -6,6 +6,7 @@ import path from "path";
 import { storage } from "./storage";
 import { importExportService } from "./services/importExportService";
 import { fileService } from "./services/fileService";
+import { exportTemplateService } from "./services/exportTemplateService";
 import { 
   insertUserSchema, 
   insertCompanySchema, 
@@ -1074,6 +1075,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/uploads/:filename", (req: any, res: any) => {
     const filename = req.params.filename;
     res.sendFile(path.join(process.cwd(), 'uploads', filename));
+  });
+
+  // Export template routes
+  app.get("/api/:module/template", requireAuth, async (req: any, res: any) => {
+    try {
+      const module = req.params.module;
+      const buffer = exportTemplateService.getTemplate(module);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-template.xlsx`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Template export error:", error);
+      res.status(500).json({ message: "Template export failed", error: error.message });
+    }
+  });
+
+  app.get("/api/import-tutorial", requireAuth, async (req: any, res: any) => {
+    try {
+      const buffer = exportTemplateService.generateImportTutorialPDF();
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename=import-tutorial.pdf');
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Tutorial export error:", error);
+      res.status(500).json({ message: "Tutorial export failed", error: error.message });
+    }
   });
 
   const httpServer = createServer(app);

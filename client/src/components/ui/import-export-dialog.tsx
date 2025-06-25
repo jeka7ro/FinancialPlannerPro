@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Download, FileSpreadsheet, FileText } from "lucide-react";
+import { Upload, Download, FileSpreadsheet, FileText, BookOpen, HelpCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -113,6 +113,34 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
     });
   };
 
+  const handleDownloadTemplate = () => {
+    const link = document.createElement('a');
+    link.href = `/api/${module}/template`;
+    link.download = `${module}-template.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Template Downloaded",
+      description: `Import template for ${moduleName} is downloading...`,
+    });
+  };
+
+  const handleDownloadTutorial = () => {
+    const link = document.createElement('a');
+    link.href = `/api/import-tutorial`;
+    link.download = 'import-tutorial.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Tutorial Downloaded",
+      description: "Complete import tutorial is downloading...",
+    });
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -132,6 +160,27 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
             </div>
             
             <div className="space-y-3">
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleDownloadTemplate}
+                  className="flex items-center gap-2 border-blue-400/20 text-blue-400 hover:bg-blue-400/10"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Download Template
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleDownloadTutorial}
+                  className="flex items-center gap-2 border-green-400/20 text-green-400 hover:bg-green-400/10"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Tutorial PDF
+                </Button>
+              </div>
+              
               <div>
                 <Label htmlFor="file-upload">Select Excel or CSV File</Label>
                 <Input
@@ -142,6 +191,9 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
                   onChange={handleFileSelect}
                   className="mt-1"
                 />
+                <p className="text-xs text-blue-400 mt-1">
+                  💡 Download the template first to see the correct format
+                </p>
               </div>
               
               {selectedFile && (

@@ -114,11 +114,12 @@ This is a comprehensive gaming management system built for managing slot machine
 - Preferred communication style: Simple, everyday language
 - Login system: Includes "Remember me" option for extended 30-day sessions
 - File attachments: Individual attachment buttons per row with popover interface
-- Import/Export: Excel/CSV import and Excel/PDF export functionality for all modules
+- Import/Export: Excel/CSV import and Excel/PDF export functionality with comprehensive templates and tutorials
 
 ## Recent Changes
 
-- December 25, 2024: Added comprehensive import/export functionality (Excel/CSV import, Excel/PDF export)
+- December 25, 2024: Added comprehensive import/export functionality with detailed templates and tutorial PDF
+- December 25, 2024: Created export templates with sample data and field descriptions for all modules
 - December 25, 2024: Implemented file attachment system with individual row-level attachment buttons
 - December 25, 2024: Added "Remember me" login option for extended 30-day sessions
 - June 25, 2025: Initial setup with complete gaming management system
