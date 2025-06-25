@@ -37,10 +37,8 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('entityType', entityType);
-      formData.append('entityId', entityId.toString());
 
-      const response = await fetch('/api/attachments/upload', {
+      const response = await fetch(`/api/${entityType}/${entityId}/attachments`, {
         method: 'POST',
         body: formData,
         credentials: 'include'
