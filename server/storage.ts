@@ -679,7 +679,7 @@ export class DatabaseStorage implements IStorage {
       db.select({ total: count() }).from(invoices),
       db.select({ total: count() }).from(cabinets).where(eq(cabinets.status, 'active')),
       db.select({ total: count() }).from(locations).where(eq(locations.isActive, true)),
-      db.select({ total: count() }).from(slots).where(eq(slots.status, 'active')),
+      db.select({ total: count() }).from(slots).where(eq(slots.isActive, true)),
       db.select().from(activityLogs).orderBy(desc(activityLogs.timestamp)).limit(5),
       db.select().from(locations).where(eq(locations.isActive, true)).limit(3)
     ]);

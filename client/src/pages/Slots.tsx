@@ -64,6 +64,17 @@ export default function Slots() {
     },
   });
 
+  const { data: companies } = useQuery({
+    queryKey: ['/api/companies', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/companies?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch companies');
+      return response.json();
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: InsertSlot) => {
       return await apiRequest("POST", "/api/slots", data);
@@ -92,10 +103,12 @@ export default function Slots() {
       slotNumber: 1,
       gameName: "",
       gameType: "",
-      status: "active",
+      propertyType: "property",
       isActive: true,
     },
   });
+
+  const watchPropertyType = form.watch("propertyType");
 
   const onSubmit = (data: InsertSlot) => {
     createMutation.mutate(data);
@@ -269,20 +282,19 @@ export default function Slots() {
                   />
                   <FormField
                     control={form.control}
-                    name="status"
+                    name="propertyType"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Status</FormLabel>
+                        <FormLabel className="text-white">Property</FormLabel>
                         <Select value={field.value} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select status" />
+                              <SelectValue placeholder="Select property type" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
+                            <SelectItem value="property">Property</SelectItem>
+                            <SelectItem value="rent">Rent</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -290,6 +302,40 @@ export default function Slots() {
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="ownerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">
+                        {watchPropertyType === "property" ? "Company" : "Provider"}
+                      </FormLabel>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder={`Select ${watchPropertyType === "property" ? "company" : "provider"}`} />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {watchPropertyType === "property" 
+                            ? companies?.companies?.map((company: any) => (
+                                <SelectItem key={company.id} value={company.id.toString()}>
+                                  {company.name}
+                                </SelectItem>
+                              ))
+                            : providers?.providers?.map((provider: any) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  {provider.name}
+                                </SelectItem>
+                              ))
+                          }
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="grid grid-cols-3 gap-4">
                   <FormField
@@ -426,7 +472,7 @@ export default function Slots() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">RTP</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
@@ -458,8 +504,8 @@ export default function Slots() {
                           {slot.rtp ? `${Number(slot.rtp)}%` : 'N/A'}
                         </td>
                         <td className="py-4 px-4">
-                          <Badge className={`${getStatusColor(slot.status)} border`}>
-                            {slot.status}
+                          <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>
+                            {slot.propertyType}
                           </Badge>
                         </td>
                         <td className="py-4 px-4 text-sm font-semibold text-emerald-500">

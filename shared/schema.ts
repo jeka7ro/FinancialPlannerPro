@@ -111,7 +111,8 @@ export const slots = pgTable("slots", {
   denomination: decimal("denomination", { precision: 8, scale: 2 }),
   maxBet: decimal("max_bet", { precision: 8, scale: 2 }),
   rtp: decimal("rtp", { precision: 5, scale: 2 }),
-  status: varchar("status", { length: 50 }).notNull().default("active"),
+  propertyType: varchar("property_type", { length: 50 }).notNull().default("property"), // "property" or "rent"
+  ownerId: integer("owner_id"), // References companies.id for property, providers.id for rent
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
