@@ -550,68 +550,68 @@ export default function Slots() {
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="w-full">
+                <table className="w-full table-fixed">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 w-12">
+                      <th className="text-left py-2 px-3 w-10">
                         <Checkbox
                           checked={selectedSlots.length === data?.slots.length && data?.slots.length > 0}
                           onCheckedChange={handleSelectAll}
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game Mix</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Exciter Type</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">RTP</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Nr</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Cabinet</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Game Mix</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Exciter Type</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16">RTP</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Serial Nr</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Invoice</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28">Commission Date</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Property</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Revenue (24h)</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Attachments</th>
+                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400 w-20">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.slots.map((slot: any) => (
                       <tr key={slot.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
+                        <td className="py-3 px-3">
                           <Checkbox
                             checked={selectedSlots.includes(slot.id)}
                             onCheckedChange={() => handleSelectSlot(slot.id)}
                             className="border-white/20"
                           />
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="font-medium text-white">
+                        <td className="py-3 px-3">
+                          <div className="font-medium text-white text-sm truncate">
                             {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
                           </div>
-                          <div className="text-sm text-slate-400">
+                          <div className="text-xs text-slate-400 truncate">
                             {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {slot.exciterType || 'N/A'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300">
                           {slot.rtp ? `${Number(slot.rtp)}%` : 'N/A'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {slot.serialNr || 'N/A'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {findInvoiceBySerialNumber(slot.serialNr) || 'N/A'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          <div className="flex items-center gap-2">
+                        <td className="py-3 px-3 text-sm text-slate-300">
+                          <div className="flex items-center gap-1">
                             {slot.commissionDate && (
-                              <Calendar className="h-4 w-4 text-blue-400" />
+                              <Calendar className="h-3 w-3 text-blue-400" />
                             )}
-                            <span>
+                            <span className="truncate">
                               {slot.commissionDate 
                                 ? new Date(slot.commissionDate).toLocaleDateString() 
                                 : findCommissionDateBySerialNumber(slot.serialNr) || 'N/A'

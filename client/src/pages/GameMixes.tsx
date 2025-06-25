@@ -96,6 +96,26 @@ export default function GameMixes() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/game-mixes/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/game-mixes'] });
+      toast({
+        title: "Success",
+        description: "Game mix deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete game mix. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertGameMix>({
     resolver: zodResolver(insertGameMixSchema),
     defaultValues: {
@@ -136,6 +156,12 @@ export default function GameMixes() {
       isActive: gameMix.isActive ?? true,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (gameMix: any) => {
+    if (window.confirm(`Are you sure you want to delete the game mix "${gameMix.name}"?`)) {
+      deleteMutation.mutate(gameMix.id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -349,67 +375,78 @@ export default function GameMixes() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 w-12">
+                      <th className="text-left py-2 px-3 w-10">
                         <Checkbox
                           checked={selectedGameMixes.length === data?.gameMixes.length && data?.gameMixes.length > 0}
                           onCheckedChange={handleSelectAll}
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Mix Name</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Provider</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game Count</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Description</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Mix Name</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Provider</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Game Count</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Description</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Status</th>
+                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.gameMixes.map((gameMix: any) => (
                       <tr key={gameMix.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
+                        <td className="py-3 px-3">
                           <Checkbox
                             checked={selectedGameMixes.includes(gameMix.id)}
                             onCheckedChange={() => handleSelectGameMix(gameMix.id)}
                             className="border-white/20"
                           />
                         </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-red-500 text-sm">🍒</span>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="w-6 h-6 bg-red-500/20 rounded-lg flex items-center justify-center">
+                              <span className="text-red-500 text-xs">🍒</span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-white">{gameMix.name}</p>
+                              <p className="text-sm font-medium text-white truncate">{gameMix.name}</p>
                               <p className="text-xs text-slate-400">Mix #{gameMix.id}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {gameMix.providerId ? `Provider ${gameMix.providerId}` : 'No provider'}
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
+                          {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        <td className="py-3 px-3 text-sm text-slate-300">
                           {gameMix.gameCount} games
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300 max-w-xs truncate">
+                        <td className="py-3 px-3 text-sm text-slate-300 max-w-xs truncate">
                           {gameMix.description || 'No description'}
                         </td>
-                        <td className="py-4 px-4">
+                        <td className="py-3 px-3">
                           <Badge className={gameMix.isActive ? 'status-active' : 'status-inactive'}>
                             {gameMix.isActive ? 'Active' : 'Inactive'}
                           </Badge>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
+                        <td className="py-3 px-3 text-right">
+                          <div className="flex justify-end space-x-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleEdit(gameMix)}
+                              className="text-blue-500 hover:text-blue-400 h-8 w-8 p-0"
+                            >
+                              <Edit className="w-3 h-3" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                              ✏️
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleDelete(gameMix)}
+                              className="text-red-500 hover:text-red-400 h-8 w-8 p-0"
+                            >
+                              <Trash2 className="w-3 h-3" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
-                            </Button>
+                            <AttachmentButton
+                              entityType="game-mixes"
+                              entityId={gameMix.id}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -465,6 +502,112 @@ export default function GameMixes() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Game Mix</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Mix Name</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game mix name" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Description</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Describe the game mix" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="providerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Provider</FormLabel>
+                      <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select provider" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/20">
+                          {providers?.providers?.map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id.toString()}>
+                              {provider.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={editForm.control}
+                  name="gameCount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Game Count</FormLabel>
+                      <FormControl>
+                        <Input 
+                          {...field} 
+                          value={field.value || ""} 
+                          type="number" 
+                          className="form-input" 
+                          placeholder="Number of games"
+                          onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  disabled={updateMutation.isPending}
+                  className="bg-blue-500 hover:bg-blue-600 text-white"
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Game Mix"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
