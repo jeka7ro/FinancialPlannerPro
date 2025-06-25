@@ -119,6 +119,10 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 25, 2025: Added Serial Number and License Date fields to Invoices module with ONJN integration
+- June 25, 2025: Added Amortization field (months) and Property Type field to Invoices module
+- June 25, 2025: Implemented file attachment functionality for Invoices with PDF, XLS, PNG, JPEG support
+- June 25, 2025: Enhanced Invoices table with Serial Numbers badges, License Date, Amortization, and Property Type columns
 - June 25, 2025: Completed comprehensive TypeScript error resolution across all modules
 - June 25, 2025: Created formUtils.ts utility with safeFormValue, safeNumericValue, and parseNullableNumber functions
 - June 25, 2025: Applied null safety pattern `value={field.value || ""}` to all form inputs throughout application

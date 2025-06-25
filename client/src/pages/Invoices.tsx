@@ -15,6 +15,7 @@ import { insertInvoiceSchema, type InsertInvoice } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Upload } from "lucide-react";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 
 // Utility function for property type colors
 const getPropertyTypeColor = (propertyType: string) => {
@@ -651,6 +652,10 @@ export default function Invoices() {
                             <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
                               ✏️
                             </Button>
+                            <AttachmentButton 
+                              entityType="invoice" 
+                              entityId={invoice.id}
+                            />
                             <Button variant="ghost" size="sm" className="text-emerald-500 hover:text-emerald-400">
                               📄
                             </Button>
