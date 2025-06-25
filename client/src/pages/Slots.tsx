@@ -88,6 +88,30 @@ export default function Slots() {
     },
   });
 
+  const { data: invoices } = useQuery({
+    queryKey: ['/api/invoices', 1, 1000],
+    queryFn: async () => {
+      const response = await fetch('/api/invoices?page=1&limit=1000', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch invoices');
+      return response.json();
+    },
+  });
+
+  // Function to find invoice number by matching slot serial number with invoice serial numbers
+  const findInvoiceBySerialNumber = (slotSerialNumber: string) => {
+    if (!invoices?.invoices || !slotSerialNumber) return null;
+    
+    const matchingInvoice = invoices.invoices.find((invoice: any) => {
+      if (!invoice.serialNumbers) return false;
+      const serialNumbers = invoice.serialNumbers.split(' ').filter((sn: string) => sn.trim());
+      return serialNumbers.includes(slotSerialNumber);
+    });
+    
+    return matchingInvoice?.invoiceNumber || null;
+  };
+
   const { data: companies } = useQuery({
     queryKey: ['/api/companies', 1, 100],
     queryFn: async () => {
@@ -99,16 +123,7 @@ export default function Slots() {
     },
   });
 
-  const { data: invoices } = useQuery({
-    queryKey: ['/api/invoices', 1, 100],
-    queryFn: async () => {
-      const response = await fetch('/api/invoices?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch invoices');
-      return response.json();
-    },
-  });
+
 
   const { data: onjnReports } = useQuery({
     queryKey: ['/api/onjn-reports', 1, 100],
@@ -1169,10 +1184,7 @@ export default function Slots() {
                           {slot.serialNr || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {slot.invoiceId ? 
-                            invoices?.invoices?.find((inv: any) => inv.id === slot.invoiceId)?.invoiceNumber || `Invoice #${slot.invoiceId}` 
-                            : 'N/A'
-                          }
+                          {findInvoiceBySerialNumber(slot.serialNr) || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {slot.licenseDate ? new Date(slot.licenseDate).toLocaleDateString() : 'N/A'}
