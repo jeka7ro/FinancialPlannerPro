@@ -105,9 +105,8 @@ export const slots = pgTable("slots", {
   cabinetId: integer("cabinet_id").references(() => cabinets.id),
   gameMixId: integer("game_mix_id").references(() => gameMixes.id),
   providerId: integer("provider_id").references(() => providers.id),
-  slotNumber: integer("slot_number").notNull(),
   gameName: varchar("game_name", { length: 255 }),
-  gameType: varchar("game_type", { length: 100 }),
+  exciterType: varchar("exciter_type", { length: 100 }),
   denomination: decimal("denomination", { precision: 8, scale: 2 }),
   maxBet: decimal("max_bet", { precision: 8, scale: 2 }),
   rtp: decimal("rtp", { precision: 5, scale: 2 }),
@@ -115,8 +114,7 @@ export const slots = pgTable("slots", {
   ownerId: integer("owner_id"), // References companies.id for property, providers.id for rent
   serialNr: varchar("serial_nr", { length: 100 }), // Links to invoice for contract tracking
   invoiceId: integer("invoice_id").references(() => invoices.id),
-  licenseDate: timestamp("license_date"), // Links to ONJN module for license management
-  commissionDate: timestamp("commission_date"), // Links to ONJN commission date
+  commissionDate: timestamp("commission_date"), // Commission date - editable field, auto-filled from ONJN if available
   onjnReportId: integer("onjn_report_id").references(() => onjnReports.id),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
   isActive: boolean("is_active").notNull().default(true),

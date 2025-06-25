@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,22 +14,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSlotSchema, type InsertSlot } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Upload, Calendar } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
-import { AttachmentButton } from "@/components/ui/attachment-button";
+import { safeFormValue } from "@/utils/formUtils";
 
-// Utility function for property type colors
 const getPropertyTypeColor = (propertyType: string) => {
   switch (propertyType?.toLowerCase()) {
-    case 'owned':
+    case 'property':
       return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
-    case 'rented':
+    case 'rent':
       return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-    case 'leased':
-      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
-    case 'contracted':
-      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
     default:
       return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
   }
@@ -99,6 +95,28 @@ export default function Slots() {
     },
   });
 
+  const { data: companies } = useQuery({
+    queryKey: ['/api/companies', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/companies?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch companies');
+      return response.json();
+    },
+  });
+
+  const { data: onjnReports } = useQuery({
+    queryKey: ['/api/onjn-reports', 1, 1000],
+    queryFn: async () => {
+      const response = await fetch('/api/onjn-reports?page=1&limit=1000', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch ONJN reports');
+      return response.json();
+    },
+  });
+
   // Function to find invoice number by matching slot serial number with invoice serial numbers
   const findInvoiceBySerialNumber = (slotSerialNumber: string) => {
     if (!invoices?.invoices || !slotSerialNumber) return null;
@@ -111,30 +129,6 @@ export default function Slots() {
     
     return matchingInvoice?.invoiceNumber || null;
   };
-
-  const { data: companies } = useQuery({
-    queryKey: ['/api/companies', 1, 100],
-    queryFn: async () => {
-      const response = await fetch('/api/companies?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch companies');
-      return response.json();
-    },
-  });
-
-
-
-  const { data: onjnReports } = useQuery({
-    queryKey: ['/api/onjn-reports', 1, 1000],
-    queryFn: async () => {
-      const response = await fetch('/api/onjn-reports?page=1&limit=1000', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch ONJN reports');
-      return response.json();
-    },
-  });
 
   // Function to find commission date by matching slot serial number with ONJN serial numbers
   const findCommissionDateBySerialNumber = (slotSerialNumber: string) => {
@@ -194,13 +188,33 @@ export default function Slots() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/slots/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/slots'] });
+      toast({
+        title: "Success",
+        description: "Slot deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete slot. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertSlot>({
     resolver: zodResolver(insertSlotSchema),
     defaultValues: {
-      slotNumber: 1,
       gameName: "",
-      gameType: "",
+      exciterType: "",
       propertyType: "property",
+      serialNr: "",
       isActive: true,
     },
   });
@@ -208,16 +222,13 @@ export default function Slots() {
   const editForm = useForm<InsertSlot>({
     resolver: zodResolver(insertSlotSchema),
     defaultValues: {
-      slotNumber: 1,
       gameName: "",
-      gameType: "",
+      exciterType: "",
       propertyType: "property",
+      serialNr: "",
       isActive: true,
     },
   });
-
-  const watchPropertyType = form.watch("propertyType");
-  const watchEditPropertyType = editForm.watch("propertyType");
 
   const onSubmit = (data: InsertSlot) => {
     createMutation.mutate(data);
@@ -232,25 +243,30 @@ export default function Slots() {
   const handleEdit = (slot: any) => {
     setEditingSlot(slot);
     editForm.reset({
-      cabinetId: slot.cabinetId,
-      gameMixId: slot.gameMixId,
-      providerId: slot.providerId,
-      slotNumber: slot.slotNumber,
+      cabinetId: slot.cabinetId || undefined,
+      gameMixId: slot.gameMixId || undefined,
+      providerId: slot.providerId || undefined,
       gameName: slot.gameName || "",
-      gameType: slot.gameType || "",
-      denomination: slot.denomination,
-      maxBet: slot.maxBet,
-      rtp: slot.rtp,
+      exciterType: slot.exciterType || "",
+      denomination: slot.denomination || "",
+      maxBet: slot.maxBet || "",
+      rtp: slot.rtp || "",
       propertyType: slot.propertyType || "property",
-      ownerId: slot.ownerId,
+      ownerId: slot.ownerId || undefined,
       serialNr: slot.serialNr || "",
-      invoiceId: slot.invoiceId,
-      licenseDate: slot.licenseDate,
-      onjnReportId: slot.onjnReportId,
-      dailyRevenue: slot.dailyRevenue,
-      isActive: slot.isActive,
+      invoiceId: slot.invoiceId || undefined,
+      commissionDate: slot.commissionDate ? new Date(slot.commissionDate) : undefined,
+      onjnReportId: slot.onjnReportId || undefined,
+      dailyRevenue: slot.dailyRevenue || "",
+      isActive: slot.isActive !== undefined ? slot.isActive : true,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (slotId: number) => {
+    if (confirm("Are you sure you want to delete this slot?")) {
+      deleteMutation.mutate(slotId);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -281,32 +297,6 @@ export default function Slots() {
     });
   };
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return await apiRequest("DELETE", `/api/slots/${id}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/slots'] });
-      toast({
-        title: "Success",
-        description: "Slot deleted successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to delete slot. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleDelete = (slotId: number) => {
-    if (confirm("Are you sure you want to delete this slot?")) {
-      deleteMutation.mutate(slotId);
-    }
-  };
-
   const handleBulkDelete = () => {
     if (selectedSlots.length === 0) return;
     
@@ -317,19 +307,6 @@ export default function Slots() {
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'maintenance':
-        return 'status-maintenance';
-      case 'inactive':
-        return 'status-inactive';
-      default:
-        return 'bg-gray-500/20 text-gray-400';
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -354,386 +331,15 @@ export default function Slots() {
                 Add Slot
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-white">Create New Slot</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="cabinetId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Cabinet</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select cabinet" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {cabinets?.cabinets?.map((cabinet: any) => (
-                              <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
-                                {cabinet.serialNumber} - {cabinet.model}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="gameMixId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Game Mix</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select game mix" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {gameMixes?.gameMixes?.map((gameMix: any) => (
-                              <SelectItem key={gameMix.id} value={gameMix.id.toString()}>
-                                {gameMix.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="providerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Provider</FormLabel>
-                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                        <FormControl>
-                          <SelectTrigger className="form-input">
-                            <SelectValue placeholder="Select provider" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="glass-card border-white/10">
-                          {providers?.providers?.map((provider: any) => (
-                            <SelectItem key={provider.id} value={provider.id.toString()}>
-                              {provider.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="slotNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Slot Number</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="number" 
-                            className="form-input" 
-                            placeholder="Slot number"
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="gameName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Game Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Game name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="gameType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Game Type</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Game type" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="propertyType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Property</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select property type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="property">Property</SelectItem>
-                            <SelectItem value="rent">Rent</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="ownerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">
-                        {watchPropertyType === "property" ? "Company" : "Provider"}
-                      </FormLabel>
-                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                        <FormControl>
-                          <SelectTrigger className="form-input">
-                            <SelectValue placeholder={`Select ${watchPropertyType === "property" ? "company" : "provider"}`} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="glass-card border-white/10">
-                          {watchPropertyType === "property" 
-                            ? companies?.companies?.map((company: any) => (
-                                <SelectItem key={company.id} value={company.id.toString()}>
-                                  {company.name}
-                                </SelectItem>
-                              ))
-                            : providers?.providers?.map((provider: any) => (
-                                <SelectItem key={provider.id} value={provider.id.toString()}>
-                                  {provider.name}
-                                </SelectItem>
-                              ))
-                          }
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="denomination"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Denomination</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value?.toString() || ""}
-                            type="number" 
-                            step="0.01"
-                            className="form-input" 
-                            placeholder="0.01"
-                            onChange={(e) => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="maxBet"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Max Bet</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value?.toString() || ""}
-                            type="number" 
-                            step="0.01"
-                            className="form-input" 
-                            placeholder="100.00"
-                            onChange={(e) => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="rtp"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">RTP (%)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value?.toString() || ""}
-                            type="number" 
-                            step="0.01"
-                            className="form-input" 
-                            placeholder="96.50"
-                            onChange={(e) => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="serialNr"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Serial Nr</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value || ""}
-                            className="form-input" 
-                            placeholder="Enter serial number"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="invoiceId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Invoice</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select invoice" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {invoices?.invoices?.map((invoice: any) => (
-                              <SelectItem key={invoice.id} value={invoice.id.toString()}>
-                                {invoice.invoiceNumber}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="licenseDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">License Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="datetime-local"
-                            className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
-                            onChange={(e) => field.onChange(e.target.value || null)}
-                            onBlur={field.onBlur}
-                            name={field.name}
-                            ref={field.ref}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="onjnReportId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">ONJN Report</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select ONJN report" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {onjnReports?.onjnReports?.map((report: any) => (
-                              <SelectItem key={report.id} value={report.id.toString()}>
-                                {report.reportType} - {report.reportPeriod}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-gaming"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Slot"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-          </Dialog>
-
-          {/* Edit Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
             <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Edit Slot</DialogTitle>
+                <DialogTitle className="text-white">Create New Slot</DialogTitle>
               </DialogHeader>
-              <Form {...editForm}>
-                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={editForm.control}
+                      control={form.control}
                       name="cabinetId"
                       render={({ field }) => (
                         <FormItem>
@@ -747,7 +353,7 @@ export default function Slots() {
                             <SelectContent className="glass-card border-white/10">
                               {cabinets?.cabinets?.map((cabinet: any) => (
                                 <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
-                                  {cabinet.serialNumber} - {cabinet.model}
+                                  {cabinet.model}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -757,7 +363,7 @@ export default function Slots() {
                       )}
                     />
                     <FormField
-                      control={editForm.control}
+                      control={form.control}
                       name="gameMixId"
                       render={({ field }) => (
                         <FormItem>
@@ -782,53 +388,33 @@ export default function Slots() {
                     />
                   </div>
 
-                  <FormField
-                    control={editForm.control}
-                    name="providerId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Provider</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select provider" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {providers?.providers?.map((provider: any) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
-                                {provider.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={editForm.control}
-                      name="slotNumber"
+                      control={form.control}
+                      name="providerId"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Slot Number</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              type="number" 
-                              className="form-input" 
-                              placeholder="1"
-                              onChange={(e) => field.onChange(parseInt(e.target.value))}
-                            />
-                          </FormControl>
+                          <FormLabel className="text-white">Provider</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select provider" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {providers?.providers?.map((provider: any) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  {provider.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
-                      control={editForm.control}
+                      control={form.control}
                       name="gameName"
                       render={({ field }) => (
                         <FormItem>
@@ -844,20 +430,36 @@ export default function Slots() {
 
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
-                      control={editForm.control}
-                      name="gameType"
+                      control={form.control}
+                      name="exciterType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Game Type</FormLabel>
+                          <FormLabel className="text-white">Exciter Type</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game type" />
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter exciter type" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                     <FormField
-                      control={editForm.control}
+                      control={form.control}
+                      name="serialNr"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Serial Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter serial number" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
                       name="propertyType"
                       render={({ field }) => (
                         <FormItem>
@@ -877,195 +479,21 @@ export default function Slots() {
                         </FormItem>
                       )}
                     />
-                  </div>
-
-                  <FormField
-                    control={editForm.control}
-                    name="ownerId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">
-                          {watchEditPropertyType === "property" ? "Owner Company" : "Rental Provider"}
-                        </FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder={`Select ${watchEditPropertyType === "property" ? "company" : "provider"}`} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {watchEditPropertyType === "property" 
-                              ? companies?.companies?.map((company: any) => (
-                                <SelectItem key={company.id} value={company.id.toString()}>
-                                  {company.name}
-                                </SelectItem>
-                              ))
-                              : providers?.providers?.map((provider: any) => (
-                                <SelectItem key={provider.id} value={provider.id.toString()}>
-                                  {provider.name}
-                                </SelectItem>
-                              ))
-                            }
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-3 gap-4">
                     <FormField
-                      control={editForm.control}
-                      name="denomination"
+                      control={form.control}
+                      name="commissionDate"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Denomination</FormLabel>
+                          <FormLabel className="text-white">Commission Date</FormLabel>
                           <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value?.toString() || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="0.01"
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="maxBet"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Max Bet</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value?.toString() || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="100.00"
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="rtp"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">RTP (%)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value?.toString() || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="96.50"
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="serialNr"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Serial Nr</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""}
-                              className="form-input" 
-                              placeholder="Enter serial number"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="invoiceId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Invoice</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select invoice" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {invoices?.invoices?.map((invoice: any) => (
-                                <SelectItem key={invoice.id} value={invoice.id.toString()}>
-                                  {invoice.invoiceNumber}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="licenseDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">License Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="datetime-local"
+                            <Input
+                              type="date"
+                              {...field}
+                              value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : new Date(field.value).toISOString().split('T')[0]) : ""}
+                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                               className="form-input"
-                              value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
-                              onChange={(e) => field.onChange(e.target.value || null)}
-                              onBlur={field.onBlur}
-                              name={field.name}
-                              ref={field.ref}
                             />
                           </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="onjnReportId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">ONJN Report</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select ONJN report" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {onjnReports?.onjnReports?.map((report: any) => (
-                                <SelectItem key={report.id} value={report.id.toString()}>
-                                  {report.reportType} - {report.reportPeriod}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -1076,7 +504,7 @@ export default function Slots() {
                     <Button 
                       type="button" 
                       variant="ghost" 
-                      onClick={() => setIsEditDialogOpen(false)}
+                      onClick={() => setIsCreateDialogOpen(false)}
                       className="text-slate-400 hover:text-white"
                     >
                       Cancel
@@ -1084,9 +512,9 @@ export default function Slots() {
                     <Button 
                       type="submit" 
                       className="btn-gaming"
-                      disabled={updateMutation.isPending}
+                      disabled={createMutation.isPending}
                     >
-                      {updateMutation.isPending ? "Updating..." : "Update Slot"}
+                      {createMutation.isPending ? "Creating..." : "Create Slot"}
                     </Button>
                   </div>
                 </form>
@@ -1147,17 +575,16 @@ export default function Slots() {
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Slot</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Type</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Exciter Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">RTP</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Nr</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
                   </thead>
@@ -1172,24 +599,16 @@ export default function Slots() {
                           />
                         </td>
                         <td className="py-4 px-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-yellow-500 text-sm">🎰</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-white">Slot #{slot.slotNumber}</p>
-                              <p className="text-xs text-slate-400">ID: {slot.id}</p>
-                            </div>
+                          <div className="font-medium text-white">{slot.gameName || 'N/A'}</div>
+                          <div className="text-sm text-slate-400">
+                            {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
                           </div>
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {slot.gameName || 'No game'}
+                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {slot.cabinetId ? `Cabinet ${slot.cabinetId}` : 'Unassigned'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {slot.gameType || 'N/A'}
+                          {slot.exciterType || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {slot.rtp ? `${Number(slot.rtp)}%` : 'N/A'}
@@ -1201,10 +620,17 @@ export default function Slots() {
                           {findInvoiceBySerialNumber(slot.serialNr) || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {slot.licenseDate ? new Date(slot.licenseDate).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {findCommissionDateBySerialNumber(slot.serialNr) || 'N/A'}
+                          <div className="flex items-center gap-2">
+                            {slot.commissionDate && (
+                              <Calendar className="h-4 w-4 text-blue-400" />
+                            )}
+                            <span>
+                              {slot.commissionDate 
+                                ? new Date(slot.commissionDate).toLocaleDateString() 
+                                : findCommissionDateBySerialNumber(slot.serialNr) || 'N/A'
+                              }
+                            </span>
+                          </div>
                         </td>
                         <td className="py-4 px-4">
                           <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>
@@ -1214,21 +640,29 @@ export default function Slots() {
                         <td className="py-4 px-4 text-sm font-semibold text-emerald-500">
                           €{slot.dailyRevenue ? Number(slot.dailyRevenue).toLocaleString() : '0'}
                         </td>
+                        <td className="py-4 px-4">
+                          <AttachmentButton 
+                            entityType="slot" 
+                            entityId={slot.id}
+                          />
+                        </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-amber-500 hover:text-amber-400"
+                            <Button
+                              variant="ghost"
+                              size="sm"
                               onClick={() => handleEdit(slot)}
+                              className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
                             >
-                              ✏️
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(slot.id)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>
@@ -1239,52 +673,228 @@ export default function Slots() {
               </div>
 
               {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center space-x-2 mt-6">
+                  <Button
+                    variant="outline"
                     size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
+                    className="border-white/20 text-white hover:bg-white/10"
                   >
                     Previous
                   </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
+                  <span className="text-sm text-slate-400">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
                     size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
+                    className="border-white/20 text-white hover:bg-white/10"
                   >
                     Next
                   </Button>
                 </div>
-              </div>
+              )}
             </>
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Slot</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="cabinetId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Cabinet</FormLabel>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select cabinet" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {cabinets?.cabinets?.map((cabinet: any) => (
+                            <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
+                              {cabinet.model}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="gameMixId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Game Mix</FormLabel>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select game mix" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {gameMixes?.gameMixes?.map((gameMix: any) => (
+                            <SelectItem key={gameMix.id} value={gameMix.id.toString()}>
+                              {gameMix.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="providerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Provider</FormLabel>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select provider" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {providers?.providers?.map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id.toString()}>
+                              {provider.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="gameName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Game Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="exciterType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Exciter Type</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter exciter type" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="serialNr"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Serial Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter serial number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="propertyType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Property Type</FormLabel>
+                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select property type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          <SelectItem value="property">Property</SelectItem>
+                          <SelectItem value="rent">Rent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="commissionDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Commission Date</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="date"
+                          {...field}
+                          value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : new Date(field.value).toISOString().split('T')[0]) : ""}
+                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                          className="form-input"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-gaming"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Slot"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
