@@ -85,18 +85,38 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
     }
   };
 
-  const handleExportExcel = () => {
-    const link = document.createElement('a');
-    link.href = `/api/${module}/export/excel`;
-    link.download = `${module}-export.xlsx`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Export Started",
-      description: `Excel export for ${moduleName} is downloading...`,
-    });
+  const handleExportExcel = async () => {
+    try {
+      const response = await fetch(`/api/${module}/export/excel`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to export data');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${module}-export.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export Started",
+        description: `Excel export for ${moduleName} is downloading...`,
+      });
+    } catch (error) {
+      toast({
+        title: "Export Failed",
+        description: "Failed to export data. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleExportPDF = () => {

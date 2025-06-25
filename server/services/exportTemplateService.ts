@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 export class ExportTemplateService {
@@ -222,11 +222,15 @@ export class ExportTemplateService {
 
   // Generate comprehensive PDF tutorial
   generateImportTutorialPDF(): Buffer {
-    const doc = new jsPDF();
+    const doc = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: 'a4'
+    });
     
     // Title
     doc.setFontSize(20);
-    doc.text('CASHPOT 2.0 - Data Import Tutorial', 20, 20);
+    doc.text('CASHPOT - Data Import Tutorial', 20, 20);
     
     // Introduction
     doc.setFontSize(12);
