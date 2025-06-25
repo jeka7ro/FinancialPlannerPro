@@ -104,6 +104,7 @@ export const slots = pgTable("slots", {
   id: serial("id").primaryKey(),
   cabinetId: integer("cabinet_id").references(() => cabinets.id),
   gameMixId: integer("game_mix_id").references(() => gameMixes.id),
+  providerId: integer("provider_id").references(() => providers.id),
   slotNumber: integer("slot_number").notNull(),
   gameName: varchar("game_name", { length: 255 }),
   gameType: varchar("game_type", { length: 100 }),
@@ -257,6 +258,10 @@ export const slotsRelations = relations(slots, ({ one }) => ({
   gameMix: one(gameMixes, {
     fields: [slots.gameMixId],
     references: [gameMixes.id],
+  }),
+  provider: one(providers, {
+    fields: [slots.providerId],
+    references: [providers.id],
   }),
 }));
 

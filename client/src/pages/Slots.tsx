@@ -53,6 +53,17 @@ export default function Slots() {
     },
   });
 
+  const { data: providers } = useQuery({
+    queryKey: ['/api/providers', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/providers?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch providers');
+      return response.json();
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: InsertSlot) => {
       return await apiRequest("POST", "/api/slots", data);
@@ -181,6 +192,31 @@ export default function Slots() {
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="providerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Provider</FormLabel>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select provider" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {providers?.providers?.map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id.toString()}>
+                              {provider.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
