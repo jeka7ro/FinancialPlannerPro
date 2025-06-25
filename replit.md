@@ -1,0 +1,119 @@
+# Gaming Management System
+
+## Overview
+
+This is a comprehensive gaming management system built for managing slot machines, cabinets, locations, and gaming operations. The application uses a full-stack TypeScript architecture with React frontend, Express.js backend, and PostgreSQL database with Drizzle ORM.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite with hot module replacement
+- **UI Library**: Shadcn/ui components built on Radix UI primitives
+- **Styling**: Tailwind CSS with custom gaming-specific color palette
+- **State Management**: TanStack Query (React Query) for server state
+- **Routing**: Wouter for client-side routing
+- **Forms**: React Hook Form with Zod validation
+
+### Backend Architecture
+- **Runtime**: Node.js with Express.js framework
+- **Language**: TypeScript with ES modules
+- **Session Management**: Express session with PostgreSQL store
+- **Authentication**: Session-based with bcrypt password hashing
+- **API**: RESTful endpoints with JSON responses
+- **Validation**: Zod schemas for request/response validation
+
+### Database Architecture
+- **Database**: PostgreSQL (configured for Neon serverless)
+- **ORM**: Drizzle ORM with TypeScript
+- **Schema**: Comprehensive gaming industry schema including:
+  - Users and role-based access control
+  - Companies and locations management
+  - Gaming providers and equipment tracking
+  - Cabinet and slot machine inventory
+  - Financial records (invoices, rent agreements)
+  - Legal documents and ONJN reporting
+  - Activity logging and audit trails
+
+## Key Components
+
+### Entity Management
+- **Users**: Role-based user management (admin, operator, manager)
+- **Companies**: Gaming company registration and management
+- **Locations**: Physical location tracking with manager assignments
+- **Providers**: Gaming software/hardware provider management
+- **Cabinets**: Gaming cabinet inventory and status tracking
+- **Game Mixes**: Game configuration and content management
+- **Slots**: Individual slot machine tracking and assignment
+
+### Financial Management
+- **Invoices**: Revenue and expense tracking with PDF generation
+- **Rent Agreements**: Location rental contract management
+- **Legal Documents**: Contract and compliance document storage
+
+### Compliance & Reporting
+- **ONJN Reports**: Romanian gaming authority reporting
+- **Activity Logs**: Comprehensive audit trail
+- **System Alerts**: Real-time monitoring and notifications
+
+### Dashboard Features
+- **KPI Metrics**: Revenue, active equipment, location performance
+- **Revenue Charts**: Visual performance analytics
+- **Equipment Status**: Real-time cabinet and slot monitoring
+- **Recent Activity**: System activity feed
+- **Alert System**: Equipment and compliance notifications
+
+## Data Flow
+
+1. **Authentication Flow**: Session-based authentication with secure cookie storage
+2. **API Communication**: RESTful APIs with JSON payloads and error handling
+3. **Data Validation**: Client-side form validation with server-side schema validation
+4. **State Management**: React Query handles caching, synchronization, and optimistic updates
+5. **Real-time Updates**: Automatic data refresh and cache invalidation
+
+## External Dependencies
+
+### Core Dependencies
+- **@neondatabase/serverless**: PostgreSQL serverless connection
+- **drizzle-orm**: Type-safe database operations
+- **express-session**: Session management
+- **bcryptjs**: Password hashing
+- **zod**: Schema validation
+- **react-hook-form**: Form management
+- **@tanstack/react-query**: Server state management
+
+### UI Dependencies
+- **@radix-ui/***: Accessible UI primitives
+- **tailwindcss**: Utility-first CSS framework
+- **lucide-react**: Icon library
+- **date-fns**: Date manipulation
+- **next-themes**: Theme management
+
+## Deployment Strategy
+
+### Development
+- **Environment**: Replit with Node.js 20
+- **Database**: PostgreSQL 16 module
+- **Build Process**: Vite dev server with HMR
+- **Port**: 5000 (mapped to external port 80)
+
+### Production
+- **Build**: Vite static build + esbuild server bundle
+- **Deployment**: Replit autoscale deployment
+- **Database**: Neon serverless PostgreSQL
+- **Session Store**: PostgreSQL session storage
+- **Static Assets**: Served from dist/public
+
+### Environment Variables
+- `DATABASE_URL`: PostgreSQL connection string
+- `SESSION_SECRET`: Session encryption key
+- `NODE_ENV`: Environment mode (development/production)
+
+## User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+## Changelog
+
+Changelog:
+- June 25, 2025. Initial setup
