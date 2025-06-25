@@ -138,7 +138,7 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
               />
             </div>
             <CardTitle className="text-2xl font-bold text-white">
-              CASHPOT 2.0
+              CASHPOT
             </CardTitle>
             <p className="text-slate-400">Gaming Management System</p>
           </CardHeader>

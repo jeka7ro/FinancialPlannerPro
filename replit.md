@@ -1,4 +1,4 @@
-# CASHPOT 2.0 Gaming Management System
+# CASHPOT Gaming Management System
 
 ## Overview
 
@@ -123,6 +123,7 @@ This is a comprehensive gaming management system built for managing slot machine
 - December 25, 2024: Created export templates with sample data and field descriptions for all modules
 - December 25, 2024: Implemented file attachment system with individual row-level attachment buttons
 - December 25, 2024: Added "Remember me" login option for extended 30-day sessions and credential storage
-- December 25, 2024: Removed "ERP" branding, updated to "CASHPOT 2.0" throughout application
+- December 25, 2024: Removed "ERP" branding, updated to "CASHPOT" throughout application
 - December 25, 2024: Implemented comprehensive theme system with 5 themes: Default, Light, Dark, macOS Monterey, and iCloud
 - June 25, 2025: Initial setup with complete gaming management system
+- June 25, 2025: Removed "2.0" from CASHPOT branding throughout application
