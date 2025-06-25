@@ -172,6 +172,25 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
                   required
                 />
               </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="rememberMe"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="rounded border-white/20 bg-white/10 text-blue-600 focus:ring-blue-500 h-4 w-4"
+                  />
+                  <Label htmlFor="rememberMe" className="text-white text-sm cursor-pointer">
+                    Remember me
+                  </Label>
+                </div>
+                <div className="text-xs text-slate-400">
+                  Stay logged in for 30 days
+                </div>
+              </div>
+              
               <Button
                 type="submit"
                 className="w-full btn-gaming"
