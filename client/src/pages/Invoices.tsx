@@ -93,6 +93,11 @@ export default function Invoices() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (invoice: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit invoice:', invoice);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

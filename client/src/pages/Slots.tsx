@@ -114,6 +114,11 @@ export default function Slots() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (slot: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit slot:', slot);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

@@ -91,6 +91,11 @@ export default function Legal() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (legalDocument: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit legal document:', legalDocument);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

@@ -73,6 +73,11 @@ export default function Providers() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (provider: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit provider:', provider);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

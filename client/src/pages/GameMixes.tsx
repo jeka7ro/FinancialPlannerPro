@@ -79,6 +79,11 @@ export default function GameMixes() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (gameMix: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit game mix:', gameMix);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

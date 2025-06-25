@@ -84,6 +84,11 @@ export default function Locations() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (location: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit location:', location);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

@@ -92,6 +92,11 @@ export default function RentManagement() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (rentAgreement: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit rent agreement:', rentAgreement);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

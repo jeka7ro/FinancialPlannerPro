@@ -90,6 +90,11 @@ export default function Cabinets() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (cabinet: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit cabinet:', cabinet);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

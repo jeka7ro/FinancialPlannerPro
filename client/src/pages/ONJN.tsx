@@ -88,6 +88,11 @@ export default function ONJN() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (onjnReport: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit ONJN report:', onjnReport);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

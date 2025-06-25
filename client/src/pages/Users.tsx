@@ -73,6 +73,11 @@ export default function Users() {
     createMutation.mutate(data);
   };
 
+  const handleEdit = (user: any) => {
+    // TODO: Implement edit functionality
+    console.log('Edit user:', user);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);

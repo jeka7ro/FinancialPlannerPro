@@ -59,7 +59,46 @@ export default function Companies() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertCompany> }) => {
+      return await apiRequest("PUT", `/api/companies/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/companies'] });
+      setIsEditDialogOpen(false);
+      setEditingCompany(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Company updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update company. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertCompany>({
+    resolver: zodResolver(insertCompanySchema),
+    defaultValues: {
+      name: "",
+      registrationNumber: "",
+      taxId: "",
+      address: "",
+      city: "",
+      country: "",
+      phone: "",
+      email: "",
+      website: "",
+      isActive: true,
+    },
+  });
+
+  const editForm = useForm<InsertCompany>({
     resolver: zodResolver(insertCompanySchema),
     defaultValues: {
       name: "",
@@ -90,12 +129,13 @@ export default function Companies() {
     editForm.reset({
       name: company.name || "",
       registrationNumber: company.registrationNumber || "",
-      taxNumber: company.taxNumber || "",
+      taxId: company.taxId || "",
       address: company.address || "",
+      city: company.city || "",
+      country: company.country || "",
       phone: company.phone || "",
       email: company.email || "",
       website: company.website || "",
-      contactPerson: company.contactPerson || "",
       isActive: company.isActive ?? true,
     });
     setIsEditDialogOpen(true);
@@ -447,7 +487,165 @@ export default function Companies() {
         </CardContent>
       </Card>
 
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-dialog border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Company</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Company Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Company name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="registrationNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Registration Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Registration number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="taxId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Tax ID</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Tax ID" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Phone</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Phone number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Address</FormLabel>
+                    <FormControl>
+                      <Input {...field} className="form-input" placeholder="Company address" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="city"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">City</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="City" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="country"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Country</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Country" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} type="email" className="form-input" placeholder="Email address" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="website"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Website</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="Website URL" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-gaming"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Company"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
