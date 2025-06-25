@@ -112,7 +112,7 @@ This is a comprehensive gaming management system built for managing slot machine
 ## User Preferences
 
 - Preferred communication style: Simple, everyday language
-- Login system: Includes "Remember me" option for extended 30-day sessions
+- Login system: Includes "Remember me" option for extended 30-day sessions and credential storage
 - File attachments: Individual attachment buttons per row with popover interface
 - Import/Export: Excel/CSV import and Excel/PDF export functionality with comprehensive templates and tutorials
 

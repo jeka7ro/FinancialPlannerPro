@@ -66,8 +66,24 @@ function useAuth() {
 function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+
+  // Load saved credentials on component mount
+  useEffect(() => {
+    const savedCredentials = localStorage.getItem('cashpot_credentials');
+    if (savedCredentials) {
+      try {
+        const { username: savedUsername, password: savedPassword, rememberMe: savedRememberMe } = JSON.parse(savedCredentials);
+        setUsername(savedUsername || '');
+        setPassword(savedPassword || '');
+        setRememberMe(savedRememberMe || false);
+      } catch (error) {
+        console.error('Error loading saved credentials:', error);
+      }
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,9 +93,22 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       const response = await apiRequest("POST", "/api/auth/login", {
         username,
         password,
+        rememberMe,
       });
 
       const data = await response.json();
+      
+      // Save credentials if remember me is checked
+      if (rememberMe) {
+        localStorage.setItem('cashpot_credentials', JSON.stringify({
+          username,
+          password,
+          rememberMe: true
+        }));
+      } else {
+        localStorage.removeItem('cashpot_credentials');
+      }
+      
       toast({
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName || data.user.username}!`,
