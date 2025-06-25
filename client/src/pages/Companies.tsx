@@ -21,6 +21,8 @@ export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingCompany, setEditingCompany] = useState<any>(null);
   const { toast } = useToast();
   const limit = 10;
 
@@ -75,6 +77,28 @@ export default function Companies() {
 
   const onSubmit = (data: InsertCompany) => {
     createMutation.mutate(data);
+  };
+
+  const onEditSubmit = (data: InsertCompany) => {
+    if (editingCompany) {
+      updateMutation.mutate({ id: editingCompany.id, data });
+    }
+  };
+
+  const handleEdit = (company: any) => {
+    setEditingCompany(company);
+    editForm.reset({
+      name: company.name || "",
+      registrationNumber: company.registrationNumber || "",
+      taxNumber: company.taxNumber || "",
+      address: company.address || "",
+      phone: company.phone || "",
+      email: company.email || "",
+      website: company.website || "",
+      contactPerson: company.contactPerson || "",
+      isActive: company.isActive ?? true,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -356,7 +380,12 @@ export default function Companies() {
                             <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
                               👁️
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-amber-500 hover:text-amber-400"
+                              onClick={() => handleEdit(company)}
+                            >
                               ✏️
                             </Button>
                             <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">

@@ -516,7 +516,12 @@ export default function Slots() {
                             <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
                               👁️
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-amber-500 hover:text-amber-400"
+                              onClick={() => handleEdit(slot)}
+                            >
                               ✏️
                             </Button>
                             <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
