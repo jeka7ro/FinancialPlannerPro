@@ -23,16 +23,19 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 
-// Session configuration
+// Session configuration optimized for deployment
 const sessionConfig = {
   secret: process.env.SESSION_SECRET || "your-secret-key-here",
-  resave: false,
-  saveUninitialized: false,
+  resave: true, // Force session save
+  saveUninitialized: true, // Create session even if not modified
+  rolling: true, // Reset expiration on activity
   cookie: {
-    secure: process.env.NODE_ENV === "production",
+    secure: false, // Required for Replit deployment
     httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours (default, can be extended with remember me)
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for stability
+    sameSite: 'lax' as const,
   },
+  name: 'sessionId', // Explicit session name
 };
 
 // Multer configuration for file uploads
@@ -72,7 +75,11 @@ const uploadAttachment = multer({
 
 // Middleware to check if user is authenticated
 const requireAuth = (req: any, res: any, next: any) => {
+  console.log("Auth check - Session:", req.session?.userId ? "exists" : "missing");
+  console.log("Auth check - Headers:", req.headers.cookie ? "has cookies" : "no cookies");
+  
   if (!req.session?.userId) {
+    console.log("Unauthorized request to:", req.path);
     return res.status(401).json({ message: "Unauthorized" });
   }
   next();
@@ -95,17 +102,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = req.body;
       
+      console.log("Login attempt for username:", username);
+      
       if (!username || !password) {
         return res.status(400).json({ message: "Username and password are required" });
       }
 
       const user = await storage.authenticateUser(username, password);
       if (!user) {
+        console.log("Authentication failed for username:", username);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      console.log("Setting session for user:", user.id);
       (req.session as any).userId = user.id;
       (req.session as any).userRole = user.role;
+      
+      // Force session save
+      req.session.save((err: any) => {
+        if (err) {
+          console.error("Session save error:", err);
+        } else {
+          console.log("Session saved successfully for user:", user.id);
+        }
+      });
       
       res.json({ 
         user: { 
@@ -132,10 +152,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.get("/api/auth/user", requireAuth, async (req, res) => {
+  // Get current user - remove requireAuth to break circular dependency
+  app.get("/api/auth/user", async (req, res) => {
     try {
-      const user = await storage.getUser((req.session as any).userId);
+      const userId = (req.session as any)?.userId;
+      console.log("Get user request - Session userId:", userId);
+      console.log("Session object:", req.session);
+      
+      if (!userId) {
+        console.log("No session found");
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const user = await storage.getUser(userId);
       if (!user) {
+        console.log("User not found for ID:", userId);
         return res.status(404).json({ message: "User not found" });
       }
       
