@@ -37,6 +37,8 @@ export default function Slots() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingSlot, setEditingSlot] = useState<any>(null);
   const [selectedSlots, setSelectedSlots] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
@@ -118,6 +120,29 @@ export default function Slots() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertSlot> }) => {
+      return await apiRequest("PUT", `/api/slots/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/slots'] });
+      setIsEditDialogOpen(false);
+      setEditingSlot(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Slot updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update slot. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertSlot>({
     resolver: zodResolver(insertSlotSchema),
     defaultValues: {
@@ -129,15 +154,48 @@ export default function Slots() {
     },
   });
 
+  const editForm = useForm<InsertSlot>({
+    resolver: zodResolver(insertSlotSchema),
+    defaultValues: {
+      slotNumber: 1,
+      gameName: "",
+      gameType: "",
+      propertyType: "property",
+      isActive: true,
+    },
+  });
+
   const watchPropertyType = form.watch("propertyType");
+  const watchEditPropertyType = editForm.watch("propertyType");
 
   const onSubmit = (data: InsertSlot) => {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertSlot) => {
+    if (editingSlot) {
+      updateMutation.mutate({ id: editingSlot.id, data });
+    }
+  };
+
   const handleEdit = (slot: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit slot:', slot);
+    setEditingSlot(slot);
+    editForm.reset({
+      cabinetId: slot.cabinetId,
+      gameMixId: slot.gameMixId,
+      providerId: slot.providerId,
+      slotNumber: slot.slotNumber,
+      gameName: slot.gameName || "",
+      gameType: slot.gameType || "",
+      denomination: slot.denomination,
+      maxBet: slot.maxBet,
+      rtp: slot.rtp,
+      propertyType: slot.propertyType || "property",
+      ownerId: slot.ownerId,
+      dailyRevenue: slot.dailyRevenue,
+      isActive: slot.isActive,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,14 +226,39 @@ export default function Slots() {
     });
   };
 
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/slots/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/slots'] });
+      toast({
+        title: "Success",
+        description: "Slot deleted successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete slot. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = (slotId: number) => {
+    if (confirm("Are you sure you want to delete this slot?")) {
+      deleteMutation.mutate(slotId);
+    }
+  };
+
   const handleBulkDelete = () => {
     if (selectedSlots.length === 0) return;
     
-    toast({
-      title: "Bulk Delete",
-      description: `Deleting ${selectedSlots.length} slots`,
-      variant: "destructive",
-    });
+    if (confirm(`Are you sure you want to delete ${selectedSlots.length} slots?`)) {
+      selectedSlots.forEach(id => deleteMutation.mutate(id));
+      setSelectedSlots([]);
+    }
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
