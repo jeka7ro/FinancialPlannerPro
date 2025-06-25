@@ -119,6 +119,10 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 25, 2025: Transformed ONJN module from report types to license commission functionality with commission dates and serial numbers
+- June 25, 2025: Added automatic commission date lookup in Slots module displaying dates when serial numbers match ONJN commissions
+- June 25, 2025: Updated database schema for license commissions with commission_date, serial_numbers, and notes fields
+- June 25, 2025: Enhanced ONJN module with file attachment support and complete CRUD operations for license commissions
 - June 25, 2025: Implemented automatic invoice number lookup in Slots module based on serial number matching
 - June 25, 2025: Slots now automatically display invoice numbers when slot serial number matches any serial number in invoices
 - June 25, 2025: Fixed duplicate variable declarations and TypeScript errors in Slots module
