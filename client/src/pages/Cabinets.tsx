@@ -287,7 +287,7 @@ export default function Cabinets() {
                     <FormItem>
                       <FormLabel className="text-white">Manufacturer</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Manufacturer name" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Manufacturer name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -434,7 +434,7 @@ export default function Cabinets() {
                       <FormItem>
                         <FormLabel className="text-white">Manufacturer</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter manufacturer" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter manufacturer" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

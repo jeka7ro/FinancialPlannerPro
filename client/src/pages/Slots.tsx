@@ -435,7 +435,7 @@ export default function Slots() {
                       <FormItem>
                         <FormLabel className="text-white">Game Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Game name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Game name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -451,7 +451,7 @@ export default function Slots() {
                       <FormItem>
                         <FormLabel className="text-white">Game Type</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Game type" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Game type" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -524,6 +524,7 @@ export default function Slots() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
@@ -544,6 +545,7 @@ export default function Slots() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
@@ -564,6 +566,7 @@ export default function Slots() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
@@ -587,6 +590,7 @@ export default function Slots() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value || ""}
                             className="form-input" 
                             placeholder="Enter serial number"
                           />
@@ -802,7 +806,7 @@ export default function Slots() {
                         <FormItem>
                           <FormLabel className="text-white">Game Name</FormLabel>
                           <FormControl>
-                            <Input {...field} className="form-input" placeholder="Enter game name" />
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game name" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -818,7 +822,7 @@ export default function Slots() {
                         <FormItem>
                           <FormLabel className="text-white">Game Type</FormLabel>
                           <FormControl>
-                            <Input {...field} className="form-input" placeholder="Enter game type" />
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game type" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -891,6 +895,7 @@ export default function Slots() {
                           <FormControl>
                             <Input 
                               {...field} 
+                              value={field.value?.toString() || ""}
                               type="number" 
                               step="0.01"
                               className="form-input" 
@@ -911,6 +916,7 @@ export default function Slots() {
                           <FormControl>
                             <Input 
                               {...field} 
+                              value={field.value?.toString() || ""}
                               type="number" 
                               step="0.01"
                               className="form-input" 
@@ -931,6 +937,7 @@ export default function Slots() {
                           <FormControl>
                             <Input 
                               {...field} 
+                              value={field.value?.toString() || ""}
                               type="number" 
                               step="0.01"
                               className="form-input" 
@@ -954,6 +961,7 @@ export default function Slots() {
                           <FormControl>
                             <Input 
                               {...field} 
+                              value={field.value || ""}
                               className="form-input" 
                               placeholder="Enter serial number"
                             />

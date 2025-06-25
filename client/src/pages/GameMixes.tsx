@@ -228,7 +228,7 @@ export default function GameMixes() {
                     <FormItem>
                       <FormLabel className="text-white">Description</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="form-input" placeholder="Describe the game mix" />
+                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Describe the game mix" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

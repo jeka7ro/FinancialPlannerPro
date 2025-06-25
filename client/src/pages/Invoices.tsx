@@ -400,7 +400,7 @@ export default function Invoices() {
                     <FormItem>
                       <FormLabel className="text-white">Notes</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="form-input" placeholder="Additional notes..." />
+                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Additional notes..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

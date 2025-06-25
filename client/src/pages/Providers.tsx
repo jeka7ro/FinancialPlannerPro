@@ -218,7 +218,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Provider Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter provider name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter provider name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -376,7 +376,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Provider Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter provider name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter provider name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -389,7 +389,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Company Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter company name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter company name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -402,7 +402,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Contact Person</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter contact person" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter contact person" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -415,7 +415,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Email</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter email address" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter email address" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -428,7 +428,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter phone number" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter phone number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -454,7 +454,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">City</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter city" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter city" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -467,7 +467,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Country</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Country" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Country" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -480,7 +480,7 @@ export default function Providers() {
                       <FormItem className="col-span-2">
                         <FormLabel className="text-white">Address</FormLabel>
                         <FormControl>
-                          <Textarea {...field} className="form-input min-h-[80px]" placeholder="Enter full address" />
+                          <Textarea {...field} value={field.value || ""} className="form-input min-h-[80px]" placeholder="Enter full address" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

@@ -226,7 +226,7 @@ export default function Users() {
                       <FormItem>
                         <FormLabel className="text-white">First Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="First name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="First name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -239,7 +239,7 @@ export default function Users() {
                       <FormItem>
                         <FormLabel className="text-white">Last Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Last name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
