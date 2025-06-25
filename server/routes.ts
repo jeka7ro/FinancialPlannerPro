@@ -7,6 +7,7 @@ import { storage } from "./storage";
 import { importExportService } from "./services/importExportService";
 import { fileService } from "./services/fileService";
 import { exportTemplateService } from "./services/exportTemplateService";
+import { logoService } from "./services/logoService";
 import { 
   insertUserSchema, 
   insertCompanySchema, 
@@ -1075,6 +1076,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/uploads/:filename", (req: any, res: any) => {
     const filename = req.params.filename;
     res.sendFile(path.join(process.cwd(), 'uploads', filename));
+  });
+
+  // Logo serving
+  app.get("/uploads/logos/:filename", (req: any, res: any) => {
+    const filename = req.params.filename;
+    res.sendFile(path.join(process.cwd(), 'uploads', 'logos', filename));
   });
 
   // Export template routes
