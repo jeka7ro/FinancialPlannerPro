@@ -16,6 +16,18 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Upload } from "lucide-react";
 
+// Utility function for property type colors
+const getPropertyTypeColor = (propertyType: string) => {
+  switch (propertyType?.toLowerCase()) {
+    case 'property':
+      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
+    case 'rent':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+  }
+};
+
 export default function Invoices() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -373,6 +385,52 @@ export default function Invoices() {
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="amortizationMonths"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Amortization (Months)</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="number" 
+                            min="1"
+                            max="120"
+                            className="form-input" 
+                            placeholder="Number of months"
+                            value={field.value?.toString() || ""}
+                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="propertyType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Property Type</FormLabel>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select property type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="property">Property</SelectItem>
+                            <SelectItem value="rent">Rent</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
@@ -520,6 +578,8 @@ export default function Invoices() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amortization</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amount</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Due Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
@@ -563,6 +623,14 @@ export default function Invoices() {
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {invoice.licenseDate ? new Date(invoice.licenseDate).toLocaleDateString() : 'No license date'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.amortizationMonths ? `${invoice.amortizationMonths} months` : 'No amortization'}
+                        </td>
+                        <td className="py-4 px-4">
+                          <Badge className={`${getPropertyTypeColor(invoice.propertyType)} border`}>
+                            {invoice.propertyType || 'property'}
+                          </Badge>
                         </td>
                         <td className="py-4 px-4 text-sm font-semibold text-white">
                           €{Number(invoice.totalAmount).toLocaleString()}

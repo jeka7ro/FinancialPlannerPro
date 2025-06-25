@@ -138,6 +138,8 @@ export const invoices = pgTable("invoices", {
   paidDate: timestamp("paid_date"),
   serialNumbers: text("serial_numbers"), // Space-separated serial numbers
   licenseDate: timestamp("license_date"), // Date for ONJN license connection
+  amortizationMonths: integer("amortization_months"), // Number of months for amortization
+  propertyType: varchar("property_type", { length: 50 }).default("property"), // property or rent
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
