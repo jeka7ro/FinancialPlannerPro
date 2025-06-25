@@ -116,6 +116,7 @@ export const slots = pgTable("slots", {
   serialNr: varchar("serial_nr", { length: 100 }), // Links to invoice for contract tracking
   invoiceId: integer("invoice_id").references(() => invoices.id),
   licenseDate: timestamp("license_date"), // Links to ONJN module for license management
+  commissionDate: timestamp("commission_date"), // Links to ONJN commission date
   onjnReportId: integer("onjn_report_id").references(() => onjnReports.id),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
   isActive: boolean("is_active").notNull().default(true),
@@ -178,18 +179,17 @@ export const legalDocuments = pgTable("legal_documents", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// ONJN Reports table
+// ONJN Reports table - License Commission
 export const onjnReports = pgTable("onjn_reports", {
   id: serial("id").primaryKey(),
-  reportType: varchar("report_type", { length: 100 }).notNull(),
-  reportPeriod: varchar("report_period", { length: 100 }).notNull(),
+  commissionType: varchar("commission_type", { length: 100 }).notNull().default("license_commission"),
+  commissionDate: timestamp("commission_date").notNull(),
+  serialNumbers: text("serial_numbers"), // Multiple serial numbers separated by spaces, like invoices
   companyId: integer("company_id").references(() => companies.id),
   locationId: integer("location_id").references(() => locations.id),
   submissionDate: timestamp("submission_date"),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
-  serialNumber: varchar("serial_number", { length: 100 }), // Connection to Invoice serial numbers
-  licenseDate: timestamp("license_date"), // Connection to Invoice license date
-  reportData: jsonb("report_data"),
+  notes: text("notes"),
   filePath: varchar("file_path", { length: 500 }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

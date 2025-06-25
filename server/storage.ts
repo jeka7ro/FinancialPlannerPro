@@ -608,7 +608,7 @@ export class DatabaseStorage implements IStorage {
   async getOnjnReports(page = 1, limit = 10, search = ""): Promise<{ onjnReports: OnjnReport[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(onjnReports.reportType, `%${search}%`)
+      ? like(onjnReports.serialNumbers, `%${search}%`)
       : undefined;
 
     const [onjnReportsResult, [{ total }]] = await Promise.all([

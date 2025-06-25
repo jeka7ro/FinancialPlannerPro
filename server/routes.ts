@@ -605,12 +605,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         for (const serialNumber of serialNumbers) {
           try {
             await storage.createOnjnReport({
-              reportType: 'license',
-              reportPeriod: new Date().getFullYear().toString(),
+              commissionType: 'license_commission',
+              commissionDate: invoiceData.licenseDate,
+              serialNumbers: serialNumber,
               companyId: invoiceData.companyId,
               locationId: invoiceData.locationId,
-              serialNumber: serialNumber,
-              licenseDate: invoiceData.licenseDate,
               status: 'pending'
             });
           } catch (onjnError) {

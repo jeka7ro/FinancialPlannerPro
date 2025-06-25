@@ -126,15 +126,28 @@ export default function Slots() {
 
 
   const { data: onjnReports } = useQuery({
-    queryKey: ['/api/onjn-reports', 1, 100],
+    queryKey: ['/api/onjn-reports', 1, 1000],
     queryFn: async () => {
-      const response = await fetch('/api/onjn-reports?page=1&limit=100', {
+      const response = await fetch('/api/onjn-reports?page=1&limit=1000', {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch ONJN reports');
       return response.json();
     },
   });
+
+  // Function to find commission date by matching slot serial number with ONJN serial numbers
+  const findCommissionDateBySerialNumber = (slotSerialNumber: string) => {
+    if (!onjnReports?.onjnReports || !slotSerialNumber) return null;
+    
+    const matchingReport = onjnReports.onjnReports.find((report: any) => {
+      if (!report.serialNumbers) return false;
+      const serialNumbers = report.serialNumbers.split(' ').filter((sn: string) => sn.trim());
+      return serialNumbers.includes(slotSerialNumber);
+    });
+    
+    return matchingReport?.commissionDate ? new Date(matchingReport.commissionDate).toLocaleDateString() : null;
+  };
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertSlot) => {
@@ -1142,6 +1155,7 @@ export default function Slots() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Nr</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
@@ -1188,6 +1202,9 @@ export default function Slots() {
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {slot.licenseDate ? new Date(slot.licenseDate).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {findCommissionDateBySerialNumber(slot.serialNr) || 'N/A'}
                         </td>
                         <td className="py-4 px-4">
                           <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>
