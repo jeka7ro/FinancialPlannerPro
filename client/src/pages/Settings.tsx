@@ -266,7 +266,7 @@ export default function Settings() {
                             <FormItem>
                               <FormLabel className="text-white">First Name</FormLabel>
                               <FormControl>
-                                <Input {...field} className="form-input" />
+                                <Input {...field} value={field.value || ""} className="form-input" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -279,7 +279,7 @@ export default function Settings() {
                             <FormItem>
                               <FormLabel className="text-white">Last Name</FormLabel>
                               <FormControl>
-                                <Input {...field} className="form-input" />
+                                <Input {...field} value={field.value || ""} className="form-input" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -294,7 +294,7 @@ export default function Settings() {
                           <FormItem>
                             <FormLabel className="text-white">Email Address</FormLabel>
                             <FormControl>
-                              <Input {...field} type="email" className="form-input" />
+                              <Input {...field} value={field.value || ""} type="email" className="form-input" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -313,7 +313,7 @@ export default function Settings() {
                             <FormItem>
                               <FormLabel className="text-white">Current Password</FormLabel>
                               <FormControl>
-                                <Input {...field} type="password" className="form-input" />
+                                <Input {...field} value={field.value || ""} type="password" className="form-input" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
@@ -328,7 +328,7 @@ export default function Settings() {
                               <FormItem>
                                 <FormLabel className="text-white">New Password</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="password" className="form-input" />
+                                  <Input {...field} value={field.value || ""} type="password" className="form-input" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -341,7 +341,7 @@ export default function Settings() {
                               <FormItem>
                                 <FormLabel className="text-white">Confirm Password</FormLabel>
                                 <FormControl>
-                                  <Input {...field} type="password" className="form-input" />
+                                  <Input {...field} value={field.value || ""} type="password" className="form-input" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>

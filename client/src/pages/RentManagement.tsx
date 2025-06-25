@@ -283,10 +283,12 @@ export default function RentManagement() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
                             placeholder="0.00"
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -302,10 +304,12 @@ export default function RentManagement() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
                             placeholder="0.00"
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -321,7 +325,7 @@ export default function RentManagement() {
                     <FormItem>
                       <FormLabel className="text-white">Terms & Conditions</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="form-input" placeholder="Agreement terms and conditions..." />
+                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Agreement terms and conditions..." />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

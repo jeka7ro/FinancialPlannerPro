@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { safeFormValue } from "@/utils/formUtils";
 import { Upload, Download, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
@@ -153,7 +154,7 @@ export default function Companies() {
     if (selectedCompanies.length === data?.companies.length) {
       setSelectedCompanies([]);
     } else {
-      setSelectedCompanies(data?.companies.map(c => c.id) || []);
+      setSelectedCompanies(data?.companies.map((c: any) => c.id) || []);
     }
   };
 
@@ -236,7 +237,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">Registration Number</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Registration number" />
+                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Registration number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -252,7 +253,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">Tax ID</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Tax identification" />
+                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Tax identification" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -265,7 +266,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">Email</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="form-input" placeholder="company@email.com" />
+                          <Input {...field} value={safeFormValue(field.value)} type="email" className="form-input" placeholder="company@email.com" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -280,7 +281,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Address</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="form-input" placeholder="Company address" />
+                        <Textarea {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Company address" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -295,7 +296,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">City</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="City" />
+                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="City" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -308,7 +309,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">Country</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Country" />
+                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Country" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -321,7 +322,7 @@ export default function Companies() {
                       <FormItem>
                         <FormLabel className="text-white">Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Phone number" />
+                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Phone number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -336,7 +337,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Website</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="https://company-website.com" />
+                        <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="https://company-website.com" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -556,7 +557,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Company Name</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Company name" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Company name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -569,7 +570,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Registration Number</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Registration number" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Registration number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -585,7 +586,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Tax ID</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Tax ID" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Tax ID" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -598,7 +599,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Phone</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Phone number" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Phone number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -613,7 +614,7 @@ export default function Companies() {
                   <FormItem>
                     <FormLabel className="text-white">Address</FormLabel>
                     <FormControl>
-                      <Input {...field} className="form-input" placeholder="Company address" />
+                      <Input {...field} value={field.value || ""} className="form-input" placeholder="Company address" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -628,7 +629,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">City</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="City" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="City" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -641,7 +642,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Country</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Country" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Country" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -657,7 +658,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Email</FormLabel>
                       <FormControl>
-                        <Input {...field} type="email" className="form-input" placeholder="Email address" />
+                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="Email address" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -670,7 +671,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Website</FormLabel>
                       <FormControl>
-                        <Input {...field} className="form-input" placeholder="Website URL" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Website URL" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
