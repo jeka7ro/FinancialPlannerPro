@@ -22,6 +22,8 @@ export default function Locations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<any>(null);
   const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
@@ -70,7 +72,45 @@ export default function Locations() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertLocation> }) => {
+      return await apiRequest("PUT", `/api/locations/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/locations'] });
+      setIsEditDialogOpen(false);
+      setEditingLocation(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Location updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update location. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertLocation>({
+    resolver: zodResolver(insertLocationSchema),
+    defaultValues: {
+      name: "",
+      address: "",
+      city: "",
+      country: "",
+      phone: "",
+      email: "",
+      companyId: undefined,
+      managerId: undefined,
+      isActive: true,
+    },
+  });
+
+  const editForm = useForm<InsertLocation>({
     resolver: zodResolver(insertLocationSchema),
     defaultValues: {
       name: "",
@@ -89,9 +129,26 @@ export default function Locations() {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertLocation) => {
+    if (editingLocation) {
+      updateMutation.mutate({ id: editingLocation.id, data });
+    }
+  };
+
   const handleEdit = (location: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit location:', location);
+    setEditingLocation(location);
+    editForm.reset({
+      companyId: location.companyId,
+      name: location.name || "",
+      address: location.address || "",
+      city: location.city || "",
+      country: location.country || "",
+      phone: location.phone || "",
+      email: location.email || "",
+      managerId: location.managerId,
+      isActive: location.isActive ?? true,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

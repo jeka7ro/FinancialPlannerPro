@@ -96,8 +96,18 @@ export default function Invoices() {
   };
 
   const handleEdit = (invoice: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit invoice:', invoice);
+    setEditingInvoice(invoice);
+    editForm.reset({
+      invoiceNumber: invoice.invoiceNumber || "",
+      companyId: invoice.companyId,
+      type: invoice.type || "income",
+      amount: invoice.amount,
+      issueDate: invoice.issueDate ? new Date(invoice.issueDate).toISOString().split('T')[0] : "",
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : "",
+      description: invoice.description || "",
+      status: invoice.status || "pending",
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

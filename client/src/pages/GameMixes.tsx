@@ -85,8 +85,15 @@ export default function GameMixes() {
   };
 
   const handleEdit = (gameMix: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit game mix:', gameMix);
+    setEditingGameMix(gameMix);
+    editForm.reset({
+      name: gameMix.name || "",
+      description: gameMix.description || "",
+      version: gameMix.version || "",
+      providerId: gameMix.providerId,
+      isActive: gameMix.isActive ?? true,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

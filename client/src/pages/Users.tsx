@@ -74,8 +74,16 @@ export default function Users() {
   };
 
   const handleEdit = (user: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit user:', user);
+    setEditingUser(user);
+    editForm.reset({
+      username: user.username || "",
+      email: user.email || "",
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      role: user.role || "operator",
+      isActive: user.isActive ?? true,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

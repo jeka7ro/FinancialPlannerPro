@@ -96,8 +96,19 @@ export default function Cabinets() {
   };
 
   const handleEdit = (cabinet: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit cabinet:', cabinet);
+    setEditingCabinet(cabinet);
+    editForm.reset({
+      locationId: cabinet.locationId,
+      serialNumber: cabinet.serialNumber || "",
+      model: cabinet.model || "",
+      manufacturer: cabinet.manufacturer || "",
+      yearManufactured: cabinet.yearManufactured,
+      status: cabinet.status || "active",
+      purchasePrice: cabinet.purchasePrice,
+      currentValue: cabinet.currentValue,
+      isActive: cabinet.isActive ?? true,
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

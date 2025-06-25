@@ -124,7 +124,6 @@ export default function Providers() {
   };
 
   const handleEdit = (provider: any) => {
-    console.log("Edit provider:", provider);
     setEditingProvider(provider);
     editForm.reset({
       name: provider.name || "",
