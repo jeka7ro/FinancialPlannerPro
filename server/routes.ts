@@ -1074,7 +1074,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const fileData = await fileService.getFile(filename!);
 
       res.setHeader('Content-Type', attachment.mimeType);
-      res.setHeader('Content-Disposition', `attachment; filename="${attachment.originalName}"`);
+      
+      // For images and PDFs, show inline for preview
+      if (attachment.mimeType.startsWith('image/') || attachment.mimeType === 'application/pdf') {
+        res.setHeader('Content-Disposition', `inline; filename="${attachment.originalName}"`);
+      } else {
+        // For other files, force download
+        res.setHeader('Content-Disposition', `attachment; filename="${attachment.originalName}"`);
+      }
+      
       res.send(fileData);
     } catch (error: any) {
       console.error("Download error:", error);

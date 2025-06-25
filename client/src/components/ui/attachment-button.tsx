@@ -132,18 +132,23 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
   };
 
   const handlePreview = (attachment: any) => {
-    if (attachment.fileType?.startsWith('image/')) {
+    if (attachment.mimeType?.startsWith('image/')) {
+      // For images, open in new tab for preview
+      window.open(`/api/attachments/${attachment.id}/download`, '_blank');
+    } else if (attachment.mimeType === 'application/pdf') {
+      // For PDFs, open in new tab for preview
       window.open(`/api/attachments/${attachment.id}/download`, '_blank');
     } else {
+      // For other files, download them
       handleDownload(attachment);
     }
   };
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType?.startsWith('image/')) return '🖼️';
-    if (fileType?.includes('pdf')) return '📄';
-    if (fileType?.includes('word') || fileType?.includes('document')) return '📝';
-    if (fileType?.includes('excel') || fileType?.includes('spreadsheet')) return '📊';
+  const getFileIcon = (mimeType: string) => {
+    if (mimeType?.startsWith('image/')) return '🖼️';
+    if (mimeType?.includes('pdf')) return '📄';
+    if (mimeType?.includes('word') || mimeType?.includes('document')) return '📝';
+    if (mimeType?.includes('excel') || mimeType?.includes('spreadsheet')) return '📊';
     return '📎';
   };
 
@@ -243,7 +248,7 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
                     className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-xl">{getFileIcon(attachment.fileType)}</span>
+                      <span className="text-xl">{getFileIcon(attachment.mimeType)}</span>
                       <div>
                         <p className="text-sm font-medium text-white">{attachment.filename}</p>
                         <p className="text-xs text-slate-400">
