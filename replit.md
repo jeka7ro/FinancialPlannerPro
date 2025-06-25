@@ -119,6 +119,10 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 25, 2025: Implemented comprehensive bulk operations (select, edit, delete) across all major modules
+- June 25, 2025: Added individual row checkboxes and select-all functionality to data tables
+- June 25, 2025: Created BulkOperations component for consistent UI patterns across modules
+- June 25, 2025: Enhanced table layouts with bulk selection capabilities and toast notifications
 - December 25, 2024: Added comprehensive import/export functionality with detailed templates and tutorial PDF
 - December 25, 2024: Created export templates with sample data and field descriptions for all modules
 - December 25, 2024: Implemented file attachment system with individual row-level attachment buttons

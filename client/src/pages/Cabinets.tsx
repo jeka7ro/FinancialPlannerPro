@@ -21,6 +21,7 @@ export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedCabinets, setSelectedCabinets] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 

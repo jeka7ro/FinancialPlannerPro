@@ -14,12 +14,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGameMixSchema, type InsertGameMix } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BulkOperations } from "@/components/ui/bulk-operations";
 
 export default function GameMixes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedGameMixes, setSelectedGameMixes] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -91,12 +94,50 @@ export default function GameMixes() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedGameMixes.length === data?.gameMixes.length) {
+      setSelectedGameMixes([]);
+    } else {
+      setSelectedGameMixes(data?.gameMixes.map(g => g.id) || []);
+    }
+  };
+
+  const handleSelectGameMix = (gameMixId: number) => {
+    setSelectedGameMixes(prev => 
+      prev.includes(gameMixId) 
+        ? prev.filter(id => id !== gameMixId)
+        : [...prev, gameMixId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedGameMixes.length} game mixes`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedGameMixes.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedGameMixes.length} game mixes`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <BulkOperations 
+          selectedCount={selectedGameMixes.length}
+          onBulkEdit={handleBulkEdit}
+          onBulkDelete={handleBulkDelete}
+        />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="game-mixes" moduleName="Game Mixes">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -259,6 +300,13 @@ export default function GameMixes() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 w-12">
+                        <Checkbox
+                          checked={selectedGameMixes.length === data?.gameMixes.length && data?.gameMixes.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white/20"
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Mix Name</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Provider</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game Count</th>
@@ -270,6 +318,13 @@ export default function GameMixes() {
                   <tbody>
                     {data.gameMixes.map((gameMix: any) => (
                       <tr key={gameMix.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedGameMixes.includes(gameMix.id)}
+                            onCheckedChange={() => handleSelectGameMix(gameMix.id)}
+                            className="border-white/20"
+                          />
+                        </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
