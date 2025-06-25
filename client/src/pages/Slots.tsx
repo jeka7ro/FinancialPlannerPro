@@ -99,6 +99,28 @@ export default function Slots() {
     },
   });
 
+  const { data: invoices } = useQuery({
+    queryKey: ['/api/invoices', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/invoices?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch invoices');
+      return response.json();
+    },
+  });
+
+  const { data: onjnReports } = useQuery({
+    queryKey: ['/api/onjn-reports', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/onjn-reports?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch ONJN reports');
+      return response.json();
+    },
+  });
+
   const createMutation = useMutation({
     mutationFn: async (data: InsertSlot) => {
       return await apiRequest("POST", "/api/slots", data);
@@ -193,6 +215,10 @@ export default function Slots() {
       rtp: slot.rtp,
       propertyType: slot.propertyType || "property",
       ownerId: slot.ownerId,
+      serialNr: slot.serialNr || "",
+      invoiceId: slot.invoiceId,
+      licenseDate: slot.licenseDate,
+      onjnReportId: slot.onjnReportId,
       dailyRevenue: slot.dailyRevenue,
       isActive: slot.isActive,
     });
@@ -551,6 +577,96 @@ export default function Slots() {
                   />
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="serialNr"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Serial Nr</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            className="form-input" 
+                            placeholder="Enter serial number"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="invoiceId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Invoice</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select invoice" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {invoices?.invoices?.map((invoice: any) => (
+                              <SelectItem key={invoice.id} value={invoice.id.toString()}>
+                                {invoice.invoiceNumber}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="licenseDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">License Date</FormLabel>
+                        <FormControl>
+                          <Input 
+                            {...field} 
+                            type="datetime-local"
+                            className="form-input"
+                            value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="onjnReportId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">ONJN Report</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select ONJN report" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {onjnReports?.onjnReports?.map((report: any) => (
+                              <SelectItem key={report.id} value={report.id.toString()}>
+                                {report.reportType} - {report.reportPeriod}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="flex justify-end space-x-4">
                   <Button 
                     type="button" 
@@ -571,6 +687,371 @@ export default function Slots() {
               </form>
             </Form>
           </DialogContent>
+          </Dialog>
+
+          {/* Edit Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Edit Slot</DialogTitle>
+              </DialogHeader>
+              <Form {...editForm}>
+                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="cabinetId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Cabinet</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select cabinet" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {cabinets?.cabinets?.map((cabinet: any) => (
+                                <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
+                                  {cabinet.serialNumber} - {cabinet.model}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="gameMixId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Game Mix</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select game mix" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {gameMixes?.gameMixes?.map((gameMix: any) => (
+                                <SelectItem key={gameMix.id} value={gameMix.id.toString()}>
+                                  {gameMix.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={editForm.control}
+                    name="providerId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Provider</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select provider" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {providers?.providers?.map((provider: any) => (
+                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                                {provider.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="slotNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Slot Number</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="number" 
+                              className="form-input" 
+                              placeholder="1"
+                              onChange={(e) => field.onChange(parseInt(e.target.value))}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="gameName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Game Name</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="form-input" placeholder="Enter game name" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="gameType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Game Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="form-input" placeholder="Enter game type" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="propertyType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Property Type</FormLabel>
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select property type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              <SelectItem value="property">Property</SelectItem>
+                              <SelectItem value="rent">Rent</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={editForm.control}
+                    name="ownerId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">
+                          {watchEditPropertyType === "property" ? "Owner Company" : "Rental Provider"}
+                        </FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder={`Select ${watchEditPropertyType === "property" ? "company" : "provider"}`} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {watchEditPropertyType === "property" 
+                              ? companies?.companies?.map((company: any) => (
+                                <SelectItem key={company.id} value={company.id.toString()}>
+                                  {company.name}
+                                </SelectItem>
+                              ))
+                              : providers?.providers?.map((provider: any) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  {provider.name}
+                                </SelectItem>
+                              ))
+                            }
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-3 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="denomination"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Denomination</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="0.01"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="maxBet"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Max Bet</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="100.00"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="rtp"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">RTP (%)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="96.50"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="serialNr"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Serial Nr</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              className="form-input" 
+                              placeholder="Enter serial number"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="invoiceId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Invoice</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select invoice" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {invoices?.invoices?.map((invoice: any) => (
+                                <SelectItem key={invoice.id} value={invoice.id.toString()}>
+                                  {invoice.invoiceNumber}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="licenseDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">License Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="datetime-local"
+                              className="form-input"
+                              value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value).toISOString() : "")}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="onjnReportId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">ONJN Report</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select ONJN report" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {onjnReports?.onjnReports?.map((report: any) => (
+                                <SelectItem key={report.id} value={report.id.toString()}>
+                                  {report.reportType} - {report.reportPeriod}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setIsEditDialogOpen(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="btn-gaming"
+                      disabled={updateMutation.isPending}
+                    >
+                      {updateMutation.isPending ? "Updating..." : "Update Slot"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
           </Dialog>
         </div>
       </div>
@@ -631,6 +1112,9 @@ export default function Slots() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">RTP</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Nr</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
@@ -668,6 +1152,18 @@ export default function Slots() {
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {slot.rtp ? `${Number(slot.rtp)}%` : 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {slot.serialNr || 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {slot.invoiceId ? 
+                            invoices?.invoices?.find((inv: any) => inv.id === slot.invoiceId)?.invoiceNumber || `Invoice #${slot.invoiceId}` 
+                            : 'N/A'
+                          }
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {slot.licenseDate ? new Date(slot.licenseDate).toLocaleDateString() : 'N/A'}
                         </td>
                         <td className="py-4 px-4">
                           <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>

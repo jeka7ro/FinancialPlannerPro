@@ -113,6 +113,10 @@ export const slots = pgTable("slots", {
   rtp: decimal("rtp", { precision: 5, scale: 2 }),
   propertyType: varchar("property_type", { length: 50 }).notNull().default("property"), // "property" or "rent"
   ownerId: integer("owner_id"), // References companies.id for property, providers.id for rent
+  serialNr: varchar("serial_nr", { length: 100 }), // Links to invoice for contract tracking
+  invoiceId: integer("invoice_id").references(() => invoices.id),
+  licenseDate: timestamp("license_date"), // Links to ONJN module for license management
+  onjnReportId: integer("onjn_report_id").references(() => onjnReports.id),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -264,9 +268,17 @@ export const slotsRelations = relations(slots, ({ one }) => ({
     fields: [slots.providerId],
     references: [providers.id],
   }),
+  invoice: one(invoices, {
+    fields: [slots.invoiceId],
+    references: [invoices.id],
+  }),
+  onjnReport: one(onjnReports, {
+    fields: [slots.onjnReportId],
+    references: [onjnReports.id],
+  }),
 }));
 
-export const invoicesRelations = relations(invoices, ({ one }) => ({
+export const invoicesRelations = relations(invoices, ({ one, many }) => ({
   company: one(companies, {
     fields: [invoices.companyId],
     references: [companies.id],
@@ -275,6 +287,7 @@ export const invoicesRelations = relations(invoices, ({ one }) => ({
     fields: [invoices.locationId],
     references: [locations.id],
   }),
+  slots: many(slots),
 }));
 
 export const rentAgreementsRelations = relations(rentAgreements, ({ one }) => ({
@@ -299,7 +312,7 @@ export const legalDocumentsRelations = relations(legalDocuments, ({ one }) => ({
   }),
 }));
 
-export const onjnReportsRelations = relations(onjnReports, ({ one }) => ({
+export const onjnReportsRelations = relations(onjnReports, ({ one, many }) => ({
   company: one(companies, {
     fields: [onjnReports.companyId],
     references: [companies.id],
@@ -308,6 +321,7 @@ export const onjnReportsRelations = relations(onjnReports, ({ one }) => ({
     fields: [onjnReports.locationId],
     references: [locations.id],
   }),
+  slots: many(slots),
 }));
 
 export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
