@@ -140,13 +140,18 @@ export default function ONJN() {
           <h1 className="text-2xl font-bold text-white">ONJN</h1>
           <p className="text-slate-400">Romanian gambling authority compliance</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Create Report
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="onjn-reports"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Create Report
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New ONJN Report</DialogTitle>
@@ -310,7 +315,8 @@ export default function ONJN() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Compliance Overview Cards */}

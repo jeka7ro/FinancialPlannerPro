@@ -93,13 +93,18 @@ export default function Providers() {
           <h1 className="text-2xl font-bold text-white">Providers</h1>
           <p className="text-slate-400">Equipment and service providers</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Add Provider
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="providers"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/providers'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Add Provider
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Provider</DialogTitle>
@@ -254,7 +259,8 @@ export default function Providers() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}

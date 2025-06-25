@@ -99,13 +99,18 @@ export default function GameMixes() {
           <h1 className="text-2xl font-bold text-white">Game Mixes</h1>
           <p className="text-slate-400">Game configurations and arrangements</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Add Game Mix
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="game-mixes"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/game-mixes'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Add Game Mix
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Game Mix</DialogTitle>
@@ -206,7 +211,8 @@ export default function GameMixes() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}

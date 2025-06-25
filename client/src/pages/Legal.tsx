@@ -143,13 +143,18 @@ export default function Legal() {
           <h1 className="text-2xl font-bold text-white">Legal</h1>
           <p className="text-slate-400">Legal compliance and documentation</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Add Document
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="legal-documents"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/legal-documents'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Add Document
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Legal Document</DialogTitle>
@@ -362,7 +367,8 @@ export default function Legal() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}

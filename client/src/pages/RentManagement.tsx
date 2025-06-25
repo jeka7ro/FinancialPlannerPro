@@ -125,13 +125,18 @@ export default function RentManagement() {
           <h1 className="text-2xl font-bold text-white">Rent Management</h1>
           <p className="text-slate-400">Rental agreements and payments</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Create Agreement
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="rent-agreements"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/rent-agreements'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Create Agreement
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Rent Agreement</DialogTitle>
@@ -343,7 +348,8 @@ export default function RentManagement() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}

@@ -136,13 +136,18 @@ export default function Cabinets() {
           <h1 className="text-2xl font-bold text-white">Cabinets</h1>
           <p className="text-slate-400">Gaming cabinet inventory and management</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Add Cabinet
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog 
+            entityType="cabinets"
+            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] })}
+          />
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Add Cabinet
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Cabinet</DialogTitle>
@@ -286,7 +291,8 @@ export default function Cabinets() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}
