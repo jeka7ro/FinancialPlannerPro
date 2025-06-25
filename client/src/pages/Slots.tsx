@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSlotSchema, type InsertSlot } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Upload } from "lucide-react";
 
 export default function Slots() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -149,10 +150,12 @@ export default function Slots() {
           <p className="text-slate-400">Slot machine management and tracking</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog 
-            entityType="slots"
-            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/slots'] })}
-          />
+          <ImportExportDialog module="slots" moduleName="Slots">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="floating-action text-white">

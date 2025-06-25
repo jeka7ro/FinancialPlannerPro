@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertLegalDocumentSchema, type InsertLegalDocument } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Upload } from "lucide-react";
 
 export default function Legal() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -145,10 +146,12 @@ export default function Legal() {
           <p className="text-slate-400">Legal compliance and documentation</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog 
-            entityType="legal-documents"
-            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/legal-documents'] })}
-          />
+          <ImportExportDialog module="legal-documents" moduleName="Legal Documents">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="floating-action text-white">

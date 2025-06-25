@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGameMixSchema, type InsertGameMix } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Upload } from "lucide-react";
 
 export default function GameMixes() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -101,10 +102,12 @@ export default function GameMixes() {
           <p className="text-slate-400">Game configurations and arrangements</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog 
-            entityType="game-mixes"
-            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/game-mixes'] })}
-          />
+          <ImportExportDialog module="game-mixes" moduleName="Game Mixes">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="floating-action text-white">

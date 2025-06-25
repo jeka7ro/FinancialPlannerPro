@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInvoiceSchema, type InsertInvoice } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Upload } from "lucide-react";
 
 export default function Invoices() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -130,10 +131,12 @@ export default function Invoices() {
           <p className="text-slate-400">Financial invoicing and billing</p>
         </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog 
-            entityType="invoices"
-            onImportSuccess={() => queryClient.invalidateQueries({ queryKey: ['/api/invoices'] })}
-          />
+          <ImportExportDialog module="invoices" moduleName="Invoices">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="floating-action text-white">
