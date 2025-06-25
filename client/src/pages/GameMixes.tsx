@@ -291,7 +291,7 @@ export default function GameMixes() {
             </div>
           ) : !data?.gameMixes?.length ? (
             <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">🎮</span>
+              <span className="text-2xl mb-2 block">🍒</span>
               No game mixes found
             </div>
           ) : (
@@ -327,8 +327,8 @@ export default function GameMixes() {
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-purple-500 text-sm">🎮</span>
+                            <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
+                              <span className="text-red-500 text-sm">🍒</span>
                             </div>
                             <div>
                               <p className="text-sm font-medium text-white">{gameMix.name}</p>
