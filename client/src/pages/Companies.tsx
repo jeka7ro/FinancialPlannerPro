@@ -14,7 +14,7 @@ import { insertCompanySchema, type InsertCompany } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
-import { FileAttachments } from "@/components/ui/file-attachments";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 import { Upload, Download } from "lucide-react";
 
 export default function Companies() {
@@ -348,6 +348,11 @@ export default function Companies() {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">
+                            <AttachmentButton 
+                              entityType="companies" 
+                              entityId={company.id} 
+                              entityName={company.name} 
+                            />
                             <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
                               👁️
                             </Button>
@@ -413,14 +418,7 @@ export default function Companies() {
         </CardContent>
       </Card>
 
-      {/* File Attachments for selected company */}
-      {data?.companies.length > 0 && (
-        <FileAttachments 
-          entityType="companies" 
-          entityId={data.companies[0].id} 
-          entityName={data.companies[0].name} 
-        />
-      )}
+
     </div>
   );
 }

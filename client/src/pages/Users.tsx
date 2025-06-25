@@ -13,7 +13,7 @@ import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
-import { FileAttachments } from "@/components/ui/file-attachments";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 import { Upload, Download } from "lucide-react";
 
 export default function Users() {
@@ -335,6 +335,11 @@ export default function Users() {
                             <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
                               👁️
                             </Button>
+                            <AttachmentButton 
+                              entityType="users" 
+                              entityId={user.id} 
+                              entityName={`${user.firstName || ''} ${user.lastName || ''} (${user.username})`} 
+                            />
                             <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
                               ✏️
                             </Button>
@@ -400,14 +405,7 @@ export default function Users() {
         </CardContent>
       </Card>
 
-      {/* File Attachments for selected user */}
-      {data?.users.length > 0 && (
-        <FileAttachments 
-          entityType="users" 
-          entityId={data.users[0].id} 
-          entityName={`${data.users[0].firstName || ''} ${data.users[0].lastName || ''} (${data.users[0].username})`} 
-        />
-      )}
+
     </div>
   );
 }

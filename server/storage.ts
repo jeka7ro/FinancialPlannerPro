@@ -11,6 +11,7 @@ import {
   legalDocuments,
   onjnReports,
   activityLogs,
+  attachments,
   type User,
   type InsertUser,
   type Company,
