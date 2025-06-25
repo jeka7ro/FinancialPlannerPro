@@ -10,7 +10,7 @@ const navigation = [
   { name: "Locations", href: "/locations", icon: "📍" },
   { name: "Providers", href: "/providers", icon: "🚚" },
   { name: "Cabinets", href: "/cabinets", icon: "🖥️" },
-  { name: "Game Mixes", href: "/game-mixes", icon: "🎮" },
+  { name: "Game Mixes", href: "/game-mixes", icon: "🍒" },
   { name: "Slots", href: "/slots", icon: "🎰" },
   { name: "Invoices", href: "/invoices", icon: "💰" },
   { name: "Rent Management", href: "/rent-management", icon: "🏠" },
