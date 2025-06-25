@@ -226,7 +226,7 @@ export class ExportTemplateService {
     
     // Title
     doc.setFontSize(20);
-    doc.text('CASHPOT ERP 2.0 - Data Import Tutorial', 20, 20);
+    doc.text('CASHPOT 2.0 - Data Import Tutorial', 20, 20);
     
     // Introduction
     doc.setFontSize(12);

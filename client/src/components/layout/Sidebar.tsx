@@ -35,7 +35,7 @@ export default function Sidebar({ className }: SidebarProps) {
             alt="CASHPOT" 
             className="h-8 w-auto"
           />
-          <span className="text-xl font-bold text-white">ERP</span>
+          <span className="text-xl font-bold text-white">2.0</span>
         </div>
       </div>
       
