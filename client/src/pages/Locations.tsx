@@ -14,12 +14,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertLocationSchema, type InsertLocation } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BulkOperations } from "@/components/ui/bulk-operations";
 
 export default function Locations() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -339,6 +342,13 @@ export default function Locations() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 w-12">
+                        <Checkbox
+                          checked={selectedLocations.length === data?.locations.length && data?.locations.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white/20"
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Address</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
@@ -350,6 +360,13 @@ export default function Locations() {
                   <tbody>
                     {data.locations.map((location: any) => (
                       <tr key={location.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedLocations.includes(location.id)}
+                            onCheckedChange={() => handleSelectLocation(location.id)}
+                            className="border-white/20"
+                          />
+                        </td>
                         <td className="py-4 px-4">
                           <div>
                             <p className="text-sm font-medium text-white">{location.name}</p>

@@ -13,7 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCabinetSchema, type InsertCabinet } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BulkOperations } from "@/components/ui/bulk-operations";
 
 export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -377,6 +379,13 @@ export default function Cabinets() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 w-12">
+                        <Checkbox
+                          checked={selectedCabinets.length === data?.cabinets.length && data?.cabinets.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white/20"
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
@@ -389,6 +398,13 @@ export default function Cabinets() {
                   <tbody>
                     {data.cabinets.map((cabinet: any) => (
                       <tr key={cabinet.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedCabinets.includes(cabinet.id)}
+                            onCheckedChange={() => handleSelectCabinet(cabinet.id)}
+                            className="border-white/20"
+                          />
+                        </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
