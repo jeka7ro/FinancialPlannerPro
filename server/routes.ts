@@ -1,7 +1,11 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
 import session from "express-session";
+import multer from "multer";
+import path from "path";
+import { storage } from "./storage";
+import { importExportService } from "./services/importExportService";
+import { fileService } from "./services/fileService";
 import { 
   insertUserSchema, 
   insertCompanySchema, 
@@ -28,6 +32,41 @@ const sessionConfig = {
     maxAge: 24 * 60 * 60 * 1000, // 24 hours
   },
 };
+
+// Multer configuration for file uploads
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    const allowedTypes = [
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'application/vnd.ms-excel',
+      'text/csv'
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only Excel files are allowed.'));
+    }
+  }
+});
+
+// Multer configuration for general file attachments
+const uploadAttachment = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    if (fileService.isValidFileType(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type.'));
+    }
+  }
+});
 
 // Middleware to check if user is authenticated
 const requireAuth = (req: any, res: any, next: any) => {
@@ -915,6 +954,126 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Get activity logs error:", error);
       res.status(500).json({ message: "Failed to fetch activity logs" });
     }
+  });
+
+  // Import/Export routes
+  app.post("/api/:module/import", requireAuth, upload.single('file'), async (req: any, res: any) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const module = req.params.module;
+      const result = await importExportService.importFromExcel(module, req.file.buffer);
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Import error:", error);
+      res.status(500).json({ message: "Import failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:module/export/excel", requireAuth, async (req, res) => {
+    try {
+      const module = req.params.module;
+      const buffer = await importExportService.exportToExcel(module);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-export.xlsx`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Excel export error:", error);
+      res.status(500).json({ message: "Export failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:module/export/pdf", requireAuth, async (req, res) => {
+    try {
+      const module = req.params.module;
+      const buffer = await importExportService.exportToPDF(module);
+      
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-report.pdf`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("PDF export error:", error);
+      res.status(500).json({ message: "Export failed", error: error.message });
+    }
+  });
+
+  // File attachment routes
+  app.post("/api/:entityType/:entityId/attachments", requireAuth, uploadAttachment.single('file'), async (req: any, res: any) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { entityType, entityId } = req.params;
+      const { description } = req.body;
+      const userId = (req.session as any).userId;
+
+      const attachment = await fileService.saveFile(
+        req.file,
+        entityType,
+        parseInt(entityId),
+        userId,
+        description
+      );
+
+      res.json(attachment);
+    } catch (error: any) {
+      console.error("File upload error:", error);
+      res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:entityType/:entityId/attachments", requireAuth, async (req: any, res: any) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const attachments = await storage.getAttachments(entityType, parseInt(entityId));
+      res.json(attachments);
+    } catch (error: any) {
+      console.error("Get attachments error:", error);
+      res.status(500).json({ message: "Failed to fetch attachments", error: error.message });
+    }
+  });
+
+  app.get("/api/attachments/:id/download", requireAuth, async (req: any, res: any) => {
+    try {
+      const attachmentId = parseInt(req.params.id);
+      const attachment = await storage.getAttachment(attachmentId);
+      
+      if (!attachment) {
+        return res.status(404).json({ message: "Attachment not found" });
+      }
+
+      const filename = attachment.filePath.split('/').pop();
+      const fileData = await fileService.getFile(filename!);
+
+      res.setHeader('Content-Type', attachment.mimeType);
+      res.setHeader('Content-Disposition', `attachment; filename="${attachment.originalName}"`);
+      res.send(fileData);
+    } catch (error: any) {
+      console.error("Download error:", error);
+      res.status(500).json({ message: "Download failed", error: error.message });
+    }
+  });
+
+  app.delete("/api/attachments/:id", requireAuth, async (req: any, res: any) => {
+    try {
+      const attachmentId = parseInt(req.params.id);
+      await fileService.deleteFile(attachmentId);
+      res.json({ message: "File deleted successfully" });
+    } catch (error: any) {
+      console.error("Delete file error:", error);
+      res.status(500).json({ message: "Delete failed", error: error.message });
+    }
+  });
+
+  // Static file serving for uploads
+  app.get("/uploads/:filename", (req: any, res: any) => {
+    const filename = req.params.filename;
+    res.sendFile(path.join(process.cwd(), 'uploads', filename));
   });
 
   const httpServer = createServer(app);

@@ -13,6 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCompanySchema, type InsertCompany } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { ImportExportDialog } from "@/components/ui/import-export-dialog";
+import { FileAttachments } from "@/components/ui/file-attachments";
+import { Upload, Download } from "lucide-react";
 
 export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -89,7 +92,14 @@ export default function Companies() {
           <h1 className="text-2xl font-bold text-white">Companies</h1>
           <p className="text-slate-400">Manage gaming companies and organizations</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog module="companies" moduleName="Companies">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="floating-action text-white">
               <span className="mr-2">➕</span>
@@ -251,6 +261,7 @@ export default function Companies() {
             </Form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Search */}
@@ -401,6 +412,15 @@ export default function Companies() {
           )}
         </CardContent>
       </Card>
+
+      {/* File Attachments for selected company */}
+      {data?.companies.length > 0 && (
+        <FileAttachments 
+          entityType="companies" 
+          entityId={data.companies[0].id} 
+          entityName={data.companies[0].name} 
+        />
+      )}
     </div>
   );
 }

@@ -35,6 +35,8 @@ import {
   type InsertOnjnReport,
   type ActivityLog,
   type InsertActivityLog,
+  type Attachment,
+  type InsertAttachment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like, count } from "drizzle-orm";
@@ -127,6 +129,12 @@ export interface IStorage {
   // Dashboard operations
   getDashboardStats(): Promise<any>;
   authenticateUser(username: string, password: string): Promise<User | null>;
+
+  // Attachment operations
+  getAttachment(id: number): Promise<Attachment | undefined>;
+  getAttachments(entityType: string, entityId: number): Promise<Attachment[]>;
+  createAttachment(attachment: InsertAttachment): Promise<Attachment>;
+  deleteAttachment(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -697,6 +705,30 @@ export class DatabaseStorage implements IStorage {
     }
 
     return user;
+  }
+
+  // Attachment operations
+  async getAttachment(id: number): Promise<Attachment | undefined> {
+    const [attachment] = await db.select().from(attachments).where(eq(attachments.id, id));
+    return attachment || undefined;
+  }
+
+  async getAttachments(entityType: string, entityId: number): Promise<Attachment[]> {
+    return await db.select().from(attachments)
+      .where(and(eq(attachments.entityType, entityType), eq(attachments.entityId, entityId)))
+      .orderBy(desc(attachments.createdAt));
+  }
+
+  async createAttachment(insertAttachment: InsertAttachment): Promise<Attachment> {
+    const [attachment] = await db
+      .insert(attachments)
+      .values(insertAttachment)
+      .returning();
+    return attachment;
+  }
+
+  async deleteAttachment(id: number): Promise<void> {
+    await db.delete(attachments).where(eq(attachments.id, id));
   }
 }
 

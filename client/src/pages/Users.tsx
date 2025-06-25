@@ -12,6 +12,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertUserSchema, type InsertUser } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { ImportExportDialog } from "@/components/ui/import-export-dialog";
+import { FileAttachments } from "@/components/ui/file-attachments";
+import { Upload, Download } from "lucide-react";
 
 export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -100,7 +103,14 @@ export default function Users() {
           <h1 className="text-2xl font-bold text-white">Users</h1>
           <p className="text-slate-400">User accounts and access management</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <div className="flex items-center gap-2">
+          <ImportExportDialog module="users" moduleName="Users">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
+          </ImportExportDialog>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="floating-action text-white">
               <span className="mr-2">➕</span>
@@ -229,7 +239,8 @@ export default function Users() {
               </form>
             </Form>
           </DialogContent>
-        </Dialog>
+          </Dialog>
+        </div>
       </div>
 
       {/* Search */}
@@ -388,6 +399,15 @@ export default function Users() {
           )}
         </CardContent>
       </Card>
+
+      {/* File Attachments for selected user */}
+      {data?.users.length > 0 && (
+        <FileAttachments 
+          entityType="users" 
+          entityId={data.users[0].id} 
+          entityName={`${data.users[0].firstName || ''} ${data.users[0].lastName || ''} (${data.users[0].username})`} 
+        />
+      )}
     </div>
   );
 }

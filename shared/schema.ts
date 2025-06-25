@@ -419,3 +419,33 @@ export type InsertOnjnReport = z.infer<typeof insertOnjnReportSchema>;
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+
+// File attachments table
+export const attachments = pgTable("attachments", {
+  id: serial("id").primaryKey(),
+  filename: varchar("filename", { length: 255 }).notNull(),
+  originalName: varchar("original_name", { length: 255 }).notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  fileSize: integer("file_size").notNull(),
+  filePath: varchar("file_path", { length: 500 }).notNull(),
+  entityType: varchar("entity_type", { length: 50 }).notNull(), // 'company', 'location', 'user', etc.
+  entityId: integer("entity_id").notNull(),
+  uploadedBy: integer("uploaded_by").notNull(),
+  description: text("description"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const attachmentsRelations = relations(attachments, ({ one }) => ({
+  uploader: one(users, {
+    fields: [attachments.uploadedBy],
+    references: [users.id],
+  }),
+}));
+
+export const insertAttachmentSchema = createInsertSchema(attachments).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Attachment = typeof attachments.$inferSelect;
+export type InsertAttachment = z.infer<typeof insertAttachmentSchema>;
