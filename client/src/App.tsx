@@ -28,6 +28,9 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
+// Logo path for CASHPOT branding
+const cashpotLogo = "/cashpot-logo.png";
+
 function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,13 +101,15 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       <div className="w-full max-w-md">
         <Card className="glass-card border-white/10">
           <CardHeader className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-10 h-10 gaming-gradient rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-lg">🎲</span>
-              </div>
+            <div className="flex justify-center mb-4">
+              <img 
+                src={cashpotLogo} 
+                alt="CASHPOT" 
+                className="h-16 w-auto"
+              />
             </div>
             <CardTitle className="text-2xl font-bold text-white">
-              CASHPOT ERP 2.0
+              ERP 2.0
             </CardTitle>
             <p className="text-slate-400">Gaming Management System</p>
           </CardHeader>

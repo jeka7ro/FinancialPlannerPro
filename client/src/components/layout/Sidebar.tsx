@@ -1,5 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+// Import logo using public path
+const cashpotLogo = "/cashpot-logo.png";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
@@ -28,10 +30,12 @@ export default function Sidebar({ className }: SidebarProps) {
     <div className={cn("sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0", className)}>
       <div className="flex items-center justify-center h-16 px-4 border-b border-white/10">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 gaming-gradient rounded-lg flex items-center justify-center">
-            <span className="text-white text-sm">🎲</span>
-          </div>
-          <span className="text-xl font-bold text-white">CASHPOT ERP</span>
+          <img 
+            src={cashpotLogo} 
+            alt="CASHPOT" 
+            className="h-8 w-auto"
+          />
+          <span className="text-xl font-bold text-white">ERP</span>
         </div>
       </div>
       
