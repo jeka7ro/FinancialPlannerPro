@@ -129,5 +129,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - December 25, 2024: Added "Remember me" login option for extended 30-day sessions and credential storage
 - December 25, 2024: Removed "ERP" branding, updated to "CASHPOT" throughout application
 - December 25, 2024: Implemented comprehensive theme system with 5 themes: Default, Light, Dark, macOS Monterey, and iCloud
+- June 25, 2025: Added comprehensive file attachment system to all modules with preview and download capabilities
+- June 25, 2025: Implemented AttachmentButton component with upload, preview, and download functionality for all entities
+- June 25, 2025: Enhanced server routes with file upload, download, and deletion endpoints with proper error handling
 - June 25, 2025: Initial setup with complete gaming management system
 - June 25, 2025: Removed "2.0" from CASHPOT branding throughout application

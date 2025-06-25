@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 
 export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
