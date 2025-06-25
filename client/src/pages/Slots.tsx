@@ -234,7 +234,7 @@ export default function Slots() {
     if (selectedSlots.length === data?.slots.length) {
       setSelectedSlots([]);
     } else {
-      setSelectedSlots(data?.slots.map(s => s.id) || []);
+      setSelectedSlots(data?.slots.map((s: any) => s.id) || []);
     }
   };
 
@@ -463,7 +463,7 @@ export default function Slots() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Property</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select property type" />
@@ -830,7 +830,7 @@ export default function Slots() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Property Type</FormLabel>
-                          <Select value={field.value} onValueChange={field.onChange}>
+                          <Select value={field.value || ""} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger className="form-input">
                                 <SelectValue placeholder="Select property type" />

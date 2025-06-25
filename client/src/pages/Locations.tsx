@@ -161,7 +161,7 @@ export default function Locations() {
     if (selectedLocations.length === data?.locations.length) {
       setSelectedLocations([]);
     } else {
-      setSelectedLocations(data?.locations.map(l => l.id) || []);
+      setSelectedLocations(data?.locations.map((l: any) => l.id) || []);
     }
   };
 
@@ -311,7 +311,7 @@ export default function Locations() {
                       <FormItem>
                         <FormLabel className="text-white">Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Phone number" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Phone number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -324,7 +324,7 @@ export default function Locations() {
                       <FormItem>
                         <FormLabel className="text-white">Email</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="form-input" placeholder="location@email.com" />
+                          <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="location@email.com" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

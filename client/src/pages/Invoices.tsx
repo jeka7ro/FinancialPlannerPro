@@ -20,6 +20,8 @@ export default function Invoices() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingInvoice, setEditingInvoice] = useState<any>(null);
   const { toast } = useToast();
   const limit = 10;
 
@@ -78,7 +80,43 @@ export default function Invoices() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertInvoice> }) => {
+      return await apiRequest("PUT", `/api/invoices/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/invoices'] });
+      setIsEditDialogOpen(false);
+      setEditingInvoice(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Invoice updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update invoice. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertInvoice>({
+    resolver: zodResolver(insertInvoiceSchema),
+    defaultValues: {
+      invoiceNumber: "",
+      invoiceDate: new Date(),
+      dueDate: new Date(),
+      subtotal: "0",
+      taxAmount: "0",
+      totalAmount: "0",
+      status: "pending",
+    },
+  });
+
+  const editForm = useForm<InsertInvoice>({
     resolver: zodResolver(insertInvoiceSchema),
     defaultValues: {
       invoiceNumber: "",
@@ -95,16 +133,24 @@ export default function Invoices() {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertInvoice) => {
+    if (editingInvoice) {
+      updateMutation.mutate({ id: editingInvoice.id, data });
+    }
+  };
+
   const handleEdit = (invoice: any) => {
     setEditingInvoice(invoice);
     editForm.reset({
       invoiceNumber: invoice.invoiceNumber || "",
       companyId: invoice.companyId,
-      type: invoice.type || "income",
-      amount: invoice.amount,
-      issueDate: invoice.issueDate ? new Date(invoice.issueDate).toISOString().split('T')[0] : "",
-      dueDate: invoice.dueDate ? new Date(invoice.dueDate).toISOString().split('T')[0] : "",
-      description: invoice.description || "",
+      locationId: invoice.locationId,
+      invoiceDate: invoice.invoiceDate ? new Date(invoice.invoiceDate) : new Date(),
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate) : new Date(),
+      subtotal: invoice.subtotal || "0",
+      taxAmount: invoice.taxAmount || "0",
+      totalAmount: invoice.totalAmount || "0",
+      notes: invoice.notes || "",
       status: invoice.status || "pending",
     });
     setIsEditDialogOpen(true);
@@ -176,7 +222,7 @@ export default function Invoices() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select status" />

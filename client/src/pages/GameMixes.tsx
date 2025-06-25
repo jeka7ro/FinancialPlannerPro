@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertGameMixSchema, type InsertGameMix } from "@shared/schema";
+import { insertGameMixSchema, type InsertGameMix, type GameMix } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Upload, Edit, Trash2 } from "lucide-react";
@@ -73,7 +73,40 @@ export default function GameMixes() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertGameMix> }) => {
+      return await apiRequest("PUT", `/api/game-mixes/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/game-mixes'] });
+      setIsEditDialogOpen(false);
+      setEditingGameMix(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Game mix updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update game mix. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertGameMix>({
+    resolver: zodResolver(insertGameMixSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      gameCount: 0,
+      isActive: true,
+    },
+  });
+
+  const editForm = useForm<InsertGameMix>({
     resolver: zodResolver(insertGameMixSchema),
     defaultValues: {
       name: "",
@@ -87,13 +120,19 @@ export default function GameMixes() {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertGameMix) => {
+    if (editingGameMix) {
+      updateMutation.mutate({ id: editingGameMix.id, data });
+    }
+  };
+
   const handleEdit = (gameMix: any) => {
     setEditingGameMix(gameMix);
     editForm.reset({
       name: gameMix.name || "",
       description: gameMix.description || "",
-      version: gameMix.version || "",
       providerId: gameMix.providerId,
+      gameCount: gameMix.gameCount || 0,
       isActive: gameMix.isActive ?? true,
     });
     setIsEditDialogOpen(true);
@@ -108,7 +147,7 @@ export default function GameMixes() {
     if (selectedGameMixes.length === data?.gameMixes.length) {
       setSelectedGameMixes([]);
     } else {
-      setSelectedGameMixes(data?.gameMixes.map(g => g.id) || []);
+      setSelectedGameMixes(data?.gameMixes.map((g: GameMix) => g.id) || []);
     }
   };
 

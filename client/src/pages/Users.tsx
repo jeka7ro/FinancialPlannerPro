@@ -20,6 +20,8 @@ export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState<any>(null);
   const { toast } = useToast();
   const limit = 10;
 
@@ -56,6 +58,29 @@ export default function Users() {
     },
   });
 
+  const editMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> }) => {
+      return await apiRequest("PUT", `/api/users/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/users'] });
+      setIsEditDialogOpen(false);
+      editForm.reset();
+      setEditingUser(null);
+      toast({
+        title: "Success",
+        description: "User updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update user.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -69,8 +94,26 @@ export default function Users() {
     },
   });
 
+  const editForm = useForm<InsertUser>({
+    resolver: zodResolver(insertUserSchema.omit({ password: true })),
+    defaultValues: {
+      username: "",
+      email: "",
+      firstName: "",
+      lastName: "",
+      role: "operator",
+      isActive: true,
+    },
+  });
+
   const onSubmit = (data: InsertUser) => {
     createMutation.mutate(data);
+  };
+
+  const onEditSubmit = (data: Partial<InsertUser>) => {
+    if (editingUser) {
+      editMutation.mutate({ id: editingUser.id, data });
+    }
   };
 
   const handleEdit = (user: any) => {
@@ -210,7 +253,7 @@ export default function Users() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Role</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select value={field.value || ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select role" />

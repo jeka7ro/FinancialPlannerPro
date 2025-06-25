@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertCabinetSchema, type InsertCabinet } from "@shared/schema";
+import { insertCabinetSchema, type InsertCabinet, type Cabinet } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Upload, Edit, Trash2 } from "lucide-react";
@@ -83,7 +83,41 @@ export default function Cabinets() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertCabinet> }) => {
+      return await apiRequest("PUT", `/api/cabinets/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
+      setIsEditDialogOpen(false);
+      setEditingCabinet(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Cabinet updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update cabinet. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertCabinet>({
+    resolver: zodResolver(insertCabinetSchema),
+    defaultValues: {
+      serialNumber: "",
+      model: "",
+      manufacturer: "",
+      status: "active",
+      isActive: true,
+    },
+  });
+
+  const editForm = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
       serialNumber: "",
@@ -98,17 +132,25 @@ export default function Cabinets() {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertCabinet) => {
+    if (editingCabinet) {
+      updateMutation.mutate({ id: editingCabinet.id, data });
+    }
+  };
+
   const handleEdit = (cabinet: any) => {
     setEditingCabinet(cabinet);
     editForm.reset({
       locationId: cabinet.locationId,
+      providerId: cabinet.providerId,
       serialNumber: cabinet.serialNumber || "",
       model: cabinet.model || "",
       manufacturer: cabinet.manufacturer || "",
-      yearManufactured: cabinet.yearManufactured,
       status: cabinet.status || "active",
-      purchasePrice: cabinet.purchasePrice,
-      currentValue: cabinet.currentValue,
+      installationDate: cabinet.installationDate,
+      lastMaintenanceDate: cabinet.lastMaintenanceDate,
+      nextMaintenanceDate: cabinet.nextMaintenanceDate,
+      dailyRevenue: cabinet.dailyRevenue,
       isActive: cabinet.isActive ?? true,
     });
     setIsEditDialogOpen(true);
@@ -123,7 +165,7 @@ export default function Cabinets() {
     if (selectedCabinets.length === data?.cabinets.length) {
       setSelectedCabinets([]);
     } else {
-      setSelectedCabinets(data?.cabinets.map(c => c.id) || []);
+      setSelectedCabinets(data?.cabinets.map((c: Cabinet) => c.id) || []);
     }
   };
 
@@ -309,7 +351,7 @@ export default function Cabinets() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select value={field.value || ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />
@@ -346,6 +388,196 @@ export default function Cabinets() {
               </form>
             </Form>
           </DialogContent>
+          </Dialog>
+
+          {/* Edit Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Edit Cabinet</DialogTitle>
+              </DialogHeader>
+              <Form {...editForm}>
+                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="serialNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Serial Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="form-input" placeholder="Enter serial number" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="model"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Model</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="form-input" placeholder="Enter model" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={editForm.control}
+                    name="manufacturer"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Manufacturer</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="form-input" placeholder="Enter manufacturer" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="providerId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Provider</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select provider" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {providers?.providers?.map((provider: any) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  {provider.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="locationId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Location</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select location" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {locations?.locations?.map((location: any) => (
+                                <SelectItem key={location.id} value={location.id.toString()}>
+                                  {location.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={editForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Status</FormLabel>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="installationDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Installation Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              type="datetime-local"
+                              className="form-input" 
+                              value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
+                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="dailyRevenue"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Daily Revenue</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              value={field.value || ""}
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="0.00"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setIsEditDialogOpen(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="btn-gaming"
+                      disabled={updateMutation.isPending}
+                    >
+                      {updateMutation.isPending ? "Updating..." : "Update Cabinet"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
           </Dialog>
         </div>
       </div>

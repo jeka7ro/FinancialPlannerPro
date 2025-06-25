@@ -150,7 +150,7 @@ export default function Providers() {
     if (selectedProviders.length === data?.providers.length) {
       setSelectedProviders([]);
     } else {
-      setSelectedProviders(data?.providers.map(p => p.id) || []);
+      setSelectedProviders(data?.providers.map((p: any) => p.id) || []);
     }
   };
 
@@ -231,7 +231,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Company Name</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Company name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Company name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -247,7 +247,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Contact Person</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Contact person name" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Contact person name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -260,7 +260,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Email</FormLabel>
                         <FormControl>
-                          <Input {...field} type="email" className="form-input" placeholder="provider@email.com" />
+                          <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="provider@email.com" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -275,7 +275,7 @@ export default function Providers() {
                     <FormItem>
                       <FormLabel className="text-white">Address</FormLabel>
                       <FormControl>
-                        <Textarea {...field} className="form-input" placeholder="Provider address" />
+                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Provider address" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -290,7 +290,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">City</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="City" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="City" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -303,7 +303,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Country</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Country" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Country" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -316,7 +316,7 @@ export default function Providers() {
                       <FormItem>
                         <FormLabel className="text-white">Phone</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Phone number" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Phone number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
