@@ -105,7 +105,6 @@ export const slots = pgTable("slots", {
   cabinetId: integer("cabinet_id").references(() => cabinets.id),
   gameMixId: integer("game_mix_id").references(() => gameMixes.id),
   providerId: integer("provider_id").references(() => providers.id),
-  gameName: varchar("game_name", { length: 255 }),
   exciterType: varchar("exciter_type", { length: 100 }),
   denomination: decimal("denomination", { precision: 8, scale: 2 }),
   maxBet: decimal("max_bet", { precision: 8, scale: 2 }),

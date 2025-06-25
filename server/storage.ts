@@ -432,7 +432,7 @@ export class DatabaseStorage implements IStorage {
   async getSlots(page = 1, limit = 10, search = ""): Promise<{ slots: Slot[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(slots.gameName, `%${search}%`)
+      ? like(slots.exciterType, `%${search}%`)
       : undefined;
 
     const [slotsResult, [{ total }]] = await Promise.all([

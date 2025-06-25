@@ -211,7 +211,6 @@ export default function Slots() {
   const form = useForm<InsertSlot>({
     resolver: zodResolver(insertSlotSchema),
     defaultValues: {
-      gameName: "",
       exciterType: "",
       propertyType: "property",
       serialNr: "",
@@ -222,7 +221,6 @@ export default function Slots() {
   const editForm = useForm<InsertSlot>({
     resolver: zodResolver(insertSlotSchema),
     defaultValues: {
-      gameName: "",
       exciterType: "",
       propertyType: "property",
       serialNr: "",
@@ -246,7 +244,6 @@ export default function Slots() {
       cabinetId: slot.cabinetId || undefined,
       gameMixId: slot.gameMixId || undefined,
       providerId: slot.providerId || undefined,
-      gameName: slot.gameName || "",
       exciterType: slot.exciterType || "",
       denomination: slot.denomination || "",
       maxBet: slot.maxBet || "",
@@ -413,19 +410,7 @@ export default function Slots() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="gameName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Game Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game name" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -575,8 +560,8 @@ export default function Slots() {
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Game Mix</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Exciter Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">RTP</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Nr</th>
@@ -598,14 +583,16 @@ export default function Slots() {
                             className="border-white/20"
                           />
                         </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
+                        </td>
                         <td className="py-4 px-4">
-                          <div className="font-medium text-white">{slot.gameName || 'N/A'}</div>
+                          <div className="font-medium text-white">
+                            {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
+                          </div>
                           <div className="text-sm text-slate-400">
                             {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {slot.exciterType || 'N/A'}
@@ -787,19 +774,7 @@ export default function Slots() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={editForm.control}
-                  name="gameName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Game Name</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game name" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <div className="grid grid-cols-2 gap-4">
