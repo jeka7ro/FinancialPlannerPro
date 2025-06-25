@@ -17,6 +17,22 @@ import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 
+// Utility function for property type colors
+const getPropertyTypeColor = (propertyType: string) => {
+  switch (propertyType?.toLowerCase()) {
+    case 'owned':
+      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
+    case 'rented':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+    case 'leased':
+      return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300';
+    case 'contracted':
+      return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-300';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+  }
+};
+
 export default function Slots() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
