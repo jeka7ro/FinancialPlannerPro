@@ -102,6 +102,39 @@ export default function Cabinets() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedCabinets.length === data?.cabinets.length) {
+      setSelectedCabinets([]);
+    } else {
+      setSelectedCabinets(data?.cabinets.map(c => c.id) || []);
+    }
+  };
+
+  const handleSelectCabinet = (cabinetId: number) => {
+    setSelectedCabinets(prev => 
+      prev.includes(cabinetId) 
+        ? prev.filter(id => id !== cabinetId)
+        : [...prev, cabinetId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedCabinets.length} cabinets`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedCabinets.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedCabinets.length} cabinets`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   const getStatusIcon = (status: string) => {
@@ -133,7 +166,12 @@ export default function Cabinets() {
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <BulkOperations 
+          selectedCount={selectedCabinets.length}
+          onBulkEdit={handleBulkEdit}
+          onBulkDelete={handleBulkDelete}
+        />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="cabinets" moduleName="Cabinets">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">

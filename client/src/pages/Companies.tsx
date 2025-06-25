@@ -15,7 +15,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, Edit, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BulkOperations } from "@/components/ui/bulk-operations";
 
 export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +25,7 @@ export default function Companies() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<any>(null);
+  const [selectedCompanies, setSelectedCompanies] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -146,16 +149,52 @@ export default function Companies() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedCompanies.length === data?.companies.length) {
+      setSelectedCompanies([]);
+    } else {
+      setSelectedCompanies(data?.companies.map(c => c.id) || []);
+    }
+  };
+
+  const handleSelectCompany = (companyId: number) => {
+    setSelectedCompanies(prev => 
+      prev.includes(companyId) 
+        ? prev.filter(id => id !== companyId)
+        : [...prev, companyId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    // TODO: Implement bulk edit functionality
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedCompanies.length} companies`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedCompanies.length === 0) return;
+    
+    // TODO: Add confirmation dialog
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedCompanies.length} companies`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Actions */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Companies</h1>
-          <p className="text-slate-400">Manage gaming companies and organizations</p>
-        </div>
+        <BulkOperations 
+          selectedCount={selectedCompanies.length}
+          onBulkEdit={handleBulkEdit}
+          onBulkDelete={handleBulkDelete}
+        />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="companies" moduleName="Companies">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -372,6 +411,13 @@ export default function Companies() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 w-12">
+                        <Checkbox
+                          checked={selectedCompanies.length === data?.companies.length && data?.companies.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white/20"
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Registration</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
@@ -383,6 +429,13 @@ export default function Companies() {
                   <tbody>
                     {data.companies.map((company: any) => (
                       <tr key={company.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedCompanies.includes(company.id)}
+                            onCheckedChange={() => handleSelectCompany(company.id)}
+                            className="border-white/20"
+                          />
+                        </td>
                         <td className="py-4 px-4">
                           <div>
                             <p className="text-sm font-medium text-white">{company.name}</p>

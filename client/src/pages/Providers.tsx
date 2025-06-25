@@ -13,7 +13,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertProviderSchema, type InsertProvider } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BulkOperations } from "@/components/ui/bulk-operations";
 
 export default function Providers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,6 +23,7 @@ export default function Providers() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingProvider, setEditingProvider] = useState<any>(null);
+  const [selectedProviders, setSelectedProviders] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -143,12 +146,50 @@ export default function Providers() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedProviders.length === data?.providers.length) {
+      setSelectedProviders([]);
+    } else {
+      setSelectedProviders(data?.providers.map(p => p.id) || []);
+    }
+  };
+
+  const handleSelectProvider = (providerId: number) => {
+    setSelectedProviders(prev => 
+      prev.includes(providerId) 
+        ? prev.filter(id => id !== providerId)
+        : [...prev, providerId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedProviders.length} providers`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedProviders.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedProviders.length} providers`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <BulkOperations 
+          selectedCount={selectedProviders.length}
+          onBulkEdit={handleBulkEdit}
+          onBulkDelete={handleBulkDelete}
+        />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="providers" moduleName="Providers">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
@@ -505,6 +546,13 @@ export default function Providers() {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 w-12">
+                        <Checkbox
+                          checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="border-white/20"
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Provider</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
@@ -516,6 +564,13 @@ export default function Providers() {
                   <tbody>
                     {data.providers.map((provider: any) => (
                       <tr key={provider.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedProviders.includes(provider.id)}
+                            onCheckedChange={() => handleSelectProvider(provider.id)}
+                            className="border-white/20"
+                          />
+                        </td>
                         <td className="py-4 px-4">
                           <div>
                             <p className="text-sm font-medium text-white">{provider.name}</p>

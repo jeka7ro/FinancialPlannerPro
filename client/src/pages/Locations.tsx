@@ -96,12 +96,50 @@ export default function Locations() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedLocations.length === data?.locations.length) {
+      setSelectedLocations([]);
+    } else {
+      setSelectedLocations(data?.locations.map(l => l.id) || []);
+    }
+  };
+
+  const handleSelectLocation = (locationId: number) => {
+    setSelectedLocations(prev => 
+      prev.includes(locationId) 
+        ? prev.filter(id => id !== locationId)
+        : [...prev, locationId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedLocations.length} locations`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedLocations.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedLocations.length} locations`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <BulkOperations 
+          selectedCount={selectedLocations.length}
+          onBulkEdit={handleBulkEdit}
+          onBulkDelete={handleBulkDelete}
+        />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="locations" moduleName="Locations">
             <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
