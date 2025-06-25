@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
+import { ThemeSelector } from "@/components/ui/theme-selector";
 // Import logo using public path
 const cashpotLogo = "/cashpot-logo.png";
 
