@@ -628,6 +628,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/invoices", requireAuth, async (req, res) => {
     try {
+      console.log("Invoice creation request body:", JSON.stringify(req.body, null, 2));
       const invoiceData = insertInvoiceSchema.parse(req.body);
       const invoice = await storage.createInvoice(invoiceData);
       
@@ -654,6 +655,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(invoice);
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("Invoice validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Create invoice error:", error);
