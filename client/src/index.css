@@ -425,11 +425,26 @@ main,
   margin-right: -1rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  overflow-x: auto;
 }
 
 .glass-card table {
   width: 100%;
-  min-width: calc(100vw - 300px);
+  table-layout: auto;
+  /* Allow table to size based on content, no min-width forcing horizontal scroll */
+}
+
+/* Ensure table cells don't get too cramped */
+.glass-card table th,
+.glass-card table td {
+  white-space: nowrap;
+  padding: 0.75rem 1rem;
+}
+
+/* Allow certain columns to wrap if needed */
+.glass-card table .wrap-text {
+  white-space: normal;
+  word-break: break-word;
 }
 
 
