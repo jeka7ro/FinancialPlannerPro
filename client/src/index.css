@@ -413,24 +413,12 @@ main,
   }
 }
 
-/* POSITION TABLES AT LEFT EDGE LIKE SCREENSHOT */
-.glass-card {
-  margin-left: -8px !important;
-  width: calc(100vw - 192px) !important; /* Full width minus exact sidebar width */
-}
-
+/* MATCH SCREENSHOT POSITIONING - TABLE STARTS NEAR SIDEBAR */
 .glass-card .overflow-x-auto.-mx-6 {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-}
-
-.glass-card .overflow-x-auto {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  padding-left: 16px !important;
-  padding-right: 16px !important;
+  margin-left: -2.5rem !important;
+  margin-right: -1.5rem !important;
+  padding-left: 1rem !important;
+  padding-right: 1.5rem !important;
 }
 
 .glass-card table {
@@ -438,13 +426,11 @@ main,
   table-layout: auto !important;
   margin: 0 !important;
   text-align: left !important;
-  min-width: 1200px !important;
 }
 
 .glass-card th, .glass-card td {
   text-align: left !important;
   padding: 8px 12px !important;
-  white-space: nowrap !important;
 }
 
 /* SPECIFIC DATA TABLE ALIGNMENT - DO NOT AFFECT LOGIN OR OTHER LAYOUTS */
