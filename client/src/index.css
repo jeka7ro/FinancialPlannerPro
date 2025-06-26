@@ -413,67 +413,6 @@ main,
   }
 }
 
-/* MATCH SCREENSHOT POSITIONING - TABLE STARTS NEAR SIDEBAR */
-.glass-card .overflow-x-auto.-mx-6 {
-  margin-left: -2.5rem !important;
-  margin-right: -1.5rem !important;
-  padding-left: 1rem !important;
-  padding-right: 1.5rem !important;
-}
 
-.glass-card table {
-  width: 100% !important;
-  table-layout: auto !important;
-  margin: 0 !important;
-  text-align: left !important;
-}
 
-.glass-card th, .glass-card td {
-  text-align: left !important;
-  padding: 8px 12px !important;
-}
 
-/* SPECIFIC DATA TABLE ALIGNMENT - DO NOT AFFECT LOGIN OR OTHER LAYOUTS */
-.glass-card .overflow-x-auto {
-  margin-left: 0 !important;
-  text-align: left !important;
-}
-
-.glass-card .overflow-x-auto table {
-  margin-left: 0 !important;
-  text-align: left !important;
-  float: none !important;
-}
-
-/* MAXIMIZE TABLE SPACE USAGE */
-.glass-card .overflow-x-auto.-mx-6 {
-  margin-left: -24px !important;
-  margin-right: -24px !important;
-  padding-left: 24px !important;
-  padding-right: 24px !important;
-  width: calc(100% + 48px) !important;
-}
-
-.glass-card .overflow-x-auto table {
-  width: 100% !important;
-  min-width: 100% !important;
-  table-layout: fixed !important;
-}
-
-.glass-card .overflow-x-auto table th,
-.glass-card .overflow-x-auto table td {
-  text-align: left !important;
-  padding: 8px 12px !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-}
-
-/* Remove card padding constraints */
-.glass-card .card-content {
-  padding: 16px !important;
-}
-
-/* Full width containers */
-.space-y-6 {
-  width: 100% !important;
-}
