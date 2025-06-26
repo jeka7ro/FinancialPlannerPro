@@ -282,11 +282,11 @@ export default function Legal() {
                   <FormField
                     control={form.control}
                     name="documentNumber"
-                    render={({ field }) => (
+                    render={({ field: { value, ...field } }) => (
                       <FormItem>
                         <FormLabel className="text-white">Document Number</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Document number" />
+                          <Input {...field} value={value || ""} className="form-input" placeholder="Document number" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -295,11 +295,11 @@ export default function Legal() {
                   <FormField
                     control={form.control}
                     name="issuingAuthority"
-                    render={({ field }) => (
+                    render={({ field: { value, ...field } }) => (
                       <FormItem>
                         <FormLabel className="text-white">Issuing Authority</FormLabel>
                         <FormControl>
-                          <Input {...field} className="form-input" placeholder="Authority name" />
+                          <Input {...field} value={value || ""} className="form-input" placeholder="Authority name" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

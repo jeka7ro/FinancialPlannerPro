@@ -230,8 +230,8 @@ export default function Cabinets() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-white">Gaming Cabinets</h1>
-          <p className="text-slate-400 mt-2">Manage your gaming cabinet inventory</p>
+          <h1 className="text-3xl font-bold text-white">Cabinets</h1>
+          <p className="text-slate-400 mt-2">Gaming cabinet inventory and management</p>
         </div>
         <div className="flex gap-3">
           <ImportExportDialog 
@@ -533,8 +533,7 @@ export default function Cabinets() {
       <Card className="glass-card border-white/10">
         <CardHeader className="border-b border-white/10">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-white">Cabinet Management</CardTitle>
-            <div className="flex gap-4">
+            <div className="flex gap-4 w-full justify-end">
               <Input
                 placeholder="Search cabinets..."
                 value={searchTerm}

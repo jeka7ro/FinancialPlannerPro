@@ -119,6 +119,12 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 26, 2025: Fixed duplicate "Cabinets" headings in Cabinets page to eliminate tripled display issue
+- June 26, 2025: Updated logo display in sidebar with proper Vite asset handling and error handling
+- June 26, 2025: Completed comprehensive action button implementation across all modules with working edit and delete functionality
+- June 26, 2025: Added proper Edit and Trash2 icons from Lucide React throughout entire application
+- June 26, 2025: Implemented delete mutations with confirmation dialogs and error handling for all data tables
+- June 26, 2025: Fixed TypeScript errors in form handling and ensured consistent UI patterns across modules
 - June 26, 2025: Enhanced user management with comprehensive contact information including email, telephone, and photo fields
 - June 26, 2025: Added telephone column to Users table display for complete contact visibility
 - June 26, 2025: Created UserAvatar component with photo display functionality and fallback initials
