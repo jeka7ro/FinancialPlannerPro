@@ -614,7 +614,9 @@ export default function Locations() {
                           {location.address}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {location.companyId ? `Company ${location.companyId}` : 'No company'}
+                          {location.companyId ? 
+                            companies?.companies?.find((c: any) => c.id === location.companyId)?.name || 'Unknown Company' 
+                            : 'No company'}
                         </td>
                         <td className="py-4 px-4">
                           <div className="text-sm text-slate-300">
