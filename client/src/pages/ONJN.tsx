@@ -444,8 +444,8 @@ export default function ONJN() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>

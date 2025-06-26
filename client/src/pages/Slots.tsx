@@ -549,8 +549,8 @@ export default function Slots() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="w-full table-fixed">
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full table-fixed min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
                       <th className="text-left py-2 px-3 w-10">

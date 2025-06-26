@@ -542,8 +542,8 @@ export default function Providers() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
+              <div className="overflow-x-auto -mx-2">
+                <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
                       <th className="text-left py-3 px-4 w-12">
