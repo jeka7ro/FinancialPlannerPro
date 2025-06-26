@@ -382,8 +382,7 @@ export const insertProviderSchema = createInsertSchema(providers).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  logoUrl: z.string().url().optional().or(z.literal("")),
-  website: z.string().url().optional().or(z.literal("")),
+  website: z.string().optional().or(z.literal("")),
 });
 
 export const insertCabinetSchema = createInsertSchema(cabinets).omit({
