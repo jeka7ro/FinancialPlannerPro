@@ -19,7 +19,13 @@ import {
   insertInvoiceSchema,
   insertRentAgreementSchema,
   insertLegalDocumentSchema,
-  insertOnjnReportSchema
+  insertOnjnReportSchema,
+  insertBillingPlanSchema,
+  insertLocationBillingSchema,
+  insertRevenueReportSchema,
+  insertAutomatedBillSchema,
+  insertBillingScheduleSchema,
+  insertPaymentHistorySchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 
@@ -1169,6 +1175,285 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Tutorial export error:", error);
       res.status(500).json({ message: "Tutorial export failed", error: error.message });
+    }
+  });
+
+  // Billing Plan routes
+  app.get("/api/billing-plans", requireAuth, async (req, res) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string || "";
+      
+      const result = await storage.getBillingPlans(page, limit, search);
+      res.json(result);
+    } catch (error) {
+      console.error("Get billing plans error:", error);
+      res.status(500).json({ message: "Failed to fetch billing plans" });
+    }
+  });
+
+  app.post("/api/billing-plans", requireAuth, async (req, res) => {
+    try {
+      const billingPlanData = insertBillingPlanSchema.parse(req.body);
+      const billingPlan = await storage.createBillingPlan(billingPlanData);
+      res.status(201).json(billingPlan);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Create billing plan error:", error);
+      res.status(500).json({ message: "Failed to create billing plan" });
+    }
+  });
+
+  app.get("/api/billing-plans/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const billingPlan = await storage.getBillingPlan(id);
+      if (!billingPlan) {
+        return res.status(404).json({ message: "Billing plan not found" });
+      }
+      res.json(billingPlan);
+    } catch (error) {
+      console.error("Get billing plan error:", error);
+      res.status(500).json({ message: "Failed to fetch billing plan" });
+    }
+  });
+
+  app.put("/api/billing-plans/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const billingPlanData = insertBillingPlanSchema.partial().parse(req.body);
+      const billingPlan = await storage.updateBillingPlan(id, billingPlanData);
+      res.json(billingPlan);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Update billing plan error:", error);
+      res.status(500).json({ message: "Failed to update billing plan" });
+    }
+  });
+
+  app.delete("/api/billing-plans/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteBillingPlan(id);
+      res.json({ message: "Billing plan deleted successfully" });
+    } catch (error) {
+      console.error("Delete billing plan error:", error);
+      res.status(500).json({ message: "Failed to delete billing plan" });
+    }
+  });
+
+  // Location Billing routes
+  app.get("/api/location-billing", requireAuth, async (req, res) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string || "";
+      
+      const result = await storage.getLocationBillings(page, limit, search);
+      res.json(result);
+    } catch (error) {
+      console.error("Get location billing error:", error);
+      res.status(500).json({ message: "Failed to fetch location billing" });
+    }
+  });
+
+  app.post("/api/location-billing", requireAuth, async (req, res) => {
+    try {
+      const locationBillingData = insertLocationBillingSchema.parse(req.body);
+      const locationBilling = await storage.createLocationBilling(locationBillingData);
+      res.status(201).json(locationBilling);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Create location billing error:", error);
+      res.status(500).json({ message: "Failed to create location billing" });
+    }
+  });
+
+  app.put("/api/location-billing/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const locationBillingData = insertLocationBillingSchema.partial().parse(req.body);
+      const locationBilling = await storage.updateLocationBilling(id, locationBillingData);
+      res.json(locationBilling);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Update location billing error:", error);
+      res.status(500).json({ message: "Failed to update location billing" });
+    }
+  });
+
+  // Revenue Reports routes
+  app.get("/api/revenue-reports", requireAuth, async (req, res) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string || "";
+      
+      const result = await storage.getRevenueReports(page, limit, search);
+      res.json(result);
+    } catch (error) {
+      console.error("Get revenue reports error:", error);
+      res.status(500).json({ message: "Failed to fetch revenue reports" });
+    }
+  });
+
+  app.post("/api/revenue-reports", requireAuth, async (req, res) => {
+    try {
+      const revenueReportData = insertRevenueReportSchema.parse(req.body);
+      const revenueReport = await storage.createRevenueReport(revenueReportData);
+      res.status(201).json(revenueReport);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Create revenue report error:", error);
+      res.status(500).json({ message: "Failed to create revenue report" });
+    }
+  });
+
+  app.put("/api/revenue-reports/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const revenueReportData = insertRevenueReportSchema.partial().parse(req.body);
+      const revenueReport = await storage.updateRevenueReport(id, revenueReportData);
+      res.json(revenueReport);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Update revenue report error:", error);
+      res.status(500).json({ message: "Failed to update revenue report" });
+    }
+  });
+
+  // Automated Bills routes
+  app.get("/api/automated-bills", requireAuth, async (req, res) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      const search = req.query.search as string || "";
+      
+      const result = await storage.getAutomatedBills(page, limit, search);
+      res.json(result);
+    } catch (error) {
+      console.error("Get automated bills error:", error);
+      res.status(500).json({ message: "Failed to fetch automated bills" });
+    }
+  });
+
+  app.post("/api/automated-bills", requireAuth, async (req, res) => {
+    try {
+      const automatedBillData = insertAutomatedBillSchema.parse(req.body);
+      const automatedBill = await storage.createAutomatedBill(automatedBillData);
+      res.status(201).json(automatedBill);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Create automated bill error:", error);
+      res.status(500).json({ message: "Failed to create automated bill" });
+    }
+  });
+
+  app.put("/api/automated-bills/:id", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const automatedBillData = insertAutomatedBillSchema.partial().parse(req.body);
+      const automatedBill = await storage.updateAutomatedBill(id, automatedBillData);
+      res.json(automatedBill);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Update automated bill error:", error);
+      res.status(500).json({ message: "Failed to update automated bill" });
+    }
+  });
+
+  app.post("/api/automated-bills/:id/mark-paid", requireAuth, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { paidAmount, paidDate, paymentMethod, paymentReference } = req.body;
+      
+      const automatedBill = await storage.markBillAsPaid(id, {
+        paidAmount,
+        paidDate: new Date(paidDate),
+        paymentMethod,
+        paymentReference
+      });
+      
+      res.json(automatedBill);
+    } catch (error) {
+      console.error("Mark bill as paid error:", error);
+      res.status(500).json({ message: "Failed to mark bill as paid" });
+    }
+  });
+
+  // Payment History routes
+  app.get("/api/payment-history", requireAuth, async (req, res) => {
+    try {
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await storage.getPaymentHistories(page, limit);
+      res.json(result);
+    } catch (error) {
+      console.error("Get payment history error:", error);
+      res.status(500).json({ message: "Failed to fetch payment history" });
+    }
+  });
+
+  app.post("/api/payment-history", requireAuth, async (req, res) => {
+    try {
+      const paymentHistoryData = insertPaymentHistorySchema.parse(req.body);
+      const paymentHistory = await storage.createPaymentHistory(paymentHistoryData);
+      res.status(201).json(paymentHistory);
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Create payment history error:", error);
+      res.status(500).json({ message: "Failed to create payment history" });
+    }
+  });
+
+  // Billing Dashboard routes
+  app.get("/api/billing/dashboard", requireAuth, async (req, res) => {
+    try {
+      const stats = await storage.getBillingDashboardStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Get billing dashboard stats error:", error);
+      res.status(500).json({ message: "Failed to fetch billing dashboard stats" });
+    }
+  });
+
+  app.get("/api/billing/pending-bills", requireAuth, async (req, res) => {
+    try {
+      const bills = await storage.getPendingBills();
+      res.json(bills);
+    } catch (error) {
+      console.error("Get pending bills error:", error);
+      res.status(500).json({ message: "Failed to fetch pending bills" });
+    }
+  });
+
+  app.get("/api/billing/overdue-bills", requireAuth, async (req, res) => {
+    try {
+      const bills = await storage.getOverdueBills();
+      res.json(bills);
+    } catch (error) {
+      console.error("Get overdue bills error:", error);
+      res.status(500).json({ message: "Failed to fetch overdue bills" });
     }
   });
 

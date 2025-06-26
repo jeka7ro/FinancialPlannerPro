@@ -12,6 +12,12 @@ import {
   onjnReports,
   activityLogs,
   attachments,
+  billingPlans,
+  locationBilling,
+  revenueReports,
+  automatedBills,
+  billingSchedules,
+  paymentHistory,
   type User,
   type InsertUser,
   type Company,
@@ -38,6 +44,18 @@ import {
   type InsertActivityLog,
   type Attachment,
   type InsertAttachment,
+  type BillingPlan,
+  type InsertBillingPlan,
+  type LocationBilling,
+  type InsertLocationBilling,
+  type RevenueReport,
+  type InsertRevenueReport,
+  type AutomatedBill,
+  type InsertAutomatedBill,
+  type BillingSchedule,
+  type InsertBillingSchedule,
+  type PaymentHistory,
+  type InsertPaymentHistory,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like, count, or } from "drizzle-orm";
@@ -136,6 +154,61 @@ export interface IStorage {
   getAttachments(entityType: string, entityId: number): Promise<Attachment[]>;
   createAttachment(attachment: InsertAttachment): Promise<Attachment>;
   deleteAttachment(id: number): Promise<void>;
+
+  // Billing Plan operations
+  getBillingPlan(id: number): Promise<BillingPlan | undefined>;
+  getBillingPlans(page?: number, limit?: number, search?: string): Promise<{ billingPlans: BillingPlan[]; total: number }>;
+  createBillingPlan(billingPlan: InsertBillingPlan): Promise<BillingPlan>;
+  updateBillingPlan(id: number, billingPlan: Partial<InsertBillingPlan>): Promise<BillingPlan>;
+  deleteBillingPlan(id: number): Promise<void>;
+
+  // Location Billing operations
+  getLocationBilling(id: number): Promise<LocationBilling | undefined>;
+  getLocationBillings(page?: number, limit?: number, search?: string): Promise<{ locationBillings: LocationBilling[]; total: number }>;
+  getLocationBillingByLocation(locationId: number): Promise<LocationBilling | undefined>;
+  createLocationBilling(locationBilling: InsertLocationBilling): Promise<LocationBilling>;
+  updateLocationBilling(id: number, locationBilling: Partial<InsertLocationBilling>): Promise<LocationBilling>;
+  deleteLocationBilling(id: number): Promise<void>;
+
+  // Revenue Report operations
+  getRevenueReport(id: number): Promise<RevenueReport | undefined>;
+  getRevenueReports(page?: number, limit?: number, search?: string): Promise<{ revenueReports: RevenueReport[]; total: number }>;
+  getRevenueReportsByLocation(locationId: number, startDate?: Date, endDate?: Date): Promise<RevenueReport[]>;
+  createRevenueReport(revenueReport: InsertRevenueReport): Promise<RevenueReport>;
+  updateRevenueReport(id: number, revenueReport: Partial<InsertRevenueReport>): Promise<RevenueReport>;
+  deleteRevenueReport(id: number): Promise<void>;
+
+  // Automated Bill operations
+  getAutomatedBill(id: number): Promise<AutomatedBill | undefined>;
+  getAutomatedBills(page?: number, limit?: number, search?: string): Promise<{ automatedBills: AutomatedBill[]; total: number }>;
+  getAutomatedBillsByLocation(locationId: number): Promise<AutomatedBill[]>;
+  getPendingBills(): Promise<AutomatedBill[]>;
+  getOverdueBills(): Promise<AutomatedBill[]>;
+  createAutomatedBill(automatedBill: InsertAutomatedBill): Promise<AutomatedBill>;
+  updateAutomatedBill(id: number, automatedBill: Partial<InsertAutomatedBill>): Promise<AutomatedBill>;
+  deleteAutomatedBill(id: number): Promise<void>;
+  markBillAsPaid(id: number, paymentData: { paidAmount: string; paidDate: Date; paymentMethod: string; paymentReference?: string }): Promise<AutomatedBill>;
+
+  // Billing Schedule operations
+  getBillingSchedule(id: number): Promise<BillingSchedule | undefined>;
+  getBillingSchedules(page?: number, limit?: number): Promise<{ billingSchedules: BillingSchedule[]; total: number }>;
+  getActiveSchedules(): Promise<BillingSchedule[]>;
+  getDueSchedules(): Promise<BillingSchedule[]>;
+  createBillingSchedule(billingSchedule: InsertBillingSchedule): Promise<BillingSchedule>;
+  updateBillingSchedule(id: number, billingSchedule: Partial<InsertBillingSchedule>): Promise<BillingSchedule>;
+  deleteBillingSchedule(id: number): Promise<void>;
+
+  // Payment History operations
+  getPaymentHistory(id: number): Promise<PaymentHistory | undefined>;
+  getPaymentHistories(page?: number, limit?: number): Promise<{ paymentHistories: PaymentHistory[]; total: number }>;
+  getPaymentHistoryByBill(automatedBillId: number): Promise<PaymentHistory[]>;
+  createPaymentHistory(paymentHistory: InsertPaymentHistory): Promise<PaymentHistory>;
+  deletePaymentHistory(id: number): Promise<void>;
+
+  // Billing automation operations
+  generateBillsForDueSchedules(): Promise<AutomatedBill[]>;
+  calculateBillAmount(locationBillingId: number, startDate: Date, endDate: Date): Promise<{ baseRent: number; revenueShare: number; total: number }>;
+  getBillingDashboardStats(): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -790,6 +863,432 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAttachment(id: number): Promise<void> {
     await db.delete(attachments).where(eq(attachments.id, id));
+  }
+
+  // Billing Plan operations
+  async getBillingPlan(id: number): Promise<BillingPlan | undefined> {
+    const [billingPlan] = await db.select().from(billingPlans).where(eq(billingPlans.id, id));
+    return billingPlan || undefined;
+  }
+
+  async getBillingPlans(page = 1, limit = 10, search = ""): Promise<{ billingPlans: BillingPlan[]; total: number }> {
+    const offset = (page - 1) * limit;
+    const whereClause = search 
+      ? or(
+          like(billingPlans.name, `%${search}%`),
+          like(billingPlans.planType, `%${search}%`),
+          like(billingPlans.description, `%${search}%`)
+        )
+      : undefined;
+
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(billingPlans)
+      .where(whereClause);
+
+    const plans = await db
+      .select()
+      .from(billingPlans)
+      .where(whereClause)
+      .orderBy(desc(billingPlans.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      billingPlans: plans,
+      total: totalResult.count,
+    };
+  }
+
+  async createBillingPlan(insertBillingPlan: InsertBillingPlan): Promise<BillingPlan> {
+    const [billingPlan] = await db
+      .insert(billingPlans)
+      .values(insertBillingPlan)
+      .returning();
+    return billingPlan;
+  }
+
+  async updateBillingPlan(id: number, updateBillingPlan: Partial<InsertBillingPlan>): Promise<BillingPlan> {
+    const [billingPlan] = await db
+      .update(billingPlans)
+      .set({ ...updateBillingPlan, updatedAt: new Date() })
+      .where(eq(billingPlans.id, id))
+      .returning();
+    return billingPlan;
+  }
+
+  async deleteBillingPlan(id: number): Promise<void> {
+    await db.delete(billingPlans).where(eq(billingPlans.id, id));
+  }
+
+  // Location Billing operations
+  async getLocationBilling(id: number): Promise<LocationBilling | undefined> {
+    const [locationBill] = await db.select().from(locationBilling).where(eq(locationBilling.id, id));
+    return locationBill || undefined;
+  }
+
+  async getLocationBillings(page = 1, limit = 10, search = ""): Promise<{ locationBillings: LocationBilling[]; total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(locationBilling);
+
+    const locationBillings = await db
+      .select()
+      .from(locationBilling)
+      .orderBy(desc(locationBilling.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      locationBillings,
+      total: totalResult.count,
+    };
+  }
+
+  async getLocationBillingByLocation(locationId: number): Promise<LocationBilling | undefined> {
+    const [locationBill] = await db
+      .select()
+      .from(locationBilling)
+      .where(and(eq(locationBilling.locationId, locationId), eq(locationBilling.isActive, true)))
+      .orderBy(desc(locationBilling.startDate));
+    return locationBill || undefined;
+  }
+
+  async createLocationBilling(insertLocationBilling: InsertLocationBilling): Promise<LocationBilling> {
+    const [locationBill] = await db
+      .insert(locationBilling)
+      .values(insertLocationBilling)
+      .returning();
+    return locationBill;
+  }
+
+  async updateLocationBilling(id: number, updateLocationBilling: Partial<InsertLocationBilling>): Promise<LocationBilling> {
+    const [locationBill] = await db
+      .update(locationBilling)
+      .set({ ...updateLocationBilling, updatedAt: new Date() })
+      .where(eq(locationBilling.id, id))
+      .returning();
+    return locationBill;
+  }
+
+  async deleteLocationBilling(id: number): Promise<void> {
+    await db.delete(locationBilling).where(eq(locationBilling.id, id));
+  }
+
+  // Revenue Report operations
+  async getRevenueReport(id: number): Promise<RevenueReport | undefined> {
+    const [report] = await db.select().from(revenueReports).where(eq(revenueReports.id, id));
+    return report || undefined;
+  }
+
+  async getRevenueReports(page = 1, limit = 10, search = ""): Promise<{ revenueReports: RevenueReport[]; total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(revenueReports);
+
+    const reports = await db
+      .select()
+      .from(revenueReports)
+      .orderBy(desc(revenueReports.reportDate))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      revenueReports: reports,
+      total: totalResult.count,
+    };
+  }
+
+  async getRevenueReportsByLocation(locationId: number, startDate?: Date, endDate?: Date): Promise<RevenueReport[]> {
+    let whereClause = eq(revenueReports.locationId, locationId);
+    
+    if (startDate && endDate) {
+      whereClause = and(
+        eq(revenueReports.locationId, locationId),
+        // Add date range filter here when needed
+      ) as any;
+    }
+
+    return await db
+      .select()
+      .from(revenueReports)
+      .where(whereClause)
+      .orderBy(desc(revenueReports.reportDate));
+  }
+
+  async createRevenueReport(insertRevenueReport: InsertRevenueReport): Promise<RevenueReport> {
+    const [report] = await db
+      .insert(revenueReports)
+      .values(insertRevenueReport)
+      .returning();
+    return report;
+  }
+
+  async updateRevenueReport(id: number, updateRevenueReport: Partial<InsertRevenueReport>): Promise<RevenueReport> {
+    const [report] = await db
+      .update(revenueReports)
+      .set({ ...updateRevenueReport, updatedAt: new Date() })
+      .where(eq(revenueReports.id, id))
+      .returning();
+    return report;
+  }
+
+  async deleteRevenueReport(id: number): Promise<void> {
+    await db.delete(revenueReports).where(eq(revenueReports.id, id));
+  }
+
+  // Automated Bill operations
+  async getAutomatedBill(id: number): Promise<AutomatedBill | undefined> {
+    const [bill] = await db.select().from(automatedBills).where(eq(automatedBills.id, id));
+    return bill || undefined;
+  }
+
+  async getAutomatedBills(page = 1, limit = 10, search = ""): Promise<{ automatedBills: AutomatedBill[]; total: number }> {
+    const offset = (page - 1) * limit;
+    const whereClause = search 
+      ? or(
+          like(automatedBills.billNumber, `%${search}%`),
+          like(automatedBills.status, `%${search}%`)
+        )
+      : undefined;
+
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(automatedBills)
+      .where(whereClause);
+
+    const bills = await db
+      .select()
+      .from(automatedBills)
+      .where(whereClause)
+      .orderBy(desc(automatedBills.createdAt))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      automatedBills: bills,
+      total: totalResult.count,
+    };
+  }
+
+  async getAutomatedBillsByLocation(locationId: number): Promise<AutomatedBill[]> {
+    return await db
+      .select()
+      .from(automatedBills)
+      .where(eq(automatedBills.locationId, locationId))
+      .orderBy(desc(automatedBills.createdAt));
+  }
+
+  async getPendingBills(): Promise<AutomatedBill[]> {
+    return await db
+      .select()
+      .from(automatedBills)
+      .where(eq(automatedBills.status, 'pending'))
+      .orderBy(desc(automatedBills.dueDate));
+  }
+
+  async getOverdueBills(): Promise<AutomatedBill[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(automatedBills)
+      .where(and(
+        eq(automatedBills.status, 'pending'),
+        // Add overdue date logic here
+      ))
+      .orderBy(desc(automatedBills.dueDate));
+  }
+
+  async createAutomatedBill(insertAutomatedBill: InsertAutomatedBill): Promise<AutomatedBill> {
+    const [bill] = await db
+      .insert(automatedBills)
+      .values(insertAutomatedBill)
+      .returning();
+    return bill;
+  }
+
+  async updateAutomatedBill(id: number, updateAutomatedBill: Partial<InsertAutomatedBill>): Promise<AutomatedBill> {
+    const [bill] = await db
+      .update(automatedBills)
+      .set({ ...updateAutomatedBill, updatedAt: new Date() })
+      .where(eq(automatedBills.id, id))
+      .returning();
+    return bill;
+  }
+
+  async deleteAutomatedBill(id: number): Promise<void> {
+    await db.delete(automatedBills).where(eq(automatedBills.id, id));
+  }
+
+  async markBillAsPaid(id: number, paymentData: { paidAmount: string; paidDate: Date; paymentMethod: string; paymentReference?: string }): Promise<AutomatedBill> {
+    const [bill] = await db
+      .update(automatedBills)
+      .set({
+        status: 'paid',
+        paidAmount: paymentData.paidAmount,
+        paidDate: paymentData.paidDate,
+        paymentMethod: paymentData.paymentMethod,
+        paymentReference: paymentData.paymentReference,
+        updatedAt: new Date()
+      })
+      .where(eq(automatedBills.id, id))
+      .returning();
+    return bill;
+  }
+
+  // Billing Schedule operations
+  async getBillingSchedule(id: number): Promise<BillingSchedule | undefined> {
+    const [schedule] = await db.select().from(billingSchedules).where(eq(billingSchedules.id, id));
+    return schedule || undefined;
+  }
+
+  async getBillingSchedules(page = 1, limit = 10): Promise<{ billingSchedules: BillingSchedule[]; total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(billingSchedules);
+
+    const schedules = await db
+      .select()
+      .from(billingSchedules)
+      .orderBy(desc(billingSchedules.nextGenerationDate))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      billingSchedules: schedules,
+      total: totalResult.count,
+    };
+  }
+
+  async getActiveSchedules(): Promise<BillingSchedule[]> {
+    return await db
+      .select()
+      .from(billingSchedules)
+      .where(eq(billingSchedules.isActive, true))
+      .orderBy(desc(billingSchedules.nextGenerationDate));
+  }
+
+  async getDueSchedules(): Promise<BillingSchedule[]> {
+    const now = new Date();
+    return await db
+      .select()
+      .from(billingSchedules)
+      .where(and(
+        eq(billingSchedules.isActive, true),
+        // Add due date logic here
+      ))
+      .orderBy(desc(billingSchedules.nextGenerationDate));
+  }
+
+  async createBillingSchedule(insertBillingSchedule: InsertBillingSchedule): Promise<BillingSchedule> {
+    const [schedule] = await db
+      .insert(billingSchedules)
+      .values(insertBillingSchedule)
+      .returning();
+    return schedule;
+  }
+
+  async updateBillingSchedule(id: number, updateBillingSchedule: Partial<InsertBillingSchedule>): Promise<BillingSchedule> {
+    const [schedule] = await db
+      .update(billingSchedules)
+      .set({ ...updateBillingSchedule, updatedAt: new Date() })
+      .where(eq(billingSchedules.id, id))
+      .returning();
+    return schedule;
+  }
+
+  async deleteBillingSchedule(id: number): Promise<void> {
+    await db.delete(billingSchedules).where(eq(billingSchedules.id, id));
+  }
+
+  // Payment History operations
+  async getPaymentHistory(id: number): Promise<PaymentHistory | undefined> {
+    const [payment] = await db.select().from(paymentHistory).where(eq(paymentHistory.id, id));
+    return payment || undefined;
+  }
+
+  async getPaymentHistories(page = 1, limit = 10): Promise<{ paymentHistories: PaymentHistory[]; total: number }> {
+    const offset = (page - 1) * limit;
+    
+    const [totalResult] = await db
+      .select({ count: count() })
+      .from(paymentHistory);
+
+    const payments = await db
+      .select()
+      .from(paymentHistory)
+      .orderBy(desc(paymentHistory.paymentDate))
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      paymentHistories: payments,
+      total: totalResult.count,
+    };
+  }
+
+  async getPaymentHistoryByBill(automatedBillId: number): Promise<PaymentHistory[]> {
+    return await db
+      .select()
+      .from(paymentHistory)
+      .where(eq(paymentHistory.automatedBillId, automatedBillId))
+      .orderBy(desc(paymentHistory.paymentDate));
+  }
+
+  async createPaymentHistory(insertPaymentHistory: InsertPaymentHistory): Promise<PaymentHistory> {
+    const [payment] = await db
+      .insert(paymentHistory)
+      .values(insertPaymentHistory)
+      .returning();
+    return payment;
+  }
+
+  async deletePaymentHistory(id: number): Promise<void> {
+    await db.delete(paymentHistory).where(eq(paymentHistory.id, id));
+  }
+
+  // Billing automation operations
+  async generateBillsForDueSchedules(): Promise<AutomatedBill[]> {
+    // This would contain the logic to automatically generate bills
+    // based on due schedules. For now, return empty array.
+    return [];
+  }
+
+  async calculateBillAmount(locationBillingId: number, startDate: Date, endDate: Date): Promise<{ baseRent: number; revenueShare: number; total: number }> {
+    // This would contain the logic to calculate bill amounts
+    // based on billing plan and revenue data. For now, return zero amounts.
+    return { baseRent: 0, revenueShare: 0, total: 0 };
+  }
+
+  async getBillingDashboardStats(): Promise<any> {
+    // Get billing dashboard statistics
+    const [pendingBillsCount] = await db
+      .select({ count: count() })
+      .from(automatedBills)
+      .where(eq(automatedBills.status, 'pending'));
+
+    const [overdueBillsCount] = await db
+      .select({ count: count() })
+      .from(automatedBills)
+      .where(eq(automatedBills.status, 'overdue'));
+
+    const [totalBillsThisMonth] = await db
+      .select({ count: count() })
+      .from(automatedBills);
+
+    return {
+      pendingBills: pendingBillsCount.count,
+      overdueBills: overdueBillsCount.count,
+      totalBillsThisMonth: totalBillsThisMonth.count,
+      totalRevenue: 0, // Calculate from revenue reports
+      activeBillingPlans: 0, // Calculate from billing plans
+    };
   }
 }
 
