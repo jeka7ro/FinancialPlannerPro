@@ -55,8 +55,10 @@ export default function MainLayout({ children }: MainLayoutProps) {
           onMenuToggle={toggleSidebar}
         />
         
-        <main className="flex-1 overflow-y-auto pr-4 py-4">
-          {children}
+        <main className="flex-1 overflow-y-auto pl-6 pr-2 py-4">
+          <div className="w-full max-w-none">
+            {children}
+          </div>
         </main>
       </div>
     </div>

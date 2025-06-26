@@ -327,10 +327,7 @@ export default function Slots() {
     setCurrentPage(1);
   };
 
-  const getSortIcon = (field: string) => {
-    if (sortField !== field) return '↕';
-    return sortDirection === 'asc' ? '↑' : '↓';
-  };
+
 
   const handleSelectAll = () => {
     if (selectedSlots.length === data?.slots.length) {
@@ -674,19 +671,19 @@ export default function Slots() {
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('id')}>Slot ID {getSortIcon('id')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('providerId')}>Provider {getSortIcon('providerId')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('cabinetId')}>Cabinet {getSortIcon('cabinetId')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gameMixId')}>Game Mix {getSortIcon('gameMixId')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('locationId')}>Location {getSortIcon('locationId')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('year')}>Year {getSortIcon('year')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gamingPlaces')}>Gaming Places {getSortIcon('gamingPlaces')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('exciterType')}>Exciter Type {getSortIcon('exciterType')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('rtp')}>RTP {getSortIcon('rtp')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('serialNr')}>Serial Nr {getSortIcon('serialNr')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('invoice')}>Invoice {getSortIcon('invoice')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('commissionDate')}>Commission Date {getSortIcon('commissionDate')}</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('propertyType')}>Property {getSortIcon('propertyType')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('id')}>Slot ID</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('providerId')}>Provider</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('cabinetId')}>Cabinet</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gameMixId')}>Game Mix</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('locationId')}>Location</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('year')}>Year</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gamingPlaces')}>Gaming Places</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('exciterType')}>Exciter Type</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('rtp')}>RTP</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('serialNr')}>Serial Nr</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('invoice')}>Invoice</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('commissionDate')}>Commission Date</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('propertyType')}>Property</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Attachments</th>
                       <th className="text-right py-2 px-3 text-sm font-medium text-slate-400 w-20">Actions</th>
                     </tr>
