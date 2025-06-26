@@ -119,6 +119,21 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 26, 2025: Implemented comprehensive search functionality across all modules - search now filters by any information found in any columns
+- June 26, 2025: Enhanced backend search logic to use OR conditions across all relevant fields for each entity type
+- June 26, 2025: Updated Users search to filter by username, email, firstName, lastName, and role
+- June 26, 2025: Updated Companies search to filter by name, taxId, address, city, country, phone, email, and website
+- June 26, 2025: Updated Locations search to filter by name, address, city, country, phone, and email
+- June 26, 2025: Updated Providers search to filter by name, companyName, contactPerson, email, phone, address, city, country, and website
+- June 26, 2025: Updated Cabinets search to filter by serialNumber, model, manufacturer, and status
+- June 26, 2025: Updated Game Mixes search to filter by name and description
+- June 26, 2025: Updated Slots search to filter by serialNr, exciterType, and propertyType
+- June 26, 2025: Updated Invoices search to filter by invoiceNumber, status, serialNumbers, propertyType, and notes
+- June 26, 2025: Updated Rent Agreements search to filter by agreementNumber and status
+- June 26, 2025: Updated Legal Documents search to filter by title, documentType, and status
+- June 26, 2025: Updated ONJN Reports search to filter by serialNumbers and notes
+- June 26, 2025: Fixed missing edit dialog functionality in Invoices module with complete form fields
+- June 26, 2025: Added missing users query to Locations module for manager selection functionality
 - June 25, 2025: Transformed ONJN module from report types to license commission functionality with commission dates and serial numbers
 - June 25, 2025: Added automatic commission date lookup in Slots module displaying dates when serial numbers match ONJN commissions
 - June 25, 2025: Updated database schema for license commissions with commission_date, serial_numbers, and notes fields

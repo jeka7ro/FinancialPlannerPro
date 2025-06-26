@@ -40,7 +40,7 @@ import {
   type InsertAttachment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, like, count } from "drizzle-orm";
+import { eq, desc, and, like, count, or } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -189,7 +189,13 @@ export class DatabaseStorage implements IStorage {
   async getUsers(page = 1, limit = 10, search = ""): Promise<{ users: User[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(users.username, `%${search}%`)
+      ? or(
+          like(users.username, `%${search}%`),
+          like(users.email, `%${search}%`),
+          like(users.firstName, `%${search}%`),
+          like(users.lastName, `%${search}%`),
+          like(users.role, `%${search}%`)
+        )
       : undefined;
 
     const [usersResult, [{ total }]] = await Promise.all([
@@ -212,7 +218,16 @@ export class DatabaseStorage implements IStorage {
   async getCompanies(page = 1, limit = 10, search = ""): Promise<{ companies: Company[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(companies.name, `%${search}%`)
+      ? or(
+          like(companies.name, `%${search}%`),
+          like(companies.taxId, `%${search}%`),
+          like(companies.address, `%${search}%`),
+          like(companies.city, `%${search}%`),
+          like(companies.country, `%${search}%`),
+          like(companies.phone, `%${search}%`),
+          like(companies.email, `%${search}%`),
+          like(companies.website, `%${search}%`)
+        )
       : undefined;
 
     const [companiesResult, [{ total }]] = await Promise.all([
@@ -256,7 +271,14 @@ export class DatabaseStorage implements IStorage {
   async getLocations(page = 1, limit = 10, search = ""): Promise<{ locations: Location[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(locations.name, `%${search}%`)
+      ? or(
+          like(locations.name, `%${search}%`),
+          like(locations.address, `%${search}%`),
+          like(locations.city, `%${search}%`),
+          like(locations.country, `%${search}%`),
+          like(locations.phone, `%${search}%`),
+          like(locations.email, `%${search}%`)
+        )
       : undefined;
 
     const [locationsResult, [{ total }]] = await Promise.all([
@@ -300,7 +322,17 @@ export class DatabaseStorage implements IStorage {
   async getProviders(page = 1, limit = 10, search = ""): Promise<{ providers: Provider[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(providers.name, `%${search}%`)
+      ? or(
+          like(providers.name, `%${search}%`),
+          like(providers.companyName, `%${search}%`),
+          like(providers.contactPerson, `%${search}%`),
+          like(providers.email, `%${search}%`),
+          like(providers.phone, `%${search}%`),
+          like(providers.address, `%${search}%`),
+          like(providers.city, `%${search}%`),
+          like(providers.country, `%${search}%`),
+          like(providers.website, `%${search}%`)
+        )
       : undefined;
 
     const [providersResult, [{ total }]] = await Promise.all([
@@ -344,7 +376,12 @@ export class DatabaseStorage implements IStorage {
   async getCabinets(page = 1, limit = 10, search = ""): Promise<{ cabinets: Cabinet[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(cabinets.serialNumber, `%${search}%`)
+      ? or(
+          like(cabinets.serialNumber, `%${search}%`),
+          like(cabinets.model, `%${search}%`),
+          like(cabinets.manufacturer, `%${search}%`),
+          like(cabinets.status, `%${search}%`)
+        )
       : undefined;
 
     const [cabinetsResult, [{ total }]] = await Promise.all([
@@ -388,7 +425,10 @@ export class DatabaseStorage implements IStorage {
   async getGameMixes(page = 1, limit = 10, search = ""): Promise<{ gameMixes: GameMix[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(gameMixes.name, `%${search}%`)
+      ? or(
+          like(gameMixes.name, `%${search}%`),
+          like(gameMixes.description, `%${search}%`)
+        )
       : undefined;
 
     const [gameMixesResult, [{ total }]] = await Promise.all([
@@ -432,7 +472,11 @@ export class DatabaseStorage implements IStorage {
   async getSlots(page = 1, limit = 10, search = ""): Promise<{ slots: Slot[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(slots.exciterType, `%${search}%`)
+      ? or(
+          like(slots.serialNr, `%${search}%`),
+          like(slots.exciterType, `%${search}%`),
+          like(slots.propertyType, `%${search}%`)
+        )
       : undefined;
 
     const [slotsResult, [{ total }]] = await Promise.all([
@@ -476,7 +520,13 @@ export class DatabaseStorage implements IStorage {
   async getInvoices(page = 1, limit = 10, search = ""): Promise<{ invoices: Invoice[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(invoices.invoiceNumber, `%${search}%`)
+      ? or(
+          like(invoices.invoiceNumber, `%${search}%`),
+          like(invoices.status, `%${search}%`),
+          like(invoices.serialNumbers, `%${search}%`),
+          like(invoices.propertyType, `%${search}%`),
+          like(invoices.notes, `%${search}%`)
+        )
       : undefined;
 
     const [invoicesResult, [{ total }]] = await Promise.all([
@@ -520,7 +570,10 @@ export class DatabaseStorage implements IStorage {
   async getRentAgreements(page = 1, limit = 10, search = ""): Promise<{ rentAgreements: RentAgreement[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(rentAgreements.agreementNumber, `%${search}%`)
+      ? or(
+          like(rentAgreements.agreementNumber, `%${search}%`),
+          like(rentAgreements.status, `%${search}%`)
+        )
       : undefined;
 
     const [rentAgreementsResult, [{ total }]] = await Promise.all([
@@ -564,7 +617,11 @@ export class DatabaseStorage implements IStorage {
   async getLegalDocuments(page = 1, limit = 10, search = ""): Promise<{ legalDocuments: LegalDocument[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(legalDocuments.title, `%${search}%`)
+      ? or(
+          like(legalDocuments.title, `%${search}%`),
+          like(legalDocuments.documentType, `%${search}%`),
+          like(legalDocuments.status, `%${search}%`)
+        )
       : undefined;
 
     const [legalDocumentsResult, [{ total }]] = await Promise.all([
@@ -608,7 +665,10 @@ export class DatabaseStorage implements IStorage {
   async getOnjnReports(page = 1, limit = 10, search = ""): Promise<{ onjnReports: OnjnReport[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
-      ? like(onjnReports.serialNumbers, `%${search}%`)
+      ? or(
+          like(onjnReports.serialNumbers, `%${search}%`),
+          like(onjnReports.notes, `%${search}%`)
+        )
       : undefined;
 
     const [onjnReportsResult, [{ total }]] = await Promise.all([
