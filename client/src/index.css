@@ -413,12 +413,21 @@ main,
   }
 }
 
-/* PROPER TABLE POSITIONING AND SPACING */
+/* LEFT-ALIGNED TABLE POSITIONING */
 .glass-card .overflow-x-auto.-mx-6 {
   margin-left: -1.5rem !important;
-  margin-right: -1.5rem !important;
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
+  margin-right: -8px !important;
+  padding-left: 0 !important;
+  padding-right: 8px !important;
+  width: calc(100vw - 200px) !important; /* Use full width minus sidebar */
+}
+
+.glass-card .overflow-x-auto {
+  margin-left: -1.5rem !important;
+  margin-right: -8px !important;
+  padding-left: 0 !important;
+  padding-right: 8px !important;
+  width: calc(100vw - 200px) !important;
 }
 
 .glass-card table {
@@ -426,7 +435,7 @@ main,
   table-layout: auto !important;
   margin: 0 !important;
   text-align: left !important;
-  min-width: 1200px !important; /* Ensure minimum width for readability */
+  min-width: 1200px !important;
 }
 
 .glass-card th, .glass-card td {
@@ -435,10 +444,10 @@ main,
   white-space: nowrap !important;
 }
 
-/* Left align all table content */
-.glass-card .overflow-x-auto {
-  text-align: left !important;
-  margin: 0 !important;
+/* Remove card padding that pushes content right */
+.glass-card .p-6, .glass-card .p-0 {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 /* SPECIFIC DATA TABLE ALIGNMENT - DO NOT AFFECT LOGIN OR OTHER LAYOUTS */
