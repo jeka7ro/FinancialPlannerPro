@@ -128,6 +128,11 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Added getAttachment method to storage interface for file attachment operations
 - June 26, 2025: Removed billing system components per user request - user confirmed they don't need billing reports functionality
 - June 26, 2025: Cleaned up navigation and codebase to focus on core gaming management features
+- June 26, 2025: Completed user photo upload functionality using attachment system instead of URL fields
+- June 26, 2025: Enhanced UserAvatar component to load and display photos from attachments with proper fallback handling
+- June 26, 2025: Updated header to show current user's photo using new UserAvatar component
+- June 26, 2025: Removed photo field from user schema in favor of file attachment system for better security
+- June 26, 2025: Fixed photo display errors with proper null checking for fileName property
 - June 26, 2025: Implemented comprehensive search functionality across all modules - search now filters by any information found in any columns
 - June 26, 2025: Enhanced backend search logic to use OR conditions across all relevant fields for each entity type
 - June 26, 2025: Updated Users search to filter by username, email, firstName, lastName, and role

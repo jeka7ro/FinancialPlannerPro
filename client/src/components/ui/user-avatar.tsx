@@ -47,7 +47,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
 
   // Find the first image attachment as user photo
   const photoAttachment = Array.isArray(attachments) ? attachments.find((att: any) => 
-    att.fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i)
+    att.fileName && att.fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i)
   ) : null;
 
   return (
