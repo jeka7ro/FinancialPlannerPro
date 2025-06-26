@@ -1,8 +1,8 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { ThemeSelector } from "@/components/ui/theme-selector";
-// Import logo using Vite asset handling
-import cashpotLogo from "/cashpot-logo.png";
+// Import logo using public path
+const cashpotLogo = "/cashpot-logo.png";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
@@ -34,10 +34,16 @@ export default function Sidebar({ className }: SidebarProps) {
           <img 
             src={cashpotLogo} 
             alt="CASHPOT" 
-            className="h-10 w-auto object-contain"
+            className="h-12 w-auto object-contain filter brightness-110"
+            onLoad={() => console.log('Logo loaded successfully')}
             onError={(e) => {
-              console.log('Logo failed to load:', e);
-              e.currentTarget.style.display = 'none';
+              console.log('Logo failed to load, showing fallback');
+              const target = e.currentTarget;
+              target.style.display = 'none';
+              const fallback = document.createElement('div');
+              fallback.className = 'text-white font-bold text-xl';
+              fallback.textContent = 'CASHPOT';
+              target.parentNode?.appendChild(fallback);
             }}
           />
         </div>
