@@ -43,7 +43,7 @@ import {
   type InsertAttachment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, like, count, or, asc } from "drizzle-orm";
+import { eq, desc, and, like, count, or, asc, sql } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -580,7 +580,12 @@ export class DatabaseStorage implements IStorage {
       ? or(
           like(slots.serialNr, `%${search}%`),
           like(slots.exciterType, `%${search}%`),
-          like(slots.propertyType, `%${search}%`)
+          like(slots.propertyType, `%${search}%`),
+          like(slots.denomination, `%${search}%`),
+          like(slots.maxBet, `%${search}%`),
+          like(slots.rtp, `%${search}%`),
+          like(slots.dailyRevenue, `%${search}%`),
+
         )
       : undefined;
 

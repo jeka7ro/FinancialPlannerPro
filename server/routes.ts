@@ -549,6 +549,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const sortField = req.query.sortField as string || "id";
       const sortDirection = req.query.sortDirection as string || "asc";
       
+      console.log("Slots search request:", { page, limit, search, sortField, sortDirection });
+      
       const result = await storage.getSlots(page, limit, search, sortField, sortDirection);
       res.json(result);
     } catch (error) {
