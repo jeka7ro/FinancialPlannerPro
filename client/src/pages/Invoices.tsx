@@ -161,12 +161,28 @@ export default function Invoices() {
   });
 
   const onSubmit = (data: InsertInvoice) => {
-    createMutation.mutate(data);
+    // Transform string values to proper decimal format
+    const transformedData = {
+      ...data,
+      subtotal: data.subtotal?.toString() || "0",
+      taxAmount: data.taxAmount?.toString() || "0",
+      totalAmount: data.totalAmount?.toString() || "0",
+      amortizationMonths: data.amortizationMonths ? parseInt(data.amortizationMonths.toString()) : undefined,
+    };
+    createMutation.mutate(transformedData);
   };
 
   const onEditSubmit = (data: InsertInvoice) => {
     if (editingInvoice) {
-      updateMutation.mutate({ id: editingInvoice.id, data });
+      // Transform string values to proper decimal format
+      const transformedData = {
+        ...data,
+        subtotal: data.subtotal?.toString() || "0",
+        taxAmount: data.taxAmount?.toString() || "0",
+        totalAmount: data.totalAmount?.toString() || "0",
+        amortizationMonths: data.amortizationMonths ? parseInt(data.amortizationMonths.toString()) : undefined,
+      };
+      updateMutation.mutate({ id: editingInvoice.id, data: transformedData });
     }
   };
 
