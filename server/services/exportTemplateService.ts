@@ -183,7 +183,6 @@ export class ExportTemplateService {
         manufacturer: 'Novomatic',
         locationId: 1,
         providerId: 1,
-        installationDate: '2023-01-15',
         lastMaintenance: '2023-12-01',
         status: 'active'
       },
@@ -193,7 +192,6 @@ export class ExportTemplateService {
         manufacturer: 'IGT',
         locationId: 1,
         providerId: 2,
-        installationDate: '2023-02-20',
         lastMaintenance: '2023-11-15',
         status: 'active'
       }
@@ -205,7 +203,6 @@ export class ExportTemplateService {
       { Field: 'manufacturer', Required: 'NO', Type: 'text', Description: 'Cabinet manufacturer', Example: 'Novomatic' },
       { Field: 'locationId', Required: 'NO', Type: 'number', Description: 'ID of location where cabinet is installed', Example: '1' },
       { Field: 'providerId', Required: 'NO', Type: 'number', Description: 'ID of provider company', Example: '1' },
-      { Field: 'installationDate', Required: 'NO', Type: 'date', Description: 'Installation date (YYYY-MM-DD)', Example: '2023-01-15' },
       { Field: 'lastMaintenance', Required: 'NO', Type: 'date', Description: 'Last maintenance date (YYYY-MM-DD)', Example: '2023-12-01' },
       { Field: 'status', Required: 'NO', Type: 'text', Description: 'Cabinet status: active, inactive, maintenance, broken', Example: 'active' }
     ];

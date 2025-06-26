@@ -87,7 +87,6 @@ export const cabinets = pgTable("cabinets", {
   providerId: integer("provider_id").references(() => providers.id),
   locationId: integer("location_id").references(() => locations.id),
   status: varchar("status", { length: 50 }).notNull().default("active"),
-  installationDate: timestamp("installation_date"),
   lastMaintenanceDate: timestamp("last_maintenance_date"),
   nextMaintenanceDate: timestamp("next_maintenance_date"),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),

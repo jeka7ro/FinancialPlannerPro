@@ -56,7 +56,6 @@ export default function Cabinets() {
       model: "",
       status: "inactive",
       providerId: undefined,
-      installationDate: null,
     },
   });
 
@@ -66,7 +65,6 @@ export default function Cabinets() {
       model: "",
       status: "inactive",
       providerId: undefined,
-      installationDate: null,
     },
   });
 
@@ -168,7 +166,6 @@ export default function Cabinets() {
       model: cabinet.model || "",
       status: cabinet.status || "inactive",
       providerId: cabinet.providerId || undefined,
-      installationDate: cabinet.installationDate ? new Date(cabinet.installationDate) : null,
     });
     setIsEditDialogOpen(true);
   };
@@ -306,24 +303,7 @@ export default function Cabinets() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="installationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Installation Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date" 
-                              value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
-                              className="form-input" 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+
                   </div>
 
                   <div className="flex justify-end space-x-4">
@@ -420,24 +400,7 @@ export default function Cabinets() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={editForm.control}
-                  name="installationDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Installation Date</FormLabel>
-                      <FormControl>
-                        <Input 
-                          type="date"
-                          value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
-                          className="form-input" 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+
               </div>
 
               <div className="flex justify-end space-x-4">
@@ -506,7 +469,6 @@ export default function Cabinets() {
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Model</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Provider</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Installation Date</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Attachments</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Actions</th>
                   </tr>
@@ -525,19 +487,18 @@ export default function Cabinets() {
                         {cabinet.model}
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-300">
-                        {providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || 'No provider'}
+                        {cabinet.providerId ? (
+                          providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || `Provider ID: ${cabinet.providerId}`
+                        ) : (
+                          <span className="text-slate-500 italic">No provider assigned</span>
+                        )}
                       </td>
                       <td className="py-4 px-4">
                         <Badge className={`${getStatusColor(cabinet.status)} border`}>
                           {cabinet.status}
                         </Badge>
                       </td>
-                      <td className="py-4 px-4 text-sm text-slate-400">
-                        {cabinet.installationDate ? 
-                          new Date(cabinet.installationDate).toLocaleDateString() : 
-                          'Not set'
-                        }
-                      </td>
+
                       <td className="py-4 px-4">
                         <AttachmentButton 
                           entityType="cabinet" 
