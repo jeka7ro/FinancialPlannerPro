@@ -326,7 +326,19 @@ export default function Locations() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Manager</FormLabel>
-                      <Select onValueChange={(value) => field.onChange(value ? parseInt(value) : null)} value={field.value?.toString()}>
+                      <Select onValueChange={(value) => {
+                        const userId = value ? parseInt(value) : null;
+                        field.onChange(userId);
+                        
+                        // Auto-fill phone and email from selected manager
+                        if (userId && users?.users) {
+                          const selectedUser = users.users.find((user: any) => user.id === userId);
+                          if (selectedUser) {
+                            form.setValue('phone', selectedUser.telephone || '');
+                            form.setValue('email', selectedUser.email || '');
+                          }
+                        }
+                      }} value={field.value?.toString()}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select manager" />
@@ -493,7 +505,19 @@ export default function Locations() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Manager</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(value ? parseInt(value) : null)} value={field.value?.toString()}>
+                        <Select onValueChange={(value) => {
+                          const userId = value ? parseInt(value) : null;
+                          field.onChange(userId);
+                          
+                          // Auto-fill phone and email from selected manager
+                          if (userId && users?.users) {
+                            const selectedUser = users.users.find((user: any) => user.id === userId);
+                            if (selectedUser) {
+                              editForm.setValue('phone', selectedUser.telephone || '');
+                              editForm.setValue('email', selectedUser.email || '');
+                            }
+                          }
+                        }} value={field.value?.toString()}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select manager" />
