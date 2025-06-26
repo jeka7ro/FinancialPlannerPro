@@ -413,12 +413,12 @@ main,
   }
 }
 
-/* FORCE FULL SCREEN WIDTH TABLES */
+/* LEFT-ALIGNED TABLES STARTING AT SIDEBAR EDGE */
 .content-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  width: calc(100vw - 280px);
-  max-width: calc(100vw - 280px);
+  width: 100vw;
+  margin-left: 0;
+  padding-left: 256px; /* Sidebar width */
+  padding-right: 0;
 }
 
 .page-content {
@@ -428,24 +428,48 @@ main,
 }
 
 .glass-card {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 1rem;
+  margin-left: -256px; /* Pull back to sidebar edge */
+  padding-left: 256px; /* Add padding to clear sidebar */
+  padding-right: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  width: 100vw;
+  max-width: 100vw;
 }
 
 .glass-card .overflow-x-auto {
-  width: 100%;
-  max-width: 100%;
-  margin: 0;
-  padding: 0;
+  margin-left: 0;
+  padding-left: 0.5rem; /* Small gap from sidebar */
+  padding-right: 0.5rem;
+  width: calc(100% - 1rem);
   overflow-x: auto;
 }
 
 .glass-card table {
   width: 100%;
-  min-width: calc(100vw - 320px);
+  min-width: calc(100vw - 16px);
   table-layout: auto;
+}
+
+/* Responsive behavior for mobile */
+@media (max-width: 1024px) {
+  .content-wrapper {
+    padding-left: 0;
+  }
+  
+  .glass-card {
+    margin-left: 0;
+    padding-left: 1rem;
+    width: 100%;
+  }
+  
+  .glass-card .overflow-x-auto {
+    padding-left: 0;
+  }
+  
+  .glass-card table {
+    min-width: calc(100vw - 32px);
+  }
 }
 
 
