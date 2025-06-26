@@ -57,14 +57,14 @@ export default function Sidebar({ className }: SidebarProps) {
               <Link key={item.name} href={item.href}>
                 <a
                   className={cn(
-                    "nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200",
+                    "nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 relative z-10",
                     isActive
                       ? "bg-blue-500/20 text-white"
                       : "text-slate-300 hover:text-white hover:bg-blue-500/10"
                   )}
                 >
-                  <span className="mr-3 text-lg">{item.icon}</span>
-                  {item.name}
+                  <span className="mr-3 text-lg flex-shrink-0">{item.icon}</span>
+                  <span className="truncate">{item.name}</span>
                 </a>
               </Link>
             );

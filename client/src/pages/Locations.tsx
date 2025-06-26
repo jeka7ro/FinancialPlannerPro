@@ -32,7 +32,8 @@ export default function Locations() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/locations', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/locations?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/locations?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch locations');

@@ -447,6 +447,17 @@ main,
   word-break: break-word;
 }
 
+/* Sidebar navigation improvements */
+.sidebar-glass .nav-item {
+  position: relative;
+  z-index: 20;
+}
+
+.sidebar-glass .nav-item span {
+  position: relative;
+  z-index: 21;
+}
+
 
 
 

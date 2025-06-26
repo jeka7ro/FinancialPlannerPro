@@ -71,7 +71,8 @@ export default function Cabinets() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/cabinets', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/cabinets?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/cabinets?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch cabinets');

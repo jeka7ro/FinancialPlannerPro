@@ -85,7 +85,8 @@ export default function Invoices() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/invoices', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/invoices?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/invoices?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch invoices');

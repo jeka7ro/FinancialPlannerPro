@@ -31,7 +31,8 @@ export default function Users() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/users', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/users?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/users?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch users');

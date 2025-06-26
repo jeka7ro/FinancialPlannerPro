@@ -48,7 +48,8 @@ export default function Slots() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/slots', currentPage, limit, searchTerm, sortField, sortDirection],
     queryFn: async () => {
-      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}&search=${searchTerm}&sortField=${sortField}&sortDirection=${sortDirection}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}${searchParam}&sortField=${sortField}&sortDirection=${sortDirection}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch slots');

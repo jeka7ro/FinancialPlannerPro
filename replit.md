@@ -183,6 +183,10 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Applied negative margins to table containers for precise alignment
 - June 26, 2025: Optimized table column visibility to prevent unnecessary horizontal scrollbars
 - June 26, 2025: Added auto table layout and proper cell padding for optimal content display
+- June 26, 2025: Fixed search bar functionality across all modules with proper URL encoding
+- June 26, 2025: Resolved sidebar logo positioning issues - text no longer overlaps with logo
+- June 26, 2025: Enhanced sidebar navigation with proper z-index and text truncation
+- June 26, 2025: Applied search fixes to Providers, Cabinets, Slots, Locations, Users, Companies, and Invoices modules
 - June 26, 2025: Enhanced backend search logic to use OR conditions across all relevant fields for each entity type
 - June 26, 2025: Updated Users search to filter by username, email, firstName, lastName, and role
 - June 26, 2025: Updated Companies search to filter by name, taxId, address, city, country, phone, email, and website
