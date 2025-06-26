@@ -492,7 +492,14 @@ export default function Slots() {
                         <FormItem>
                           <FormLabel className="text-white">Year</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter year of manufacture" type="number" />
+                            <Input 
+                              {...field} 
+                              value={field.value || ""} 
+                              className="form-input" 
+                              placeholder="Enter year of manufacture" 
+                              type="number"
+                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -505,7 +512,14 @@ export default function Slots() {
                         <FormItem>
                           <FormLabel className="text-white">Gaming Places</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter number of gaming places" type="number" />
+                            <Input 
+                              {...field} 
+                              value={field.value || ""} 
+                              className="form-input" 
+                              placeholder="Enter number of gaming places" 
+                              type="number"
+                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -899,7 +913,14 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Year</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter year of manufacture" type="number" />
+                        <Input 
+                          {...field} 
+                          value={field.value || ""} 
+                          className="form-input" 
+                          placeholder="Enter year of manufacture" 
+                          type="number"
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -912,7 +933,14 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Gaming Places</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter number of gaming places" type="number" />
+                        <Input 
+                          {...field} 
+                          value={field.value || ""} 
+                          className="form-input" 
+                          placeholder="Enter number of gaming places" 
+                          type="number"
+                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
