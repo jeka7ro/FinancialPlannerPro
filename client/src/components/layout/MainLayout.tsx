@@ -37,7 +37,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-900">
+    <div className="flex h-screen overflow-hidden bg-background">
       <Sidebar className={sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} />
       
       {/* Mobile overlay */}
@@ -55,8 +55,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
           onMenuToggle={toggleSidebar}
         />
         
-        <main className="flex-1 overflow-y-auto pl-6 pr-2 py-4">
-          <div className="w-full max-w-none">
+        <main className="flex-1 overflow-y-auto pl-6 pr-2 py-4 content-wrapper">
+          <div className="w-full max-w-none page-content text-left">
             {children}
           </div>
         </main>
