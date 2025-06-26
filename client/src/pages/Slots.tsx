@@ -250,6 +250,7 @@ export default function Slots() {
 
   const onEditSubmit = (data: InsertSlot) => {
     if (editingSlot) {
+      console.log("Form data being sent:", data);
       updateMutation.mutate({ id: editingSlot.id, data });
     }
   };

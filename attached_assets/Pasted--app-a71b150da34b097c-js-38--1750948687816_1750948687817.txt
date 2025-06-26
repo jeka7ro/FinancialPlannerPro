@@ -1,0 +1,106 @@
+_app-a71b150da34b097c.js:38 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+_app-a71b150da34b097c.js:38 [LaunchDarkly] LaunchDarkly client initialized
+FinancialPlannerPro:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+framework-609f04d13f5f2392.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'battery'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-609f04d13f5f2392.js:1
+framework-609f04d13f5f2392.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-609f04d13f5f2392.js:1
+workspace_iframe.html:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/api/auth/user:1 
+            
+            
+           Failed to load resource: the server responded with a status of 401 (Unauthorized)
+Console.js:61 Warning: validateDOMNesting(...): <a> cannot appear as a descendant of <a>.
+    at a
+    at a
+    at https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=7402af04:337:18
+    at div
+    at nav
+    at div
+    at Sidebar (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/src/components/layout/Sidebar.tsx:36:35)
+    at div
+    at MainLayout (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/src/components/layout/MainLayout.tsx:37:38)
+    at AuthenticatedApp
+    at Router (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/src/App.tsx?v=CLi352iFYuTlxAf_9x5Td:397:77)
+    at Provider (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-S34NKWM7.js?v=7402af04:48:15)
+    at TooltipProvider (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=7402af04:65:5)
+    at V (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=7402af04:44:25)
+    at J (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/next-themes.js?v=7402af04:42:18)
+    at QueryClientProvider (https://2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=7402af04:2805:3)
+    at App
+Mt.forEach.n.<computed> @ Console.js:61
+Console.js:61 Logo loaded successfully
+Console.js:61 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+Mt.forEach.n.<computed> @ Console.js:61
+2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/api/slots/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/api/slots/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/api/slots/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+2e50cf40-ee9c-4ff0-9f05-583b02ad8ea0-00-2skiiru78t8j8.kirk.replit.dev/api/slots/1:1 
+            
+            
+           Failed to load resource: the server responded with a status of 500 (Internal Server Error)

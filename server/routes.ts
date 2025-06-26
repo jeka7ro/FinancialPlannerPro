@@ -559,11 +559,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/slots", requireAuth, async (req, res) => {
     try {
-      // Preprocess numeric fields to convert empty strings to null
+      // Preprocess ALL numeric and decimal fields to convert empty strings to undefined
       const preprocessedData = { ...req.body };
-      if (preprocessedData.year === "") preprocessedData.year = null;
-      if (preprocessedData.gamingPlaces === "") preprocessedData.gamingPlaces = null;
-      if (preprocessedData.rtp === "") preprocessedData.rtp = null;
+      
+      // Handle all numeric and decimal fields
+      ['year', 'gamingPlaces', 'rtp', 'cabinetId', 'gameMixId', 'providerId', 'locationId', 'denomination', 'maxBet', 'ownerId', 'invoiceId', 'onjnReportId', 'dailyRevenue'].forEach(field => {
+        if (preprocessedData[field] === "" || preprocessedData[field] === null) {
+          preprocessedData[field] = undefined;
+        }
+      });
       
       const slotData = insertSlotSchema.parse(preprocessedData);
       const slot = await storage.createSlot(slotData);
@@ -595,17 +599,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       
-      // Preprocess numeric fields to convert empty strings to null
+      console.log("Original request body:", req.body);
+      
+      // Preprocess ALL fields to convert empty strings to null/undefined for numeric fields
       const preprocessedData = { ...req.body };
-      if (preprocessedData.year === "") preprocessedData.year = null;
-      if (preprocessedData.gamingPlaces === "") preprocessedData.gamingPlaces = null;
-      if (preprocessedData.rtp === "") preprocessedData.rtp = null;
+      
+      // Handle all numeric and decimal fields
+      ['year', 'gamingPlaces', 'rtp', 'cabinetId', 'gameMixId', 'providerId', 'locationId', 'denomination', 'maxBet', 'ownerId', 'invoiceId', 'onjnReportId', 'dailyRevenue'].forEach(field => {
+        if (preprocessedData[field] === "" || preprocessedData[field] === null) {
+          preprocessedData[field] = undefined;
+        }
+      });
+      
+      console.log("Preprocessed data:", preprocessedData);
       
       const slotData = insertSlotSchema.partial().parse(preprocessedData);
+      console.log("Parsed slot data:", slotData);
+      
       const slot = await storage.updateSlot(id, slotData);
       res.json(slot);
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("Zod validation error:", error.errors);
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Update slot error:", error);
