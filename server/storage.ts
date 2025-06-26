@@ -576,18 +576,26 @@ export class DatabaseStorage implements IStorage {
 
   async getSlots(page = 1, limit = 10, search = "", sortField = "id", sortDirection = "asc"): Promise<{ slots: Slot[]; total: number }> {
     const offset = (page - 1) * limit;
-    const whereClause = search 
-      ? or(
-          like(slots.serialNr, `%${search}%`),
-          like(slots.exciterType, `%${search}%`),
-          like(slots.propertyType, `%${search}%`),
-          like(slots.denomination, `%${search}%`),
-          like(slots.maxBet, `%${search}%`),
-          like(slots.rtp, `%${search}%`),
-          like(slots.dailyRevenue, `%${search}%`),
-
-        )
-      : undefined;
+    
+    let whereClause;
+    if (search) {
+      // Create individual conditions for text and numeric fields
+      const conditions = [
+        like(slots.serialNr, `%${search}%`),
+        like(slots.exciterType, `%${search}%`),
+        like(slots.propertyType, `%${search}%`)
+      ];
+      
+      // Add numeric field searches using SQL template literals
+      if (!isNaN(Number(search))) {
+        conditions.push(
+          sql`${slots.year} = ${Number(search)}`,
+          sql`${slots.gamingPlaces} = ${Number(search)}`
+        );
+      }
+      
+      whereClause = or(...conditions);
+    }
 
     const [totalResult] = await db
       .select({ count: count() })
