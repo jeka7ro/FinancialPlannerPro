@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInvoiceSchema, type InsertInvoice } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2 } from "lucide-react";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 
 // Utility function for property type colors
@@ -116,6 +116,24 @@ export default function Invoices() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/invoices/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Invoice deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete invoice",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertInvoice>({
     resolver: zodResolver(insertInvoiceSchema),
     defaultValues: {
@@ -149,6 +167,12 @@ export default function Invoices() {
   const onEditSubmit = (data: InsertInvoice) => {
     if (editingInvoice) {
       updateMutation.mutate({ id: editingInvoice.id, data });
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this invoice?")) {
+      deleteMutation.mutate(id);
     }
   };
 
@@ -961,21 +985,25 @@ export default function Invoices() {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                              ✏️
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleEdit(invoice)}
+                              className="text-slate-400 hover:text-white hover:bg-white/10"
+                            >
+                              <Edit className="h-4 w-4" />
                             </Button>
                             <AttachmentButton 
                               entityType="invoice" 
                               entityId={invoice.id}
                             />
-                            <Button variant="ghost" size="sm" className="text-emerald-500 hover:text-emerald-400">
-                              📄
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => handleDelete(invoice.id)}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>

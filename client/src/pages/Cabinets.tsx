@@ -58,7 +58,7 @@ export default function Cabinets() {
       manufacturer: "",
       status: "inactive",
       providerId: undefined,
-      installationDate: "",
+      installationDate: null,
     },
   });
 
@@ -70,7 +70,7 @@ export default function Cabinets() {
       manufacturer: "",
       status: "inactive",
       providerId: undefined,
-      installationDate: "",
+      installationDate: null,
     },
   });
 
@@ -120,20 +120,18 @@ export default function Cabinets() {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: async (id: number) => {
-      return apiRequest("DELETE", `/api/cabinets/${id}`);
-    },
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/cabinets/${id}`),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
       toast({
         title: "Success",
         description: "Cabinet deleted successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/cabinets"] });
     },
-    onError: (error: Error) => {
+    onError: (error) => {
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to delete cabinet",
         variant: "destructive",
       });
     },
@@ -176,9 +174,15 @@ export default function Cabinets() {
       manufacturer: cabinet.manufacturer || "",  
       status: cabinet.status || "inactive",
       providerId: cabinet.providerId || undefined,
-      installationDate: cabinet.installationDate || "",
+      installationDate: cabinet.installationDate ? new Date(cabinet.installationDate) : null,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this cabinet?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   if (isLoading) {
@@ -231,9 +235,11 @@ export default function Cabinets() {
         </div>
         <div className="flex gap-3">
           <ImportExportDialog 
-            entityType="cabinets"
-            onImport={() => queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] })}
-          />
+            module="cabinets"
+            moduleName="Cabinets"
+          >
+            Import/Export
+          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button className="btn-gaming">
@@ -348,7 +354,7 @@ export default function Cabinets() {
                           <FormControl>
                             <Input 
                               type="date" 
-                              value={field.value || ""} 
+                              value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
                               onChange={(e) => field.onChange(e.target.value)}
                               className="form-input" 
                             />
@@ -491,7 +497,7 @@ export default function Cabinets() {
                       <FormControl>
                         <Input 
                           type="date"
-                          value={field.value || ""} 
+                          value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : field.value) : ""} 
                           onChange={(e) => field.onChange(e.target.value)}
                           className="form-input" 
                         />
@@ -543,8 +549,8 @@ export default function Cabinets() {
             <div className="p-4 border-b border-white/10">
               <BulkOperations
                 selectedCount={selectedCabinets.length}
+                onBulkEdit={() => {}} // Not implemented for cabinets
                 onBulkDelete={() => bulkDeleteMutation.mutate(selectedCabinets)}
-                isDeleting={bulkDeleteMutation.isPending}
               />
             </div>
           )}

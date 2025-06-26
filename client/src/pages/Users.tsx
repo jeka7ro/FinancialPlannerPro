@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { Upload, Download } from "lucide-react";
+import { Upload, Download, Edit, Trash2 } from "lucide-react";
 
 export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -101,6 +101,24 @@ export default function Users() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/users/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/users"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertUser>({
     resolver: zodResolver(insertUserSchema),
     defaultValues: {
@@ -165,6 +183,12 @@ export default function Users() {
     }
     
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this user?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -469,9 +493,6 @@ export default function Users() {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
                             <AttachmentButton 
                               entityType="users" 
                               entityId={user.id} 
@@ -483,13 +504,16 @@ export default function Users() {
                               className="text-amber-500 hover:text-amber-400"
                               onClick={() => handleEdit(user)}
                             >
-                              ✏️
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-400">
-                              🔒
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-500 hover:text-red-400"
+                              onClick={() => handleDelete(user.id)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>

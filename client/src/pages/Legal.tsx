@@ -78,6 +78,24 @@ export default function Legal() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/legal-documents/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Legal document deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/legal-documents"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete legal document",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertLegalDocument>({
     resolver: zodResolver(insertLegalDocumentSchema),
     defaultValues: {
@@ -96,6 +114,12 @@ export default function Legal() {
   const handleEdit = (legalDocument: any) => {
     // TODO: Implement edit functionality
     console.log('Edit legal document:', legalDocument);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this legal document?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

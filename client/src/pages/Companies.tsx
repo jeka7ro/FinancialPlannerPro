@@ -86,6 +86,24 @@ export default function Companies() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/companies/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Company deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/companies"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete company",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertCompany>({
     resolver: zodResolver(insertCompanySchema),
     defaultValues: {
@@ -143,6 +161,12 @@ export default function Companies() {
       isActive: company.isActive ?? true,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this company?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -471,19 +495,22 @@ export default function Companies() {
                               entityId={company.id} 
                               entityName={company.name} 
                             />
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
                             <Button 
                               variant="ghost" 
                               size="sm" 
                               className="text-amber-500 hover:text-amber-400"
                               onClick={() => handleEdit(company)}
                             >
-                              ✏️
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-500 hover:text-red-400"
+                              onClick={() => handleDelete(company.id)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>

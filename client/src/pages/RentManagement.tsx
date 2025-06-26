@@ -78,6 +78,24 @@ export default function RentManagement() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/rent-agreements/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Rent agreement deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/rent-agreements"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete rent agreement",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertRentAgreement>({
     resolver: zodResolver(insertRentAgreementSchema),
     defaultValues: {
@@ -97,6 +115,12 @@ export default function RentManagement() {
   const handleEdit = (rentAgreement: any) => {
     // TODO: Implement edit functionality
     console.log('Edit rent agreement:', rentAgreement);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this rent agreement?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {

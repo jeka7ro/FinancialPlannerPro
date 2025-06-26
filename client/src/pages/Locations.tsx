@@ -107,6 +107,24 @@ export default function Locations() {
     },
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/locations/${id}`),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Location deleted successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/locations"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete location",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertLocation>({
     resolver: zodResolver(insertLocationSchema),
     defaultValues: {
@@ -161,6 +179,12 @@ export default function Locations() {
       isActive: location.isActive ?? true,
     });
     setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Are you sure you want to delete this location?")) {
+      deleteMutation.mutate(id);
+    }
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -694,19 +718,27 @@ export default function Locations() {
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
+                            <AttachmentButton 
+                              entityType="locations" 
+                              entityId={location.id} 
+                              entityName={location.name} 
+                            />
                             <Button 
                               variant="ghost" 
                               size="sm" 
                               className="text-amber-500 hover:text-amber-400"
                               onClick={() => handleEdit(location)}
                             >
-                              ✏️
+                              <Edit className="h-4 w-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-red-500 hover:text-red-400"
+                              onClick={() => handleDelete(location.id)}
+                              disabled={deleteMutation.isPending}
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </div>
                         </td>
