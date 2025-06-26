@@ -201,6 +201,12 @@ export default function Locations() {
     });
   };
 
+  const getManagerName = (managerId: number) => {
+    if (!managerId) return "No Manager";
+    const manager = users?.users?.find((user: any) => user.id === managerId);
+    return manager ? `${manager.firstName} ${manager.lastName}` : "Unknown Manager";
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
@@ -313,6 +319,31 @@ export default function Locations() {
                     )}
                   />
                 </div>
+
+                <FormField
+                  control={form.control}
+                  name="managerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Manager</FormLabel>
+                      <Select onValueChange={(value) => field.onChange(value ? parseInt(value) : null)} value={field.value?.toString()}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select manager" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {users?.users?.map((user: any) => (
+                            <SelectItem key={user.id} value={user.id.toString()}>
+                              {user.firstName} {user.lastName} ({user.username})
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -462,16 +493,16 @@ export default function Locations() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Manager</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                        <Select onValueChange={(value) => field.onChange(value ? parseInt(value) : null)} value={field.value?.toString()}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select manager" />
                             </SelectTrigger>
                           </FormControl>
-                          <SelectContent>
+                          <SelectContent className="glass-card border-white/10">
                             {users?.users?.map((user: any) => (
                               <SelectItem key={user.id} value={user.id.toString()}>
-                                {user.username}
+                                {user.firstName} {user.lastName} ({user.username})
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -589,6 +620,7 @@ export default function Locations() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Address</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Manager</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Contact</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
@@ -617,6 +649,9 @@ export default function Locations() {
                           {location.companyId ? 
                             companies?.companies?.find((c: any) => c.id === location.companyId)?.name || 'Unknown Company' 
                             : 'No company'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {getManagerName(location.managerId)}
                         </td>
                         <td className="py-4 px-4">
                           <div className="text-sm text-slate-300">
