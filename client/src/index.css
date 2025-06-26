@@ -413,22 +413,39 @@ main,
   }
 }
 
-/* FULL SCREEN WIDTH TABLES */
-.glass-card {
+/* FORCE FULL SCREEN WIDTH TABLES */
+.content-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
   width: calc(100vw - 280px);
-  margin-left: -1.5rem;
-  margin-right: -1.5rem;
+  max-width: calc(100vw - 280px);
+}
+
+.page-content {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: visible;
+}
+
+.glass-card {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 1rem;
 }
 
 .glass-card .overflow-x-auto {
   width: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: auto;
 }
 
 .glass-card table {
   width: 100%;
-  min-width: 100%;
+  min-width: calc(100vw - 320px);
+  table-layout: auto;
 }
 
 
