@@ -41,7 +41,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
 
   if (!user) {
     return (
-      <div className={`${sizeClasses[size]} bg-gray-500/20 rounded-lg flex items-center justify-center ${className}`}>
+      <div className={`${sizeClasses[size]} bg-gray-500/20 rounded-full flex items-center justify-center ${className}`}>
         <span className="text-gray-400">👤</span>
       </div>
     );
@@ -54,12 +54,12 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   }) : null;
 
   return (
-    <div className={`${sizeClasses[size]} bg-blue-500/20 rounded-lg flex items-center justify-center overflow-hidden ${className}`}>
+    <div className={`${sizeClasses[size]} bg-blue-500/20 rounded-full flex items-center justify-center overflow-hidden ${className}`}>
       {photoAttachment && !imageError ? (
         <img 
           src={`/api/attachments/${photoAttachment.id}/download`}
           alt={`${getDisplayName(user)} avatar`}
-          className="w-full h-full object-cover rounded-lg"
+          className="w-full h-full object-cover rounded-full"
           onError={() => setImageError(true)}
         />
       ) : (
