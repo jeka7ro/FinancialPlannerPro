@@ -413,6 +413,14 @@ main,
   }
 }
 
+/* TABLE LEFT POSITIONING TO MATCH SCREENSHOT */
+.glass-card .overflow-x-auto.-mx-6 {
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  padding-left: 0.5rem;
+  padding-right: 1.5rem;
+}
+
 
 
 
