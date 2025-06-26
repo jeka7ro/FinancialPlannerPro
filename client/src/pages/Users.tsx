@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { UserAvatar } from "@/components/ui/user-avatar";
 import { Upload, Download } from "lucide-react";
 
 export default function Users() {
@@ -86,6 +87,7 @@ export default function Users() {
     defaultValues: {
       username: "",
       email: "",
+      telephone: "",
       password: "",
       firstName: "",
       lastName: "",
@@ -99,6 +101,7 @@ export default function Users() {
     defaultValues: {
       username: "",
       email: "",
+      telephone: "",
       firstName: "",
       lastName: "",
       role: "operator",
@@ -121,6 +124,7 @@ export default function Users() {
     editForm.reset({
       username: user.username || "",
       email: user.email || "",
+      telephone: user.telephone || "",
       firstName: user.firstName || "",
       lastName: user.lastName || "",
       role: user.role || "operator",
@@ -206,6 +210,20 @@ export default function Users() {
 
                 <FormField
                   control={form.control}
+                  name="telephone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Telephone</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
@@ -217,6 +235,8 @@ export default function Users() {
                     </FormItem>
                   )}
                 />
+
+
 
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
@@ -341,6 +361,7 @@ export default function Users() {
                     <tr className="border-b border-white/10">
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">User</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Email</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Telephone</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Role</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
@@ -352,9 +373,10 @@ export default function Users() {
                       <tr key={user.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-blue-500 text-sm">👤</span>
-                            </div>
+                            <UserAvatar 
+                              user={user} 
+                              size="sm"
+                            />
                             <div>
                               <p className="text-sm font-medium text-white">
                                 {user.firstName && user.lastName ? 
@@ -368,6 +390,9 @@ export default function Users() {
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {user.email}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {user.telephone || '-'}
                         </td>
                         <td className="py-4 px-4">
                           <Badge className={`${getRoleColor(user.role)} border`}>
@@ -392,7 +417,12 @@ export default function Users() {
                               entityId={user.id} 
                               entityName={`${user.firstName || ''} ${user.lastName || ''} (${user.username})`} 
                             />
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="text-amber-500 hover:text-amber-400"
+                              onClick={() => handleEdit(user)}
+                            >
                               ✏️
                             </Button>
                             <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-400">
@@ -457,6 +487,139 @@ export default function Users() {
         </CardContent>
       </Card>
 
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit User</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Username</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter username" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Email</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="user@email.com" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="telephone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Telephone</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">User Photo</label>
+                <AttachmentButton
+                  entityType="users"
+                  entityId={editingUser?.id}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">First Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="First name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Last Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={editForm.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Role</FormLabel>
+                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="form-input">
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="operator">Operator</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-gaming"
+                  disabled={editMutation.isPending}
+                >
+                  {editMutation.isPending ? "Updating..." : "Update User"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );

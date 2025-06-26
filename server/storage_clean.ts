@@ -51,7 +51,6 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  authenticateUser(username: string, password: string): Promise<User | null>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<InsertUser>): Promise<User>;
   deleteUser(id: number): Promise<void>;
@@ -135,7 +134,6 @@ export interface IStorage {
   getDashboardStats(): Promise<any>;
 
   // File attachment operations
-  getAttachment(id: number): Promise<Attachment | undefined>;
   getAttachments(entityType: string, entityId: number): Promise<Attachment[]>;
   createAttachment(attachment: InsertAttachment): Promise<Attachment>;
   deleteAttachment(id: number): Promise<void>;
@@ -162,14 +160,6 @@ export class DatabaseStorage implements IStorage {
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
     return user || undefined;
-  }
-
-  async authenticateUser(username: string, password: string): Promise<User | null> {
-    const user = await this.getUserByUsername(username);
-    if (!user) return null;
-    
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    return isPasswordValid ? user : null;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -905,11 +895,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   // File attachment operations
-  async getAttachment(id: number): Promise<Attachment | undefined> {
-    const [attachment] = await db.select().from(attachments).where(eq(attachments.id, id));
-    return attachment || undefined;
-  }
-
   async getAttachments(entityType: string, entityId: number): Promise<Attachment[]> {
     return await db
       .select()

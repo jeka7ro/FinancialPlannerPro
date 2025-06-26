@@ -8,6 +8,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: varchar("username", { length: 255 }).notNull().unique(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  telephone: varchar("telephone", { length: 50 }),
   password: text("password").notNull(),
   firstName: varchar("first_name", { length: 255 }),
   lastName: varchar("last_name", { length: 255 }),
@@ -49,6 +50,16 @@ export const locations = pgTable("locations", {
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
+
+// User Locations - Junction table for user location assignments
+export const userLocations = pgTable("user_locations", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  locationId: integer("location_id").notNull().references(() => locations.id),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  uniqueUserLocation: primaryKey({ columns: [table.userId, table.locationId] })
+}));
 
 // Providers table
 export const providers = pgTable("providers", {
@@ -207,6 +218,7 @@ export const activityLogs = pgTable("activity_logs", {
 export const usersRelations = relations(users, ({ many }) => ({
   managedLocations: many(locations),
   activityLogs: many(activityLogs),
+  userLocations: many(userLocations),
 }));
 
 export const companiesRelations = relations(companies, ({ many }) => ({
@@ -231,6 +243,18 @@ export const locationsRelations = relations(locations, ({ one, many }) => ({
   rentAgreements: many(rentAgreements),
   legalDocuments: many(legalDocuments),
   onjnReports: many(onjnReports),
+  userLocations: many(userLocations),
+}));
+
+export const userLocationsRelations = relations(userLocations, ({ one }) => ({
+  user: one(users, {
+    fields: [userLocations.userId],
+    references: [users.id],
+  }),
+  location: one(locations, {
+    fields: [userLocations.locationId],
+    references: [locations.id],
+  }),
 }));
 
 export const providersRelations = relations(providers, ({ many }) => ({
@@ -409,6 +433,11 @@ export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
   timestamp: true,
 });
 
+export const insertUserLocationSchema = createInsertSchema(userLocations).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -445,6 +474,9 @@ export type InsertOnjnReport = z.infer<typeof insertOnjnReportSchema>;
 
 export type ActivityLog = typeof activityLogs.$inferSelect;
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
+
+export type UserLocation = typeof userLocations.$inferSelect;
+export type InsertUserLocation = z.infer<typeof insertUserLocationSchema>;
 
 // File attachments table
 export const attachments = pgTable("attachments", {

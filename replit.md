@@ -119,6 +119,13 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 26, 2025: Enhanced user management with comprehensive contact information including email, telephone, and photo fields
+- June 26, 2025: Added telephone column to Users table display for complete contact visibility
+- June 26, 2025: Created UserAvatar component with photo display functionality and fallback initials
+- June 26, 2025: Updated header to display current user's photo and information in upper right corner
+- June 26, 2025: Implemented user photo display throughout Users table with proper fallback handling
+- June 26, 2025: Fixed user editing functionality by adding proper onClick handlers to edit buttons
+- June 26, 2025: Added getAttachment method to storage interface for file attachment operations
 - June 26, 2025: Removed billing system components per user request - user confirmed they don't need billing reports functionality
 - June 26, 2025: Cleaned up navigation and codebase to focus on core gaming management features
 - June 26, 2025: Implemented comprehensive search functionality across all modules - search now filters by any information found in any columns

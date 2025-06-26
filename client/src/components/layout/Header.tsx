@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
+import { useQuery } from "@tanstack/react-query";
+import { User } from "@shared/schema";
 
 interface HeaderProps {
   title: string;
@@ -13,6 +16,11 @@ interface HeaderProps {
 export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  
+  const { data: currentUser } = useQuery<User>({
+    queryKey: ["/api/auth/user"],
+    retry: false,
+  });
 
   const handleLogout = async () => {
     try {
@@ -77,20 +85,31 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         
         {/* User Profile */}
         <div className="flex items-center space-x-3">
-          <div className="text-right hidden sm:block">
-            <div className="text-sm font-medium text-white">John Manager</div>
-            <div className="text-xs text-slate-400">Gaming Operations Manager</div>
-          </div>
-          <img
-            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=100&h=100"
-            alt="User Avatar"
-            className="w-10 h-10 rounded-xl object-cover ring-2 ring-white/20"
+          {currentUser && (
+            <div className="text-right hidden sm:block">
+              <div className="text-sm font-medium text-white">
+                {currentUser.firstName && currentUser.lastName 
+                  ? `${currentUser.firstName} ${currentUser.lastName}` 
+                  : currentUser.username}
+              </div>
+              <div className="text-xs text-slate-400 capitalize">{currentUser.role}</div>
+            </div>
+          )}
+          <UserAvatarWithInfo 
+            user={currentUser || null} 
+            className="flex sm:hidden"
+          />
+          <UserAvatar 
+            user={currentUser || null} 
+            size="md"
+            className="hidden sm:flex ring-2 ring-white/20"
           />
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLogout}
             className="text-slate-300 hover:text-white hover:bg-white/10"
+            title="Logout"
           >
             <span className="text-lg">🚪</span>
           </Button>
