@@ -12,9 +12,9 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
   const { data: attachments } = useQuery({
-    queryKey: [`/api/providers/${providerId}/attachments`],
+    queryKey: [`/api/provider/${providerId}/attachments`],
     queryFn: async () => {
-      const response = await fetch(`/api/providers/${providerId}/attachments`, {
+      const response = await fetch(`/api/provider/${providerId}/attachments`, {
         credentials: 'include'
       });
       if (!response.ok) return [];

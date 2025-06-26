@@ -23,6 +23,8 @@ export default function Users() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<any>(null);
+  const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
+  const [editSelectedLocations, setEditSelectedLocations] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -37,13 +39,27 @@ export default function Users() {
     },
   });
 
+  const { data: locations } = useQuery({
+    queryKey: ['/api/locations'],
+    queryFn: async () => {
+      const response = await fetch('/api/locations?page=1&limit=1000', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      return response.json();
+    },
+  });
+
   const createMutation = useMutation({
-    mutationFn: async (data: InsertUser) => {
-      return await apiRequest("POST", "/api/users", data);
+    mutationFn: async (data: InsertUser & { locationIds?: number[] }) => {
+      // Include location IDs in the user creation request
+      const userData = { ...data, locationIds: selectedLocations };
+      return await apiRequest("POST", "/api/users", userData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setIsCreateDialogOpen(false);
+      setSelectedLocations([]);
       form.reset();
       toast({
         title: "Success",
@@ -60,12 +76,15 @@ export default function Users() {
   });
 
   const editMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> }) => {
-      return await apiRequest("PUT", `/api/users/${id}`, data);
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> & { locationIds?: number[] } }) => {
+      // Include location IDs in the user update request
+      const userData = { ...data, locationIds: editSelectedLocations };
+      return await apiRequest("PUT", `/api/users/${id}`, userData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/users'] });
       setIsEditDialogOpen(false);
+      setEditSelectedLocations([]);
       editForm.reset();
       setEditingUser(null);
       toast({
@@ -119,7 +138,7 @@ export default function Users() {
     }
   };
 
-  const handleEdit = (user: any) => {
+  const handleEdit = async (user: any) => {
     setEditingUser(user);
     editForm.reset({
       username: user.username || "",
@@ -130,6 +149,21 @@ export default function Users() {
       role: user.role || "operator",
       isActive: user.isActive ?? true,
     });
+    
+    // Load user's current location assignments
+    try {
+      const response = await fetch(`/api/users/${user.id}/locations`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const userLocations = await response.json();
+        setEditSelectedLocations(userLocations.map((ul: any) => ul.locationId));
+      }
+    } catch (error) {
+      console.error('Failed to load user locations:', error);
+      setEditSelectedLocations([]);
+    }
+    
     setIsEditDialogOpen(true);
   };
 
@@ -290,6 +324,32 @@ export default function Users() {
                     </FormItem>
                   )}
                 />
+
+                <div className="space-y-2">
+                  <label className="text-white text-sm font-medium">Assigned Locations *</label>
+                  <div className="space-y-2">
+                    {locations?.locations?.map((location: any) => (
+                      <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedLocations.includes(location.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedLocations([...selectedLocations, location.id]);
+                            } else {
+                              setSelectedLocations(selectedLocations.filter(id => id !== location.id));
+                            }
+                          }}
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-slate-300">{location.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  {selectedLocations.length === 0 && (
+                    <p className="text-xs text-red-400">Please select at least one location</p>
+                  )}
+                </div>
 
                 <div className="flex justify-end space-x-4">
                   <Button 
@@ -598,6 +658,32 @@ export default function Users() {
                   </FormItem>
                 )}
               />
+
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">Assigned Locations *</label>
+                <div className="space-y-2">
+                  {locations?.locations?.map((location: any) => (
+                    <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editSelectedLocations.includes(location.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditSelectedLocations([...editSelectedLocations, location.id]);
+                          } else {
+                            setEditSelectedLocations(editSelectedLocations.filter(id => id !== location.id));
+                          }
+                        }}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-slate-300">{location.name}</span>
+                    </label>
+                  ))}
+                </div>
+                {editSelectedLocations.length === 0 && (
+                  <p className="text-xs text-red-400">Please select at least one location</p>
+                )}
+              </div>
 
               <div className="flex justify-end space-x-4">
                 <Button 

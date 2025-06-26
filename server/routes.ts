@@ -791,8 +791,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/users", requireAdmin, async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      const { locationIds, ...userData } = req.body;
       const user = await storage.createUser(userData);
+      
+      // Assign locations to the user if provided
+      if (locationIds && locationIds.length > 0) {
+        await storage.assignUserToLocations(user.id, locationIds);
+      }
+      
       res.status(201).json({ 
         id: user.id, 
         username: user.username, 
@@ -834,8 +840,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/users/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const userData = insertUserSchema.partial().parse(req.body);
+      const { locationIds, ...userData } = req.body;
       const user = await storage.updateUser(id, userData);
+      
+      // Update user location assignments if provided
+      if (locationIds !== undefined) {
+        // First remove all existing location assignments
+        const existingLocations = await storage.getUserLocations(id);
+        for (const location of existingLocations) {
+          await storage.removeUserFromLocation(id, location.locationId);
+        }
+        
+        // Then assign new locations
+        if (locationIds.length > 0) {
+          await storage.assignUserToLocations(id, locationIds);
+        }
+      }
+      
       res.json({ 
         id: user.id, 
         username: user.username, 
@@ -861,6 +882,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete user error:", error);
       res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
+  // User location routes
+  app.get("/api/users/:id/locations", requireAuth, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const userLocations = await storage.getUserLocations(userId);
+      res.json(userLocations);
+    } catch (error) {
+      console.error("Get user locations error:", error);
+      res.status(500).json({ message: "Failed to fetch user locations" });
+    }
+  });
+
+  app.post("/api/users/:id/locations", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const { locationIds } = req.body;
+      
+      if (!locationIds || !Array.isArray(locationIds)) {
+        return res.status(400).json({ message: "Location IDs are required" });
+      }
+      
+      await storage.assignUserToLocations(userId, locationIds);
+      res.json({ message: "User assigned to locations successfully" });
+    } catch (error) {
+      console.error("Assign user to locations error:", error);
+      res.status(500).json({ message: "Failed to assign user to locations" });
+    }
+  });
+
+  app.delete("/api/users/:userId/locations/:locationId", requireAdmin, async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const locationId = parseInt(req.params.locationId);
+      
+      await storage.removeUserFromLocation(userId, locationId);
+      res.json({ message: "User removed from location successfully" });
+    } catch (error) {
+      console.error("Remove user from location error:", error);
+      res.status(500).json({ message: "Failed to remove user from location" });
     }
   });
 
