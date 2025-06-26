@@ -134,6 +134,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Implemented ProviderLogo component with proper attachment loading and fallback to initials
 - June 26, 2025: Added locations query to Slots module to support location display in table
 - June 26, 2025: Cleaned up debug console logs after successful provider logo implementation
+- June 26, 2025: Implemented compact serial numbers display in Invoice and ONJN tables - shows "multiple serials (count)" with click-to-expand popover
+- June 26, 2025: Enhanced table layouts with clean serial number display that maintains readability while providing full access to all serial numbers
 - June 26, 2025: Redesigned Cabinet module layout with Provider column first (with logo placeholders) and Cabinet Name second column
 - June 26, 2025: Made serial number field optional and removed from forms per user requirements
 - June 26, 2025: Removed installation date field from Cabinet module completely - from database schema, forms, table display, and export templates

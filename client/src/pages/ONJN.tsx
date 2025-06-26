@@ -15,8 +15,52 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Calendar, FileText, Edit, Trash2 } from "lucide-react";
+import { Upload, Calendar, FileText, Edit, Trash2, ChevronDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { safeFormValue } from "@/utils/formUtils";
+
+// Serial Numbers Display Component
+const SerialNumbersDisplay = ({ serialNumbers }: { serialNumbers: string | null }) => {
+  if (!serialNumbers) {
+    return <span className="text-slate-500">No serials</span>;
+  }
+
+  const serials = serialNumbers.split(' ').filter((sn: string) => sn.trim());
+  
+  if (serials.length <= 1) {
+    return (
+      <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/50">
+        {serials[0]}
+      </Badge>
+    );
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-auto p-1 text-xs bg-blue-500/20 text-blue-300 border border-blue-500/50 hover:bg-blue-500/30"
+        >
+          multiple serials ({serials.length}) <ChevronDown className="ml-1 h-3 w-3" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 glass-card border-white/10">
+        <div className="space-y-2">
+          <h4 className="font-medium text-white">Serial Numbers</h4>
+          <div className="flex flex-wrap gap-1">
+            {serials.map((serialNumber: string, index: number) => (
+              <Badge key={index} variant="outline" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/50">
+                {serialNumber}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 const getStatusColor = (status: string) => {
   switch (status?.toLowerCase()) {
@@ -470,15 +514,7 @@ export default function ONJN() {
                           </div>
                         </td>
                         <td className="py-4 px-4">
-                          <div className="flex flex-wrap gap-1">
-                            {report.serialNumbers ? report.serialNumbers.split(' ').filter((sn: string) => sn.trim()).map((serial: string, index: number) => (
-                              <Badge key={index} className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 border text-xs">
-                                {serial}
-                              </Badge>
-                            )) : (
-                              <span className="text-sm text-slate-400">No serial numbers</span>
-                            )}
-                          </div>
+                          <SerialNumbersDisplay serialNumbers={report.serialNumbers} />
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {companies?.companies?.find((c: any) => c.id === report.companyId)?.name || 'N/A'}
