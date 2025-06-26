@@ -53,7 +53,6 @@ export default function Cabinets() {
   const form = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
-      serialNumber: "",
       model: "",
       status: "inactive",
       providerId: undefined,
@@ -63,7 +62,6 @@ export default function Cabinets() {
   const editForm = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
-      serialNumber: "",
       model: "",
       status: "inactive",
       providerId: undefined,
@@ -165,7 +163,6 @@ export default function Cabinets() {
   const openEditDialog = (cabinet: Cabinet) => {
     setEditingCabinet(cabinet);
     editForm.reset({
-      serialNumber: cabinet.serialNumber || "",
       model: cabinet.model || "",
       status: cabinet.status || "inactive",
       providerId: cabinet.providerId || undefined,
@@ -246,23 +243,10 @@ export default function Cabinets() {
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="serialNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Serial Number</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
                       name="model"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Model</FormLabel>
+                          <FormLabel className="text-white">Cabinet Name</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value || ""} className="form-input" />
                           </FormControl>
@@ -356,23 +340,10 @@ export default function Cabinets() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
-                  name="serialNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Serial Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
                   name="model"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Model</FormLabel>
+                      <FormLabel className="text-white">Cabinet Name</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} className="form-input" />
                       </FormControl>
@@ -495,9 +466,8 @@ export default function Cabinets() {
                         className="border-white/20"
                       />
                     </th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Serial Number</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Model</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Provider</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Cabinet Name</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Status</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Attachments</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Actions</th>
@@ -514,17 +484,25 @@ export default function Cabinets() {
                         />
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-300">
-                        {cabinet.serialNumber || <span className="text-slate-500 italic">No serial number</span>}
+                        <div className="flex items-center space-x-3">
+                          <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
+                            {cabinet.providerId ? (
+                              providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name?.substring(0, 2).toUpperCase() || 'PR'
+                            ) : (
+                              'N/A'
+                            )}
+                          </div>
+                          <span>
+                            {cabinet.providerId ? (
+                              providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || `Provider ID: ${cabinet.providerId}`
+                            ) : (
+                              <span className="text-slate-500 italic">No provider assigned</span>
+                            )}
+                          </span>
+                        </div>
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-300">
                         {cabinet.model}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        {cabinet.providerId ? (
-                          providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || `Provider ID: ${cabinet.providerId}`
-                        ) : (
-                          <span className="text-slate-500 italic">No provider assigned</span>
-                        )}
                       </td>
                       <td className="py-4 px-4">
                         <Badge className={`${getStatusColor(cabinet.status)} border`}>

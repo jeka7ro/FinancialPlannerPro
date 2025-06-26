@@ -81,7 +81,7 @@ export const providers = pgTable("providers", {
 // Cabinets table
 export const cabinets = pgTable("cabinets", {
   id: serial("id").primaryKey(),
-  serialNumber: varchar("serial_number", { length: 100 }).notNull().unique(),
+  serialNumber: varchar("serial_number", { length: 100 }),
   model: varchar("model", { length: 255 }).notNull(),
   manufacturer: varchar("manufacturer", { length: 255 }),
   providerId: integer("provider_id").references(() => providers.id),

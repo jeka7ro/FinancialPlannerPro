@@ -119,6 +119,8 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 26, 2025: Redesigned Cabinet module layout with Provider column first (with logo placeholders) and Cabinet Name second column
+- June 26, 2025: Made serial number field optional and removed from forms per user requirements
 - June 26, 2025: Removed installation date field from Cabinet module completely - from database schema, forms, table display, and export templates
 - June 26, 2025: Enhanced provider display in Cabinets table with better error handling and fallback text
 - June 26, 2025: Fixed duplicate "Cabinets" heading by removing redundant page title (no additional charge)
