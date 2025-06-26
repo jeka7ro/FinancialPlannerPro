@@ -413,42 +413,35 @@ main,
   }
 }
 
-/* FULL WIDTH TABLE LAYOUT - USE ALL AVAILABLE SPACE */
-.glass-card {
-  width: 100% !important;
-  max-width: none !important;
-}
-
-.glass-card .overflow-x-auto {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  width: 100% !important;
-  max-width: none !important;
+/* EXPAND TABLES TO USE ALL AVAILABLE SPACE */
+.glass-card .overflow-x-auto.-mx-6 {
+  margin-left: -1.5rem !important;
+  margin-right: -1.5rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 0.5rem !important;
+  width: calc(100% + 3rem) !important;
 }
 
 .glass-card table {
   width: 100% !important;
-  max-width: none !important;
   table-layout: auto !important;
   margin: 0 !important;
+  text-align: left !important;
 }
 
 .glass-card th, .glass-card td {
   text-align: left !important;
   padding: 8px 12px !important;
-  white-space: nowrap !important;
 }
 
-/* Remove any container width limits */
-.container, .max-w-7xl {
-  max-width: none !important;
-  width: 100% !important;
+/* Ensure tables start from left edge */
+.glass-card .overflow-x-auto {
+  text-align: left !important;
 }
 
-/* Ensure main content uses full width */
-main {
+/* Make cards use full available width */
+.glass-card {
   width: 100% !important;
-  max-width: none !important;
 }
 
 /* SPECIFIC DATA TABLE ALIGNMENT - DO NOT AFFECT LOGIN OR OTHER LAYOUTS */
