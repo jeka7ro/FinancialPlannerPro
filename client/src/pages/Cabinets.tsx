@@ -18,6 +18,46 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 
+// Provider Logo Component
+function ProviderLogo({ providerId, providerName }: { providerId: number; providerName: string }) {
+  const { data: attachments } = useQuery({
+    queryKey: [`/api/provider/${providerId}/attachments`],
+    queryFn: async () => {
+      const response = await fetch(`/api/provider/${providerId}/attachments`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch attachments');
+      return response.json();
+    },
+  });
+
+  const logoAttachment = attachments?.find((att: any) => 
+    att.fileName?.toLowerCase().includes('.png') || 
+    att.fileName?.toLowerCase().includes('.jpg') || 
+    att.fileName?.toLowerCase().includes('.jpeg') ||
+    att.fileName?.toLowerCase().includes('.svg')
+  );
+
+  if (logoAttachment) {
+    return (
+      <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
+        <img 
+          src={`/api/attachments/${logoAttachment.id}/download`} 
+          alt={providerName}
+          className="w-full h-full object-contain"
+        />
+      </div>
+    );
+  }
+
+  // Fallback to initials
+  return (
+    <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
+      {providerName?.substring(0, 2).toUpperCase() || 'PR'}
+    </div>
+  );
+}
+
 export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -485,13 +525,16 @@ export default function Cabinets() {
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-300">
                         <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
-                            {cabinet.providerId ? (
-                              providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name?.substring(0, 2).toUpperCase() || 'PR'
-                            ) : (
-                              'N/A'
-                            )}
-                          </div>
+                          {cabinet.providerId ? (
+                            <ProviderLogo 
+                              providerId={cabinet.providerId} 
+                              providerName={providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || ''} 
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
+                              N/A
+                            </div>
+                          )}
                           <span>
                             {cabinet.providerId ? (
                               providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || `Provider ID: ${cabinet.providerId}`
