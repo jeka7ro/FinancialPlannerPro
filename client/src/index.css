@@ -413,12 +413,22 @@ main,
   }
 }
 
-/* TABLE LEFT POSITIONING TO MATCH SCREENSHOT */
-.glass-card .overflow-x-auto.-mx-6 {
+/* FULL SCREEN WIDTH TABLES */
+.glass-card {
+  width: calc(100vw - 280px);
   margin-left: -1.5rem;
   margin-right: -1.5rem;
-  padding-left: 0.5rem;
-  padding-right: 1.5rem;
+}
+
+.glass-card .overflow-x-auto {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.glass-card table {
+  width: 100%;
+  min-width: 100%;
 }
 
 
