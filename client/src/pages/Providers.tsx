@@ -41,7 +41,7 @@ export default function Providers() {
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertProvider) => {
-      return await apiRequest("/api/providers", "POST", data);
+      return await apiRequest("POST", "/api/providers", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/providers'] });
@@ -63,7 +63,7 @@ export default function Providers() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: InsertProvider }) =>
-      apiRequest(`/api/providers/${id}`, "PUT", data),
+      apiRequest("PUT", `/api/providers/${id}`, data),
     onSuccess: () => {
       toast({
         title: "Success",

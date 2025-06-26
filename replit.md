@@ -136,6 +136,7 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Updated user avatars to circular shape with proper fill and doubled size for better visibility
 - June 26, 2025: Refined user avatars to smaller circular size with transparent background and optimized photo display
 - June 26, 2025: Fixed auto-filling of phone and email fields in Locations module when manager is selected
+- June 26, 2025: Fixed HTTP method parameter order error in Providers module apiRequest calls
 - June 26, 2025: Implemented comprehensive search functionality across all modules - search now filters by any information found in any columns
 - June 26, 2025: Enhanced backend search logic to use OR conditions across all relevant fields for each entity type
 - June 26, 2025: Updated Users search to filter by username, email, firstName, lastName, and role
