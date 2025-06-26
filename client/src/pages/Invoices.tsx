@@ -357,8 +357,8 @@ export default function Invoices() {
                             {...field} 
                             type="date" 
                             className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
+                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -376,8 +376,8 @@ export default function Invoices() {
                             {...field} 
                             type="date" 
                             className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
+                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -416,8 +416,8 @@ export default function Invoices() {
                             {...field} 
                             type="date" 
                             className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
+                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
