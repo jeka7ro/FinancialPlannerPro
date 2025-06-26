@@ -27,41 +27,30 @@ function ProviderLogo({ providerId, providerName }: { providerId: number; provid
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch attachments');
-      const data = await response.json();
-      console.log(`Provider ${providerId} attachments:`, data);
-      return data;
+      return response.json();
     },
   });
 
-  const logoAttachment = attachments?.find((att: any) => {
-    const isImage = att.filename?.toLowerCase().includes('.png') || 
-                   att.filename?.toLowerCase().includes('.jpg') || 
-                   att.filename?.toLowerCase().includes('.jpeg') ||
-                   att.filename?.toLowerCase().includes('.svg');
-    console.log(`Checking attachment for provider ${providerId}:`, att.filename, 'isImage:', isImage);
-    return isImage;
-  });
-
-  console.log(`Provider ${providerId} logo attachment:`, logoAttachment);
+  const logoAttachment = attachments?.find((att: any) => 
+    att.filename?.toLowerCase().includes('.png') || 
+    att.filename?.toLowerCase().includes('.jpg') || 
+    att.filename?.toLowerCase().includes('.jpeg') ||
+    att.filename?.toLowerCase().includes('.svg')
+  );
 
   if (logoAttachment) {
-    const logoUrl = `/api/attachments/${logoAttachment.id}/download`;
-    console.log(`Loading logo for provider ${providerId}:`, logoUrl);
     return (
       <div className="w-8 h-8 rounded flex items-center justify-center overflow-hidden bg-white">
         <img 
-          src={logoUrl}
+          src={`/api/attachments/${logoAttachment.id}/download`}
           alt={providerName}
           className="w-full h-full object-contain"
-          onLoad={() => console.log(`Logo loaded for provider ${providerId}`)}
-          onError={(e) => console.error(`Logo failed to load for provider ${providerId}:`, e)}
         />
       </div>
     );
   }
 
   // Fallback to initials
-  console.log(`No logo found for provider ${providerId}, using fallback`);
   return (
     <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
       {providerName?.substring(0, 2).toUpperCase() || 'PR'}

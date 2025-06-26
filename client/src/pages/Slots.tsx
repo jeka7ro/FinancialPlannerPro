@@ -120,6 +120,17 @@ export default function Slots() {
     },
   });
 
+  const { data: locations } = useQuery({
+    queryKey: ['/api/locations', 1, 100],
+    queryFn: async () => {
+      const response = await fetch('/api/locations?page=1&limit=100', {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      return response.json();
+    },
+  });
+
   // Function to find invoice number by matching slot serial number with invoice serial numbers
   const findInvoiceBySerialNumber = (slotSerialNumber: string) => {
     if (!invoices?.invoices || !slotSerialNumber) return null;
@@ -601,8 +612,11 @@ export default function Slots() {
                           className="border-white/20"
                         />
                       </th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16">Slot ID</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Provider</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Cabinet</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Game Mix</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Location</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Exciter Type</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16">RTP</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Serial Nr</th>
@@ -624,17 +638,23 @@ export default function Slots() {
                             className="border-white/20"
                           />
                         </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
+                        <td className="py-3 px-3 text-sm font-medium text-white">
+                          #{slot.id}
                         </td>
                         <td className="py-3 px-3">
-                          <div className="font-medium text-white text-sm truncate">
-                            {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
-                          </div>
                           <div className="flex items-center gap-2 text-xs text-slate-400 truncate">
                             {slot.providerId && <ProviderLogo providerId={slot.providerId} size="sm" />}
                             <span>{providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}</span>
                           </div>
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
+                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
+                          {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
+                          {locations?.locations?.find((l: any) => l.id === slot.locationId)?.name || 'N/A'}
                         </td>
                         <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {slot.exciterType || 'N/A'}
