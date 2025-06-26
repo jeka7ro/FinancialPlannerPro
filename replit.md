@@ -119,6 +119,7 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 26, 2025: Removed Serial Number and Manufacturer fields from Cabinet module as previously requested (no additional charge)
 - June 26, 2025: Fixed duplicate "Cabinets" headings in Cabinets page to eliminate tripled display issue
 - June 26, 2025: Updated logo display in sidebar with proper Vite asset handling and error handling
 - June 26, 2025: Completed comprehensive action button implementation across all modules with working edit and delete functionality

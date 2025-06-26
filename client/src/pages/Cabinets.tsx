@@ -53,9 +53,7 @@ export default function Cabinets() {
   const form = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
-      serialNumber: "",
       model: "",
-      manufacturer: "",
       status: "inactive",
       providerId: undefined,
       installationDate: null,
@@ -65,9 +63,7 @@ export default function Cabinets() {
   const editForm = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
-      serialNumber: "",
       model: "",
-      manufacturer: "",
       status: "inactive",
       providerId: undefined,
       installationDate: null,
@@ -169,9 +165,7 @@ export default function Cabinets() {
   const openEditDialog = (cabinet: Cabinet) => {
     setEditingCabinet(cabinet);
     editForm.reset({
-      serialNumber: cabinet.serialNumber || "",
       model: cabinet.model || "",
-      manufacturer: cabinet.manufacturer || "",  
       status: cabinet.status || "inactive",
       providerId: cabinet.providerId || undefined,
       installationDate: cabinet.installationDate ? new Date(cabinet.installationDate) : null,
@@ -256,39 +250,10 @@ export default function Cabinets() {
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
-                      name="serialNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Serial Number</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
                       name="model"
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Model</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="manufacturer"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Manufacturer</FormLabel>
                           <FormControl>
                             <Input {...field} value={field.value || ""} className="form-input" />
                           </FormControl>
@@ -399,39 +364,10 @@ export default function Cabinets() {
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
-                  name="serialNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Serial Number</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
                   name="model"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Model</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="manufacturer"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Manufacturer</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} className="form-input" />
                       </FormControl>
@@ -571,7 +507,6 @@ export default function Cabinets() {
                         className="border-white/20"
                       />
                     </th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Cabinet</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Model</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Provider</th>
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">Status</th>
@@ -589,19 +524,6 @@ export default function Cabinets() {
                           onCheckedChange={() => toggleCabinetSelection(cabinet.id)}
                           className="border-white/20"
                         />
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              {cabinet.serialNumber?.slice(-2) || 'XX'}
-                            </span>
-                          </div>
-                          <div>
-                            <div className="font-medium text-white">{cabinet.serialNumber}</div>
-                            <div className="text-slate-400 text-sm">{cabinet.manufacturer}</div>
-                          </div>
-                        </div>
                       </td>
                       <td className="py-4 px-4 text-sm text-slate-300">
                         {cabinet.model}
