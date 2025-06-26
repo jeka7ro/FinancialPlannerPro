@@ -299,6 +299,8 @@ export default function Slots() {
       commissionDate: slot.commissionDate ? new Date(slot.commissionDate) : undefined,
       onjnReportId: slot.onjnReportId || undefined,
       dailyRevenue: slot.dailyRevenue || "",
+      year: slot.year || "",
+      gamingPlaces: slot.gamingPlaces || "",
       isActive: slot.isActive !== undefined ? slot.isActive : true,
     });
     setIsEditDialogOpen(true);
@@ -485,6 +487,35 @@ export default function Slots() {
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
+                      name="year"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Year</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter year of manufacture" type="number" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="gamingPlaces"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Gaming Places</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter number of gaming places" type="number" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
                       name="exciterType"
                       render={({ field }) => (
                         <FormItem>
@@ -634,6 +665,8 @@ export default function Slots() {
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('cabinetId')}>Cabinet {getSortIcon('cabinetId')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gameMixId')}>Game Mix {getSortIcon('gameMixId')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('locationId')}>Location {getSortIcon('locationId')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('year')}>Year {getSortIcon('year')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gamingPlaces')}>Gaming Places {getSortIcon('gamingPlaces')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('exciterType')}>Exciter Type {getSortIcon('exciterType')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('rtp')}>RTP {getSortIcon('rtp')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('serialNr')}>Serial Nr {getSortIcon('serialNr')}</th>
@@ -671,6 +704,12 @@ export default function Slots() {
                         </td>
                         <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {locations?.locations?.find((l: any) => l.id === slot.locationId)?.name || 'N/A'}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-300">
+                          {slot.year || 'N/A'}
+                        </td>
+                        <td className="py-3 px-3 text-sm text-slate-300">
+                          {slot.gamingPlaces || 'N/A'}
                         </td>
                         <td className="py-3 px-3 text-sm text-slate-300 truncate">
                           {slot.exciterType || 'N/A'}
@@ -850,6 +889,35 @@ export default function Slots() {
                   )}
                 />
 
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="year"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Year</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter year of manufacture" type="number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="gamingPlaces"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Gaming Places</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter number of gaming places" type="number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
               <div className="grid grid-cols-2 gap-4">

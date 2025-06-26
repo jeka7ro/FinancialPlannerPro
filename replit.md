@@ -127,6 +127,10 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Removed revenue column from Slots table per user request
 - June 26, 2025: Added backend sorting support for Slots API with sortField and sortDirection parameters
 - June 26, 2025: Updated storage interface and implementation to support sorting by Slot ID
+- June 26, 2025: Added Year and Gaming Places columns to Slots table with database schema updates
+- June 26, 2025: Enhanced Slots table display with Year (year of manufacture) and Gaming Places (number) columns
+- June 26, 2025: Updated Slots create and edit forms to include Year and Gaming Places input fields
+- June 26, 2025: Enhanced Slots search functionality to include Year and Gaming Places fields
 - June 26, 2025: Implemented ProviderLogo component with proper attachment loading and fallback to initials
 - June 26, 2025: Added locations query to Slots module to support location display in table
 - June 26, 2025: Cleaned up debug console logs after successful provider logo implementation

@@ -126,6 +126,8 @@ export const slots = pgTable("slots", {
   commissionDate: timestamp("commission_date"), // Commission date - editable field, auto-filled from ONJN if available
   onjnReportId: integer("onjn_report_id").references(() => onjnReports.id),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
+  year: integer("year"), // Year of manufacture
+  gamingPlaces: integer("gaming_places"), // Number of gaming places
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
