@@ -134,6 +134,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Updated ONJN Reports search to filter by serialNumbers and notes
 - June 26, 2025: Fixed missing edit dialog functionality in Invoices module with complete form fields
 - June 26, 2025: Added missing users query to Locations module for manager selection functionality
+- June 26, 2025: Fixed provider edit functionality by correcting HTTP method from PATCH to PUT to match server routes
+- June 26, 2025: Fixed company name display in Locations table to show actual company names instead of "Company X"
 - June 25, 2025: Transformed ONJN module from report types to license commission functionality with commission dates and serial numbers
 - June 25, 2025: Added automatic commission date lookup in Slots module displaying dates when serial numbers match ONJN commissions
 - June 25, 2025: Updated database schema for license commissions with commission_date, serial_numbers, and notes fields

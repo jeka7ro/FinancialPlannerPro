@@ -63,7 +63,7 @@ export default function Providers() {
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: InsertProvider }) =>
-      apiRequest(`/api/providers/${id}`, "PATCH", data),
+      apiRequest(`/api/providers/${id}`, "PUT", data),
     onSuccess: () => {
       toast({
         title: "Success",
