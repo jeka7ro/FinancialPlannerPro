@@ -15,6 +15,8 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   const { data: attachments } = useQuery({
     queryKey: [`/api/users/${user?.id}/attachments`],
     enabled: !!user?.id,
+    refetchOnMount: true,
+    staleTime: 0,
   });
 
   const sizeClasses = {
@@ -46,9 +48,10 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   }
 
   // Find the first image attachment as user photo
-  const photoAttachment = Array.isArray(attachments) ? attachments.find((att: any) => 
-    att.fileName && att.fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i)
-  ) : null;
+  const photoAttachment = Array.isArray(attachments) ? attachments.find((att: any) => {
+    const fileName = att.filename; // Use 'filename' property from server response
+    return fileName && fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i);
+  }) : null;
 
   return (
     <div className={`${sizeClasses[size]} bg-blue-500/20 rounded-lg flex items-center justify-center overflow-hidden ${className}`}>
