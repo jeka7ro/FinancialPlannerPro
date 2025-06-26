@@ -413,189 +413,85 @@ main,
   }
 }
 
-/* FORCE ALL TABLES TO LEFT SIDE */
-table {
-  margin-left: 0 !important;
-  margin-right: auto !important;
-  float: left !important;
+/* FULL WIDTH TABLE LAYOUT - USE ALL AVAILABLE SPACE */
+.glass-card {
   width: 100% !important;
-  text-align: left !important;
+  max-width: none !important;
 }
 
-/* Table container alignment */
-.table-container, .data-table, [role="table"] {
-  display: block !important;
-  text-align: left !important;
+.glass-card .overflow-x-auto {
   margin-left: 0 !important;
-  margin-right: auto !important;
+  margin-right: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+.glass-card table {
+  width: 100% !important;
+  max-width: none !important;
+  table-layout: auto !important;
+  margin: 0 !important;
+}
+
+.glass-card th, .glass-card td {
+  text-align: left !important;
+  padding: 8px 12px !important;
+  white-space: nowrap !important;
+}
+
+/* Remove any container width limits */
+.container, .max-w-7xl {
+  max-width: none !important;
   width: 100% !important;
 }
 
-/* All table cells left aligned */
-th, td, .table-cell, .table-header, [role="cell"], [role="columnheader"] {
-  text-align: left !important;
-  padding-left: 0.75rem !important;
-}
-
-/* Content containers must be left aligned */
-.content-wrapper, .page-content, main, .main-content {
-  text-align: left !important;
-  display: block !important;
-  margin-left: 0 !important;
+/* Ensure main content uses full width */
+main {
   width: 100% !important;
+  max-width: none !important;
 }
 
-/* Card and UI component alignment */
-.card, .card-content, .card-header, .card-title {
-  text-align: left !important;
-  margin-left: 0 !important;
-}
-
-/* Override ANY center alignment */
-.text-center, .mx-auto, .justify-center, .items-center {
-  text-align: left !important;
-  justify-content: flex-start !important;
-  margin-left: 0 !important;
-  margin-right: auto !important;
-}
-
-/* Force all text elements left */
-div, span, p, h1, h2, h3, h4, h5, h6 {
-  text-align: left !important;
-}
-
-/* Specific table wrapper fixes */
-.w-full, .max-w-none {
+/* SPECIFIC DATA TABLE ALIGNMENT - DO NOT AFFECT LOGIN OR OTHER LAYOUTS */
+.glass-card .overflow-x-auto {
   margin-left: 0 !important;
   text-align: left !important;
 }
 
-/* ADDITIONAL AGGRESSIVE LEFT ALIGNMENT RULES */
-.container, .max-w-7xl, .mx-auto {
-  margin-left: 0 !important;
-  margin-right: auto !important;
-  text-align: left !important;
-}
-
-/* Table positioning and alignment */
-table {
-  text-align: left !important;
-  margin-left: 0 !important;
-  margin-right: auto !important;
-  float: left !important;
-  clear: left !important;
-}
-
-/* Table wrapper alignment */
-.table-container, .overflow-x-auto {
-  text-align: left !important;
-  margin-left: 0 !important;
-}
-
-/* Flex container alignment */
-.flex, .flex-col, .flex-row {
-  justify-content: flex-start !important;
-  align-items: flex-start !important;
-  text-align: left !important;
-}
-
-/* Grid alignment */
-.grid {
-  justify-items: start !important;
-  text-align: left !important;
-}
-
-/* Override center classes */
-.justify-center, .items-center, .text-center {
-  justify-content: flex-start !important;
-  align-items: flex-start !important;
-  text-align: left !important;
-}
-
-/* Specific UI component alignment */
-[data-radix-scroll-area-viewport] {
-  text-align: left !important;
-}
-
-/* Button alignment in table cells */
-.table-cell button, td button {
-  text-align: left !important;
-  justify-content: flex-start !important;
-}
-
-/* ULTIMATE FORCE LEFT ALIGNMENT - NO MORE CENTER */
-.overflow-x-auto {
-  margin-left: 0 !important;
-  padding-left: 0 !important;
-  text-align: left !important;
-}
-
-.overflow-x-auto table {
+.glass-card .overflow-x-auto table {
   margin-left: 0 !important;
   text-align: left !important;
   float: none !important;
-  position: static !important;
 }
 
-/* Card content left alignment */
-.glass-card .overflow-x-auto {
+/* MAXIMIZE TABLE SPACE USAGE */
+.glass-card .overflow-x-auto.-mx-6 {
   margin-left: -24px !important;
+  margin-right: -24px !important;
   padding-left: 24px !important;
+  padding-right: 24px !important;
+  width: calc(100% + 48px) !important;
 }
 
-/* Force table container to left */
-div[class*="overflow-x-auto"] {
-  display: block !important;
+.glass-card .overflow-x-auto table {
+  width: 100% !important;
+  min-width: 100% !important;
+  table-layout: fixed !important;
+}
+
+.glass-card .overflow-x-auto table th,
+.glass-card .overflow-x-auto table td {
   text-align: left !important;
-  margin-left: 0 !important;
+  padding: 8px 12px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
-/* Remove any potential centering margins */
-.w-full.min-w-max {
-  margin-left: 0 !important;
-  margin-right: auto !important;
+/* Remove card padding constraints */
+.glass-card .card-content {
+  padding: 16px !important;
 }
 
-/* Ensure table headers and cells stick left */
-table th, table td {
-  text-align: left !important;
-  padding-left: 16px !important;
-}
-
-/* Override any flex centering on table containers */
-[class*="CardContent"] .overflow-x-auto {
-  justify-content: flex-start !important;
-  align-items: flex-start !important;
-}
-
-/* CRITICAL: Fix the -mx-6 negative margin that centers tables */
-.overflow-x-auto.-mx-6 {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  text-align: left !important;
-}
-
-/* Force all overflow containers to left */
-.overflow-x-auto {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  text-align: left !important;
-}
-
-/* Force table containers to left */
-.min-w-max {
-  margin-left: 0 !important;
-  text-align: left !important;
-}
-
-/* Override any margin auto classes */
-.-mx-6 {
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-}
-
-/* Force CardContent to left align */
-.card-content, [class*="CardContent"] {
-  text-align: left !important;
-  margin-left: 0 !important;
+/* Full width containers */
+.space-y-6 {
+  width: 100% !important;
 }
