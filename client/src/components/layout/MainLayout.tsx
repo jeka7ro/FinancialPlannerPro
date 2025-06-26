@@ -48,15 +48,17 @@ export default function MainLayout({ children }: MainLayoutProps) {
         />
       )}
       
-      <div className="flex-1 flex flex-col overflow-hidden lg:ml-64">
+      <div className="flex-1 flex flex-col overflow-hidden">
         <Header 
           title={currentPage.title}
           subtitle={currentPage.subtitle}
           onMenuToggle={toggleSidebar}
         />
         
-        <main className="flex-1 overflow-y-auto px-6 py-4">
-          {children}
+        <main className="flex-1 overflow-y-auto py-4 content-wrapper">
+          <div className="w-full max-w-none page-content text-left">
+            {children}
+          </div>
         </main>
       </div>
     </div>
