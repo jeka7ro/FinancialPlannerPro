@@ -20,9 +20,9 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   });
 
   const sizeClasses = {
-    sm: "w-16 h-16 text-base",
-    md: "w-20 h-20 text-lg",
-    lg: "w-24 h-24 text-xl"
+    sm: "w-12 h-12 text-sm",
+    md: "w-14 h-14 text-base",
+    lg: "w-16 h-16 text-lg"
   };
 
   const getInitials = (user: User) => {
@@ -41,7 +41,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
 
   if (!user) {
     return (
-      <div className={`${sizeClasses[size]} bg-gray-500/20 rounded-full flex items-center justify-center ${className}`}>
+      <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center ${className}`}>
         <span className="text-gray-400">👤</span>
       </div>
     );
@@ -54,7 +54,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   }) : null;
 
   return (
-    <div className={`${sizeClasses[size]} bg-blue-500/20 rounded-full flex items-center justify-center overflow-hidden ${className}`}>
+    <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden ${className}`}>
       {photoAttachment && !imageError ? (
         <img 
           src={`/api/attachments/${photoAttachment.id}/download`}
@@ -63,9 +63,11 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
           onError={() => setImageError(true)}
         />
       ) : (
-        <span className="text-blue-400 font-medium">
-          {getInitials(user)}
-        </span>
+        <div className="w-full h-full bg-blue-500/20 rounded-full flex items-center justify-center">
+          <span className="text-blue-400 font-medium">
+            {getInitials(user)}
+          </span>
+        </div>
       )}
     </div>
   );
