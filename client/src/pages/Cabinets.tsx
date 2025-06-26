@@ -495,8 +495,8 @@ export default function Cabinets() {
               <p className="text-slate-500 mt-2">Add your first cabinet to get started</p>
             </div>
           ) : (
-            <div className="overflow-x-auto" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px', paddingLeft: '24px' }}>
-              <table className="w-full" style={{ tableLayout: 'auto', width: '100%' }}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
                 <thead>
                   <tr className="border-b border-white/10">
                     <th className="text-left py-4 px-4 text-slate-300 font-medium">

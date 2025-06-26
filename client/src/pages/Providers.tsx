@@ -567,24 +567,24 @@ export default function Providers() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-6" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px', paddingLeft: '24px' }}>
-                <table className="w-full min-w-max" style={{ tableLayout: 'auto', width: '100%' }}>
+              <div className="overflow-x-auto -mx-6">
+                <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4" style={{ width: '50px' }}>
+                      <th className="text-left py-3 px-4 w-12">
                         <Checkbox
                           checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
                           onCheckedChange={handleSelectAll}
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Provider</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Contact</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Logo</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Provider</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-40">Company</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Location</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Contact</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-24">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-20">Logo</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400 w-24">Actions</th>
                     </tr>
                   </thead>
                   <tbody>

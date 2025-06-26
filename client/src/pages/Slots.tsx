@@ -661,32 +661,32 @@ export default function Slots() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-6" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px', paddingLeft: '24px' }}>
-                <table className="w-full min-w-max" style={{ tableLayout: 'auto', width: '100%' }}>
+              <div className="overflow-x-auto -mx-6">
+                <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-2 px-3" style={{ width: '50px' }}>
+                      <th className="text-left py-2 px-3 w-12">
                         <Checkbox
                           checked={selectedSlots.length === data?.slots.length && data?.slots.length > 0}
                           onCheckedChange={handleSelectAll}
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('id')}>Slot ID</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('providerId')}>Provider</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('cabinetId')}>Cabinet</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gameMixId')}>Game Mix</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('locationId')}>Location</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('year')}>Year</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gamingPlaces')}>Gaming Places</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('exciterType')}>Exciter Type</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('rtp')}>RTP</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('serialNr')}>Serial Nr</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('invoice')}>Invoice</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('commissionDate')}>Commission Date</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('propertyType')}>Property</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Attachments</th>
-                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400" style={{ width: '100px' }}>Actions</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('id')}>Slot ID</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('providerId')}>Provider</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('cabinetId')}>Cabinet</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('gameMixId')}>Game Mix</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-36" onClick={() => handleSort('locationId')}>Location</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('year')}>Year</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('gamingPlaces')}>Gaming Places</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('exciterType')}>Exciter Type</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('rtp')}>RTP</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-24" onClick={() => handleSort('serialNr')}>Serial Nr</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('invoice')}>Invoice</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-36" onClick={() => handleSort('commissionDate')}>Commission Date</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-24" onClick={() => handleSort('propertyType')}>Property</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28">Attachments</th>
+                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400 w-24">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
