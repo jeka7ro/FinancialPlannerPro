@@ -1011,11 +1011,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/onjn-reports", requireAuth, async (req, res) => {
     try {
+      console.log("ONJN creation request body:", JSON.stringify(req.body, null, 2));
       const onjnReportData = insertOnjnReportSchema.parse(req.body);
       const onjnReport = await storage.createOnjnReport(onjnReportData);
       res.status(201).json(onjnReport);
     } catch (error) {
       if (error instanceof ZodError) {
+        console.error("ONJN validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Create ONJN report error:", error);

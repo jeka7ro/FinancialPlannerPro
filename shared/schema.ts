@@ -408,6 +408,11 @@ export const insertInvoiceSchema = createInsertSchema(invoices).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  invoiceDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
+  dueDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
+  licenseDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
+  paidDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
 });
 
 export const insertRentAgreementSchema = createInsertSchema(rentAgreements).omit({
@@ -426,6 +431,9 @@ export const insertOnjnReportSchema = createInsertSchema(onjnReports).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  commissionDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
+  submissionDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
 });
 
 export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({
