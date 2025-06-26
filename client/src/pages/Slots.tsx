@@ -40,13 +40,15 @@ export default function Slots() {
   const [selectedSlots, setSelectedSlots] = useState<number[]>([]);
   const [selectedProviderIdForCreate, setSelectedProviderIdForCreate] = useState<number | null>(null);
   const [selectedProviderIdForEdit, setSelectedProviderIdForEdit] = useState<number | null>(null);
+  const [sortField, setSortField] = useState<string>('id');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const { toast } = useToast();
   const limit = 10;
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ['/api/slots', currentPage, limit, searchTerm],
+    queryKey: ['/api/slots', currentPage, limit, searchTerm, sortField, sortDirection],
     queryFn: async () => {
-      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}&search=${searchTerm}&sortField=${sortField}&sortDirection=${sortDirection}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch slots');
@@ -311,6 +313,21 @@ export default function Slots() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+    setCurrentPage(1);
+  };
+
+  const getSortIcon = (field: string) => {
+    if (sortField !== field) return '↕';
+    return sortDirection === 'asc' ? '↑' : '↓';
   };
 
   const handleSelectAll = () => {
@@ -612,18 +629,17 @@ export default function Slots() {
                           className="border-white/20"
                         />
                       </th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16">Slot ID</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Provider</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Cabinet</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Game Mix</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Location</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Exciter Type</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16">RTP</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Serial Nr</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Invoice</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28">Commission Date</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Property</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24">Revenue (24h)</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('id')}>Slot ID {getSortIcon('id')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('providerId')}>Provider {getSortIcon('providerId')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('cabinetId')}>Cabinet {getSortIcon('cabinetId')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('gameMixId')}>Game Mix {getSortIcon('gameMixId')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('locationId')}>Location {getSortIcon('locationId')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('exciterType')}>Exciter Type {getSortIcon('exciterType')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-16 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('rtp')}>RTP {getSortIcon('rtp')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('serialNr')}>Serial Nr {getSortIcon('serialNr')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-24 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('invoice')}>Invoice {getSortIcon('invoice')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('commissionDate')}>Commission Date {getSortIcon('commissionDate')}</th>
+                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('propertyType')}>Property {getSortIcon('propertyType')}</th>
                       <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-20">Attachments</th>
                       <th className="text-right py-2 px-3 text-sm font-medium text-slate-400 w-20">Actions</th>
                     </tr>
@@ -685,9 +701,6 @@ export default function Slots() {
                           <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>
                             {slot.propertyType}
                           </Badge>
-                        </td>
-                        <td className="py-4 px-4 text-sm font-semibold text-emerald-500">
-                          €{slot.dailyRevenue ? Number(slot.dailyRevenue).toLocaleString() : '0'}
                         </td>
                         <td className="py-4 px-4">
                           <AttachmentButton 

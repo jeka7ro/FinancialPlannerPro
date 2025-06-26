@@ -546,8 +546,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const search = req.query.search as string || "";
+      const sortField = req.query.sortField as string || "id";
+      const sortDirection = req.query.sortDirection as string || "asc";
       
-      const result = await storage.getSlots(page, limit, search);
+      const result = await storage.getSlots(page, limit, search, sortField, sortDirection);
       res.json(result);
     } catch (error) {
       console.error("Get slots error:", error);

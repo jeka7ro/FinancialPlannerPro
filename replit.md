@@ -123,6 +123,10 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Provider logos now load from attachment system and display properly with white background for visibility
 - June 26, 2025: Redesigned Slots table layout with user-requested column order: Slot ID (auto-increment), Provider, Cabinet, Game Mix, Location, etc.
 - June 26, 2025: Added auto-increment Slot ID column (non-editable) as first column in Slots table
+- June 26, 2025: Implemented sortable table headers for Slots module with click-to-sort functionality
+- June 26, 2025: Removed revenue column from Slots table per user request
+- June 26, 2025: Added backend sorting support for Slots API with sortField and sortDirection parameters
+- June 26, 2025: Updated storage interface and implementation to support sorting by Slot ID
 - June 26, 2025: Implemented ProviderLogo component with proper attachment loading and fallback to initials
 - June 26, 2025: Added locations query to Slots module to support location display in table
 - June 26, 2025: Cleaned up debug console logs after successful provider logo implementation

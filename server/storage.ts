@@ -43,7 +43,7 @@ import {
   type InsertAttachment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, like, count, or } from "drizzle-orm";
+import { eq, desc, and, like, count, or, asc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -94,7 +94,7 @@ export interface IStorage {
 
   // Slot operations
   getSlot(id: number): Promise<Slot | undefined>;
-  getSlots(page?: number, limit?: number, search?: string): Promise<{ slots: Slot[]; total: number }>;
+  getSlots(page?: number, limit?: number, search?: string, sortField?: string, sortDirection?: string): Promise<{ slots: Slot[]; total: number }>;
   createSlot(slot: InsertSlot): Promise<Slot>;
   updateSlot(id: number, slot: Partial<InsertSlot>): Promise<Slot>;
   deleteSlot(id: number): Promise<void>;
@@ -574,7 +574,7 @@ export class DatabaseStorage implements IStorage {
     return slot || undefined;
   }
 
-  async getSlots(page = 1, limit = 10, search = ""): Promise<{ slots: Slot[]; total: number }> {
+  async getSlots(page = 1, limit = 10, search = "", sortField = "id", sortDirection = "asc"): Promise<{ slots: Slot[]; total: number }> {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
@@ -589,11 +589,14 @@ export class DatabaseStorage implements IStorage {
       .from(slots)
       .where(whereClause);
 
+    // Default to ordering by id
+    const orderByClause = sortDirection === 'desc' ? desc(slots.id) : asc(slots.id);
+
     const slotsList = await db
       .select()
       .from(slots)
       .where(whereClause)
-      .orderBy(desc(slots.createdAt))
+      .orderBy(orderByClause)
       .limit(limit)
       .offset(offset);
 
