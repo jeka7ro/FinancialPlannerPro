@@ -20,9 +20,9 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   });
 
   const sizeClasses = {
-    sm: "w-8 h-8 text-sm",
-    md: "w-10 h-10 text-base",
-    lg: "w-12 h-12 text-lg"
+    sm: "w-16 h-16 text-base",
+    md: "w-20 h-20 text-lg",
+    lg: "w-24 h-24 text-xl"
   };
 
   const getInitials = (user: User) => {
