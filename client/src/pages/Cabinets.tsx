@@ -17,7 +17,6 @@ import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
-import { ProviderLogo } from "@/components/ui/provider-logo";
 
 export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -51,68 +50,15 @@ export default function Cabinets() {
     },
   });
 
-  const { data: locations } = useQuery({
-    queryKey: ['/api/locations', 1, 100],
-    queryFn: async () => {
-      const response = await fetch('/api/locations?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
-      return response.json();
-    },
-  });
-
-  const createMutation = useMutation({
-    mutationFn: async (data: InsertCabinet) => {
-      return await apiRequest("POST", "/api/cabinets", data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
-      setIsCreateDialogOpen(false);
-      form.reset();
-      toast({
-        title: "Success",
-        description: "Cabinet created successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to create cabinet. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertCabinet> }) => {
-      return await apiRequest("PUT", `/api/cabinets/${id}`, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
-      setIsEditDialogOpen(false);
-      setEditingCabinet(null);
-      editForm.reset();
-      toast({
-        title: "Success",
-        description: "Cabinet updated successfully.",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error",
-        description: "Failed to update cabinet. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
   const form = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
+      serialNumber: "",
       model: "",
-      status: "active",
-      isActive: true,
+      manufacturer: "",
+      status: "inactive",
+      providerId: undefined,
+      installationDate: "",
     },
   });
 
@@ -122,8 +68,95 @@ export default function Cabinets() {
       serialNumber: "",
       model: "",
       manufacturer: "",
-      status: "active",
-      isActive: true,
+      status: "inactive",
+      providerId: undefined,
+      installationDate: "",
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertCabinet) => {
+      return apiRequest("POST", "/api/cabinets", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
+      setIsCreateDialogOpen(false);
+      form.reset();
+      toast({
+        title: "Success",
+        description: "Cabinet created successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data: InsertCabinet) => {
+      return apiRequest("PUT", `/api/cabinets/${editingCabinet.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
+      setIsEditDialogOpen(false);
+      setEditingCabinet(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Cabinet updated successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/cabinets/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
+      toast({
+        title: "Success",
+        description: "Cabinet deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      return apiRequest("POST", "/api/cabinets/bulk-delete", { ids });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] });
+      setSelectedCabinets([]);
+      toast({
+        title: "Success",
+        description: "Selected cabinets deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
     },
   });
 
@@ -132,40 +165,48 @@ export default function Cabinets() {
   };
 
   const onEditSubmit = (data: InsertCabinet) => {
-    if (editingCabinet) {
-      updateMutation.mutate({ id: editingCabinet.id, data });
-    }
+    updateMutation.mutate(data);
   };
 
-  const handleEdit = (cabinet: any) => {
+  const openEditDialog = (cabinet: Cabinet) => {
     setEditingCabinet(cabinet);
     editForm.reset({
-      providerId: cabinet.providerId,
+      serialNumber: cabinet.serialNumber || "",
       model: cabinet.model || "",
-      status: cabinet.status || "active",
-      installationDate: cabinet.installationDate,
-      lastMaintenanceDate: cabinet.lastMaintenanceDate,
-      nextMaintenanceDate: cabinet.nextMaintenanceDate,
-      dailyRevenue: cabinet.dailyRevenue,
-      isActive: cabinet.isActive ?? true,
+      manufacturer: cabinet.manufacturer || "",  
+      status: cabinet.status || "inactive",
+      providerId: cabinet.providerId || undefined,
+      installationDate: cabinet.installationDate || "",
     });
     setIsEditDialogOpen(true);
   };
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
-  const handleSelectAll = () => {
-    if (selectedCabinets.length === data?.cabinets.length) {
-      setSelectedCabinets([]);
-    } else {
-      setSelectedCabinets(data?.cabinets.map((c: Cabinet) => c.id) || []);
+  if (error) {
+    return (
+      <div className="text-center text-red-500 py-8">
+        Error loading cabinets: {error.message}
+      </div>
+    );
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'active': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case 'maintenance': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'inactive': return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+      default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
     }
   };
 
-  const handleSelectCabinet = (cabinetId: number) => {
+  const toggleCabinetSelection = (cabinetId: number) => {
     setSelectedCabinets(prev => 
       prev.includes(cabinetId) 
         ? prev.filter(id => id !== cabinetId)
@@ -173,122 +214,254 @@ export default function Cabinets() {
     );
   };
 
-  const handleBulkEdit = () => {
-    toast({
-      title: "Bulk Edit",
-      description: `Editing ${selectedCabinets.length} cabinets`,
-    });
-  };
-
-  const handleBulkDelete = () => {
-    if (selectedCabinets.length === 0) return;
-    
-    toast({
-      title: "Bulk Delete",
-      description: `Deleting ${selectedCabinets.length} cabinets`,
-      variant: "destructive",
-    });
-  };
-
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'active':
-        return '💻';
-      case 'maintenance':
-        return '🔧';
-      case 'inactive':
-        return '⚠️';
-      default:
-        return '❓';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'maintenance':
-        return 'status-maintenance';
-      case 'inactive':
-        return 'status-inactive';
-      default:
-        return 'bg-gray-500/20 text-gray-400';
+  const toggleSelectAll = () => {
+    if (selectedCabinets.length === data?.cabinets?.length) {
+      setSelectedCabinets([]);
+    } else {
+      setSelectedCabinets(data?.cabinets.map((c: Cabinet) => c.id) || []);
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Actions */}
-      <div className="flex items-center justify-between">
-        <BulkOperations 
-          selectedCount={selectedCabinets.length}
-          onBulkEdit={handleBulkEdit}
-          onBulkDelete={handleBulkDelete}
-        />
-        <div className="flex items-center gap-2">
-          <ImportExportDialog module="cabinets" moduleName="Cabinets">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Gaming Cabinets</h1>
+          <p className="text-slate-400 mt-2">Manage your gaming cabinet inventory</p>
+        </div>
+        <div className="flex gap-3">
+          <ImportExportDialog 
+            entityType="cabinets"
+            onImport={() => queryClient.invalidateQueries({ queryKey: ['/api/cabinets'] })}
+          />
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="floating-action text-white">
-                <span className="mr-2">➕</span>
+              <Button className="btn-gaming">
+                <Upload className="h-4 w-4 mr-2" />
                 Add Cabinet
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-white">Create New Cabinet</DialogTitle>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="model"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Model</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="form-input" placeholder="Cabinet model" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="providerId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Provider</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+            <DialogContent className="glass-card border-white/10 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Add New Cabinet</DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="serialNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Serial Number</FormLabel>
                           <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select provider" />
-                            </SelectTrigger>
+                            <Input {...field} value={field.value || ""} className="form-input" />
                           </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {providers?.providers?.map((provider: any) => (
-                              <SelectItem key={provider.id} value={provider.id.toString()}>
-                                {provider.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="model"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Model</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="manufacturer"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Manufacturer</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="providerId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Provider</FormLabel>
+                          <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(value ? Number(value) : null)}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select provider" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {providers?.providers?.map((provider: any) => (
+                                <SelectItem key={provider.id} value={provider.id.toString()}>
+                                  {provider.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Status</FormLabel>
+                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="maintenance">Maintenance</SelectItem>
+                              <SelectItem value="inactive">Inactive</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="installationDate"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Installation Date</FormLabel>
+                          <FormControl>
+                            <Input 
+                              type="date" 
+                              value={field.value || ""} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                              className="form-input" 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setIsCreateDialogOpen(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="btn-gaming"
+                      disabled={createMutation.isPending}
+                    >
+                      {createMutation.isPending ? "Creating..." : "Create Cabinet"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Cabinet</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
                 <FormField
-                  control={form.control}
+                  control={editForm.control}
+                  name="serialNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Serial Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="model"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Model</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="manufacturer"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Manufacturer</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="providerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Provider</FormLabel>
+                      <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(value ? Number(value) : null)}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select provider" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          {providers?.providers?.map((provider: any) => (
+                            <SelectItem key={provider.id} value={provider.id.toString()}>
+                              {provider.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
                   name="status"
                   render={({ field }) => (
                     <FormItem>
@@ -309,339 +482,201 @@ export default function Cabinets() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={editForm.control}
+                  name="installationDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Installation Date</FormLabel>
+                      <FormControl>
+                        <Input 
+                          type="date"
+                          value={field.value || ""} 
+                          onChange={(e) => field.onChange(e.target.value)}
+                          className="form-input" 
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-gaming"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Cabinet"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-          </Dialog>
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-gaming"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Cabinet"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
-          {/* Edit Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-white">Edit Cabinet</DialogTitle>
-              </DialogHeader>
-              <Form {...editForm}>
-                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="model"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Model</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="form-input" placeholder="Enter model" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="providerId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Provider</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select provider" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {providers?.providers?.map((provider: any) => (
-                                <SelectItem key={provider.id} value={provider.id.toString()}>
-                                  {provider.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={editForm.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="maintenance">Maintenance</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="installationDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Installation Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              type="datetime-local"
-                              className="form-input" 
-                              value={field.value ? new Date(field.value).toISOString().slice(0, 16) : ""}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="dailyRevenue"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Daily Revenue</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="0.00"
-                              onChange={(e) => field.onChange(e.target.value)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="flex justify-end space-x-4">
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      onClick={() => setIsEditDialogOpen(false)}
-                      className="text-slate-400 hover:text-white"
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      className="btn-gaming"
-                      disabled={updateMutation.isPending}
-                    >
-                      {updateMutation.isPending ? "Updating..." : "Update Cabinet"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-
-      {/* Search */}
       <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search cabinets..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
+        <CardHeader className="border-b border-white/10">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-white">Cabinet Management</CardTitle>
+            <div className="flex gap-4">
+              <Input
+                placeholder="Search cabinets..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 form-input"
+              />
+            </div>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Cabinets List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Gaming Cabinets</CardTitle>
         </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
-              ))}
+        <CardContent className="p-0">
+          {selectedCabinets.length > 0 && (
+            <div className="p-4 border-b border-white/10">
+              <BulkOperations
+                selectedCount={selectedCabinets.length}
+                onBulkDelete={() => bulkDeleteMutation.mutate(selectedCabinets)}
+                isDeleting={bulkDeleteMutation.isPending}
+              />
             </div>
-          ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load cabinets
-            </div>
-          ) : !data?.cabinets?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">💻</span>
-              No cabinets found
+          )}
+          
+          {data?.cabinets?.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-slate-400 text-lg">No cabinets found</p>
+              <p className="text-slate-500 mt-2">Add your first cabinet to get started</p>
             </div>
           ) : (
-            <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 w-12">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">
+                      <Checkbox
+                        checked={selectedCabinets.length === data?.cabinets?.length && data?.cabinets?.length > 0}
+                        onCheckedChange={toggleSelectAll}
+                        className="border-white/20"
+                      />
+                    </th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Cabinet</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Model</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Provider</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Status</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Installation Date</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Attachments</th>
+                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data?.cabinets?.map((cabinet: Cabinet) => (
+                    <tr key={cabinet.id} className="border-b border-white/5 hover:bg-white/5">
+                      <td className="py-4 px-4">
                         <Checkbox
-                          checked={selectedCabinets.length === data?.cabinets.length && data?.cabinets.length > 0}
-                          onCheckedChange={handleSelectAll}
+                          checked={selectedCabinets.includes(cabinet.id)}
+                          onCheckedChange={() => toggleCabinetSelection(cabinet.id)}
                           className="border-white/20"
                         />
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Cabinet</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Model</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Revenue (24h)</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Last Maintenance</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.cabinets.map((cabinet: any) => (
-                      <tr key={cabinet.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
-                          <Checkbox
-                            checked={selectedCabinets.includes(cabinet.id)}
-                            onCheckedChange={() => handleSelectCabinet(cabinet.id)}
-                            className="border-white/20"
-                          />
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-sm">{getStatusIcon(cabinet.status)}</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-white">{cabinet.serialNumber}</p>
-                              <div className="flex items-center gap-2">
-                                {cabinet.providerId && <ProviderLogo providerId={cabinet.providerId} size="sm" />}
-                                <p className="text-xs text-slate-400">{cabinet.manufacturer}</p>
-                              </div>
-                            </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+                            <span className="text-white font-semibold text-sm">
+                              {cabinet.serialNumber?.slice(-2) || 'XX'}
+                            </span>
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {cabinet.model}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {cabinet.locationId ? `Location ${cabinet.locationId}` : 'Unassigned'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getStatusColor(cabinet.status)} border`}>
-                            {cabinet.status}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4 text-sm font-semibold text-emerald-500">
-                          €{cabinet.dailyRevenue ? Number(cabinet.dailyRevenue).toLocaleString() : '0'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-400">
-                          {cabinet.lastMaintenanceDate ? 
-                            new Date(cabinet.lastMaintenanceDate).toLocaleDateString() : 
-                            'Never'
-                          }
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-amber-500 hover:text-amber-400"
-                              onClick={() => handleEdit(cabinet)}
-                            >
-                              ✏️
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
-                            </Button>
+                          <div>
+                            <div className="font-medium text-white">{cabinet.serialNumber}</div>
+                            <div className="text-slate-400 text-sm">{cabinet.manufacturer}</div>
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        {cabinet.model}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        {providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || 'No provider'}
+                      </td>
+                      <td className="py-4 px-4">
+                        <Badge className={`${getStatusColor(cabinet.status)} border`}>
+                          {cabinet.status}
+                        </Badge>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-400">
+                        {cabinet.installationDate ? 
+                          new Date(cabinet.installationDate).toLocaleDateString() : 
+                          'Not set'
                         }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
+                      </td>
+                      <td className="py-4 px-4">
+                        <AttachmentButton 
+                          entityType="cabinet" 
+                          entityId={cabinet.id}
+                        />
+                      </td>
+                      <td className="py-4 px-4">
+                        <div className="flex items-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => openEditDialog(cabinet)}
+                            className="text-slate-400 hover:text-white hover:bg-white/10"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteMutation.mutate(cabinet.id)}
+                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {data?.cabinets?.length > 0 && (
+            <div className="flex justify-between items-center p-4 border-t border-white/10">
+              <div className="text-sm text-slate-400">
+                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
               </div>
-            </>
+              <div className="flex space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="border-white/20 text-slate-400 hover:text-white"
+                >
+                  Previous
+                </Button>
+                <span className="flex items-center px-3 py-1 text-sm text-slate-400 bg-white/5 rounded border border-white/10">
+                  {currentPage}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => prev + 1)}
+                  disabled={currentPage * limit >= data.total}
+                  className="border-white/20 text-slate-400 hover:text-white"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
