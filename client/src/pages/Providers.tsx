@@ -567,11 +567,11 @@ export default function Providers() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
+              <div className="overflow-x-auto -mx-6" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px', paddingLeft: '24px' }}>
+                <table className="w-full min-w-max" style={{ tableLayout: 'auto', width: '100%' }}>
                   <thead>
                     <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 w-12">
+                      <th className="text-left py-3 px-4" style={{ width: '50px' }}>
                         <Checkbox
                           checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
                           onCheckedChange={handleSelectAll}

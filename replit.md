@@ -142,6 +142,9 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Fixed ONJN license commission deletion foreign key constraint errors
 - June 26, 2025: Fixed Slots module numeric field validation errors by adding server-side preprocessing to convert empty strings to null values
 - June 26, 2025: Applied numeric field preprocessing to both create and update slot operations for Year, Gaming Places, and RTP fields
+- June 26, 2025: CRITICAL FIX - Implemented full-width table layout using calc(100vw - 280px) to maximize table space usage across all modules
+- June 26, 2025: Removed table-layout: fixed and width constraints (w-16, w-24, etc.) from table headers to allow dynamic column sizing
+- June 26, 2025: Applied comprehensive table width expansion to Slots, Providers, and Cabinets modules with consistent styling
 - June 26, 2025: Redesigned Cabinet module layout with Provider column first (with logo placeholders) and Cabinet Name second column
 - June 26, 2025: Made serial number field optional and removed from forms per user requirements
 - June 26, 2025: Removed installation date field from Cabinet module completely - from database schema, forms, table display, and export templates
