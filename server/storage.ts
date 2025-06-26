@@ -848,6 +848,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteOnjnReport(id: number): Promise<void> {
+    // First, remove the ONJN report reference from any slots that reference it
+    await db
+      .update(slots)
+      .set({ onjnReportId: null })
+      .where(eq(slots.onjnReportId, id));
+    
+    // Then delete the ONJN report
     await db.delete(onjnReports).where(eq(onjnReports.id, id));
   }
 
