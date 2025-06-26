@@ -444,7 +444,7 @@ export default function ONJN() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-2">
+              <div className="overflow-x-auto -mx-6">
                 <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
