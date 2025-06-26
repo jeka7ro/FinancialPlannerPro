@@ -19,13 +19,7 @@ import {
   insertInvoiceSchema,
   insertRentAgreementSchema,
   insertLegalDocumentSchema,
-  insertOnjnReportSchema,
-  insertBillingPlanSchema,
-  insertLocationBillingSchema,
-  insertRevenueReportSchema,
-  insertAutomatedBillSchema,
-  insertBillingScheduleSchema,
-  insertPaymentHistorySchema
+  insertOnjnReportSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
 
@@ -1239,9 +1233,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Tutorial export error:", error);
       res.status(500).json({ message: "Tutorial export failed", error: error.message });
     }
-  });
-
-
   });
 
   const httpServer = createServer(app);
