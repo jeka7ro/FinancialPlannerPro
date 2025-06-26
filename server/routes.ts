@@ -559,7 +559,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/slots", requireAuth, async (req, res) => {
     try {
-      const slotData = insertSlotSchema.parse(req.body);
+      // Preprocess numeric fields to convert empty strings to null
+      const preprocessedData = { ...req.body };
+      if (preprocessedData.year === "") preprocessedData.year = null;
+      if (preprocessedData.gamingPlaces === "") preprocessedData.gamingPlaces = null;
+      if (preprocessedData.rtp === "") preprocessedData.rtp = null;
+      
+      const slotData = insertSlotSchema.parse(preprocessedData);
       const slot = await storage.createSlot(slotData);
       res.status(201).json(slot);
     } catch (error) {
@@ -588,7 +594,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/slots/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const slotData = insertSlotSchema.partial().parse(req.body);
+      
+      // Preprocess numeric fields to convert empty strings to null
+      const preprocessedData = { ...req.body };
+      if (preprocessedData.year === "") preprocessedData.year = null;
+      if (preprocessedData.gamingPlaces === "") preprocessedData.gamingPlaces = null;
+      if (preprocessedData.rtp === "") preprocessedData.rtp = null;
+      
+      const slotData = insertSlotSchema.partial().parse(preprocessedData);
       const slot = await storage.updateSlot(id, slotData);
       res.json(slot);
     } catch (error) {

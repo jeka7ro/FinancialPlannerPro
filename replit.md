@@ -140,6 +140,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 26, 2025: Fixed Light theme implementation with proper light mode styling for glass effects and sidebar
 - June 26, 2025: Improved left-alignment of all tables and content throughout the application
 - June 26, 2025: Fixed ONJN license commission deletion foreign key constraint errors
+- June 26, 2025: Fixed Slots module numeric field validation errors by adding server-side preprocessing to convert empty strings to null values
+- June 26, 2025: Applied numeric field preprocessing to both create and update slot operations for Year, Gaming Places, and RTP fields
 - June 26, 2025: Redesigned Cabinet module layout with Provider column first (with logo placeholders) and Cabinet Name second column
 - June 26, 2025: Made serial number field optional and removed from forms per user requirements
 - June 26, 2025: Removed installation date field from Cabinet module completely - from database schema, forms, table display, and export templates
