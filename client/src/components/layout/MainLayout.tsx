@@ -37,7 +37,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="grid grid-cols-[256px_1fr] h-screen overflow-hidden bg-background">
       <Sidebar className={sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} />
       
       {/* Mobile overlay */}
@@ -48,17 +48,15 @@ export default function MainLayout({ children }: MainLayoutProps) {
         />
       )}
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex flex-col overflow-hidden">
         <Header 
           title={currentPage.title}
           subtitle={currentPage.subtitle}
           onMenuToggle={toggleSidebar}
         />
         
-        <main className="flex-1 overflow-y-auto py-4 content-wrapper">
-          <div className="w-full max-w-none page-content text-left">
-            {children}
-          </div>
+        <main className="flex-1 overflow-y-auto py-4 px-0">
+          {children}
         </main>
       </div>
     </div>
