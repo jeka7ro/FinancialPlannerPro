@@ -119,13 +119,8 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
-- June 26, 2025: Implemented comprehensive automated billing and rent management system
-- June 26, 2025: Created billing database schema with billing plans, automated bills, revenue reports, and payment tracking
-- June 26, 2025: Built Billing Dashboard with KPI metrics, pending bills overview, and overdue alerts
-- June 26, 2025: Created Billing Plans management for flexible rent structures (fixed, revenue share, hybrid)
-- June 26, 2025: Implemented Revenue Reports module for location-based revenue tracking and verification
-- June 26, 2025: Built Automated Bills module with bill generation, payment tracking, and mark-as-paid functionality
-- June 26, 2025: Added billing system navigation to sidebar with dedicated billing section
+- June 26, 2025: Removed billing system components per user request - user confirmed they don't need billing reports functionality
+- June 26, 2025: Cleaned up navigation and codebase to focus on core gaming management features
 - June 26, 2025: Implemented comprehensive search functionality across all modules - search now filters by any information found in any columns
 - June 26, 2025: Enhanced backend search logic to use OR conditions across all relevant fields for each entity type
 - June 26, 2025: Updated Users search to filter by username, email, firstName, lastName, and role

@@ -20,10 +20,7 @@ import Users from "@/pages/Users";
 import Legal from "@/pages/Legal";
 import ONJN from "@/pages/ONJN";
 import Settings from "@/pages/Settings";
-import BillingDashboard from "@/pages/BillingDashboard";
-import BillingPlans from "@/pages/BillingPlans";
-import RevenueReports from "@/pages/RevenueReports";
-import AutomatedBills from "@/pages/AutomatedBills";
+
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -222,10 +219,6 @@ function AuthenticatedApp() {
         <Route path="/users" component={Users} />
         <Route path="/legal" component={Legal} />
         <Route path="/onjn" component={ONJN} />
-        <Route path="/billing-dashboard" component={BillingDashboard} />
-        <Route path="/billing-plans" component={BillingPlans} />
-        <Route path="/revenue-reports" component={RevenueReports} />
-        <Route path="/automated-bills" component={AutomatedBills} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>
