@@ -17,6 +17,7 @@ import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { ProviderLogo } from "@/components/ui/provider-logo";
 
 export default function Cabinets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -109,9 +110,7 @@ export default function Cabinets() {
   const form = useForm<InsertCabinet>({
     resolver: zodResolver(insertCabinetSchema),
     defaultValues: {
-      serialNumber: "",
       model: "",
-      manufacturer: "",
       status: "active",
       isActive: true,
     },
@@ -141,11 +140,8 @@ export default function Cabinets() {
   const handleEdit = (cabinet: any) => {
     setEditingCabinet(cabinet);
     editForm.reset({
-      locationId: cabinet.locationId,
       providerId: cabinet.providerId,
-      serialNumber: cabinet.serialNumber || "",
       model: cabinet.model || "",
-      manufacturer: cabinet.manufacturer || "",
       status: cabinet.status || "active",
       installationDate: cabinet.installationDate,
       lastMaintenanceDate: cabinet.lastMaintenanceDate,
@@ -254,19 +250,6 @@ export default function Cabinets() {
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
-                    name="serialNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Serial Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter serial number" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name="model"
                     render={({ field }) => (
                       <FormItem>
@@ -278,23 +261,6 @@ export default function Cabinets() {
                       </FormItem>
                     )}
                   />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="manufacturer"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Manufacturer</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Manufacturer name" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="providerId"
@@ -311,30 +277,6 @@ export default function Cabinets() {
                             {providers?.providers?.map((provider: any) => (
                               <SelectItem key={provider.id} value={provider.id.toString()}>
                                 {provider.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select location" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {locations?.locations?.map((location: any) => (
-                              <SelectItem key={location.id} value={location.id.toString()}>
-                                {location.name}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -401,19 +343,6 @@ export default function Cabinets() {
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={editForm.control}
-                      name="serialNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Serial Number</FormLabel>
-                          <FormControl>
-                            <Input {...field} className="form-input" placeholder="Enter serial number" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
                       name="model"
                       render={({ field }) => (
                         <FormItem>
@@ -425,23 +354,6 @@ export default function Cabinets() {
                         </FormItem>
                       )}
                     />
-                  </div>
-
-                  <FormField
-                    control={editForm.control}
-                    name="manufacturer"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Manufacturer</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter manufacturer" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={editForm.control}
                       name="providerId"
@@ -458,30 +370,6 @@ export default function Cabinets() {
                               {providers?.providers?.map((provider: any) => (
                                 <SelectItem key={provider.id} value={provider.id.toString()}>
                                   {provider.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="locationId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Location</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select location" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {locations?.locations?.map((location: any) => (
-                                <SelectItem key={location.id} value={location.id.toString()}>
-                                  {location.name}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -659,7 +547,10 @@ export default function Cabinets() {
                             </div>
                             <div>
                               <p className="text-sm font-medium text-white">{cabinet.serialNumber}</p>
-                              <p className="text-xs text-slate-400">{cabinet.manufacturer}</p>
+                              <div className="flex items-center gap-2">
+                                {cabinet.providerId && <ProviderLogo providerId={cabinet.providerId} size="sm" />}
+                                <p className="text-xs text-slate-400">{cabinet.manufacturer}</p>
+                              </div>
                             </div>
                           </div>
                         </td>

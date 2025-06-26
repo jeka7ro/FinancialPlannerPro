@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { ProviderLogo } from "@/components/ui/provider-logo";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +38,8 @@ export default function Slots() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingSlot, setEditingSlot] = useState<any>(null);
   const [selectedSlots, setSelectedSlots] = useState<number[]>([]);
+  const [selectedProviderIdForCreate, setSelectedProviderIdForCreate] = useState<number | null>(null);
+  const [selectedProviderIdForEdit, setSelectedProviderIdForEdit] = useState<number | null>(null);
   const { toast } = useToast();
   const limit = 10;
 
@@ -238,8 +241,36 @@ export default function Slots() {
     }
   };
 
+  // Filter cabinets and game mixes based on selected provider
+  const getFilteredCabinets = (selectedProviderId: number | null) => {
+    if (!selectedProviderId || !cabinets?.cabinets) return [];
+    return cabinets.cabinets.filter((cabinet: any) => cabinet.providerId === selectedProviderId);
+  };
+
+  const getFilteredGameMixes = (selectedProviderId: number | null) => {
+    if (!selectedProviderId || !gameMixes?.gameMixes) return [];
+    return gameMixes.gameMixes.filter((gameMix: any) => gameMix.providerId === selectedProviderId);
+  };
+
+  const handleProviderChange = (providerId: string, isEdit = false) => {
+    const numericProviderId = parseInt(providerId);
+    
+    if (isEdit) {
+      setSelectedProviderIdForEdit(numericProviderId);
+      // Reset cabinet and game mix when provider changes
+      editForm.setValue('cabinetId', undefined);
+      editForm.setValue('gameMixId', undefined);
+    } else {
+      setSelectedProviderIdForCreate(numericProviderId);
+      // Reset cabinet and game mix when provider changes
+      form.setValue('cabinetId', undefined);
+      form.setValue('gameMixId', undefined);
+    }
+  };
+
   const handleEdit = (slot: any) => {
     setEditingSlot(slot);
+    setSelectedProviderIdForEdit(slot.providerId || null);
     editForm.reset({
       cabinetId: slot.cabinetId || undefined,
       gameMixId: slot.gameMixId || undefined,
@@ -334,6 +365,34 @@ export default function Slots() {
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="providerId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Provider</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => {
+                          field.onChange(parseInt(value));
+                          handleProviderChange(value, false);
+                        }}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select provider first" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {providers?.providers?.map((provider: any) => (
+                              <SelectItem key={provider.id} value={provider.id.toString()}>
+                                {provider.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
@@ -341,14 +400,18 @@ export default function Slots() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Cabinet</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <Select 
+                            value={field.value?.toString()} 
+                            onValueChange={(value) => field.onChange(parseInt(value))}
+                            disabled={!selectedProviderIdForCreate}
+                          >
                             <FormControl>
                               <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select cabinet" />
+                                <SelectValue placeholder={selectedProviderIdForCreate ? "Select cabinet" : "Select provider first"} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className="glass-card border-white/10">
-                              {cabinets?.cabinets?.map((cabinet: any) => (
+                              {getFilteredCabinets(selectedProviderIdForCreate)?.map((cabinet: any) => (
                                 <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
                                   {cabinet.model}
                                 </SelectItem>
@@ -365,14 +428,18 @@ export default function Slots() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Game Mix</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <Select 
+                            value={field.value?.toString()} 
+                            onValueChange={(value) => field.onChange(parseInt(value))}
+                            disabled={!selectedProviderIdForCreate}
+                          >
                             <FormControl>
                               <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select game mix" />
+                                <SelectValue placeholder={selectedProviderIdForCreate ? "Select game mix" : "Select provider first"} />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className="glass-card border-white/10">
-                              {gameMixes?.gameMixes?.map((gameMix: any) => (
+                              {getFilteredGameMixes(selectedProviderIdForCreate)?.map((gameMix: any) => (
                                 <SelectItem key={gameMix.id} value={gameMix.id.toString()}>
                                   {gameMix.name}
                                 </SelectItem>
@@ -385,33 +452,7 @@ export default function Slots() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="providerId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Provider</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select provider" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {providers?.providers?.map((provider: any) => (
-                                <SelectItem key={provider.id} value={provider.id.toString()}>
-                                  {provider.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
 
-                  </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <FormField
@@ -590,8 +631,9 @@ export default function Slots() {
                           <div className="font-medium text-white text-sm truncate">
                             {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
                           </div>
-                          <div className="text-xs text-slate-400 truncate">
-                            {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
+                          <div className="flex items-center gap-2 text-xs text-slate-400 truncate">
+                            {slot.providerId && <ProviderLogo providerId={slot.providerId} size="sm" />}
+                            <span>{providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}</span>
                           </div>
                         </td>
                         <td className="py-3 px-3 text-sm text-slate-300 truncate">

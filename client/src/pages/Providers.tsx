@@ -17,6 +17,7 @@ import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { ProviderLogo } from "@/components/ui/provider-logo";
 
 export default function Providers() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -558,6 +559,7 @@ export default function Providers() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Contact</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Logo</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
                   </thead>
@@ -572,9 +574,12 @@ export default function Providers() {
                           />
                         </td>
                         <td className="py-4 px-4">
-                          <div>
-                            <p className="text-sm font-medium text-white">{provider.name}</p>
-                            <p className="text-xs text-slate-400">{provider.contactPerson || 'No contact person'}</p>
+                          <div className="flex items-center gap-3">
+                            <ProviderLogo providerId={provider.id} size="md" />
+                            <div>
+                              <p className="text-sm font-medium text-white">{provider.name}</p>
+                              <p className="text-xs text-slate-400">{provider.contactPerson || 'No contact person'}</p>
+                            </div>
                           </div>
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
@@ -597,6 +602,12 @@ export default function Providers() {
                           <Badge className={provider.isActive ? 'status-active' : 'status-inactive'}>
                             {provider.isActive ? 'Active' : 'Inactive'}
                           </Badge>
+                        </td>
+                        <td className="py-4 px-4">
+                          <AttachmentButton 
+                            entityType="provider" 
+                            entityId={provider.id}
+                          />
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">

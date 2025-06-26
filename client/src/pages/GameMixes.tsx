@@ -18,6 +18,7 @@ import { Upload, Edit, Trash2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { ProviderLogo } from "@/components/ui/provider-logo";
 
 export default function GameMixes() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -411,8 +412,13 @@ export default function GameMixes() {
                             </div>
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
+                        <td className="py-3 px-3">
+                          <div className="flex items-center gap-2">
+                            {gameMix.providerId && <ProviderLogo providerId={gameMix.providerId} size="sm" />}
+                            <span className="text-sm text-slate-300 truncate">
+                              {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
+                            </span>
+                          </div>
                         </td>
                         <td className="py-3 px-3 text-sm text-slate-300">
                           {gameMix.gameCount} games
