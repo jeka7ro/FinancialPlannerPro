@@ -49,11 +49,15 @@ export default function Slots() {
     queryKey: ['/api/slots', currentPage, limit, searchTerm, sortField, sortDirection],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}${searchParam}&sortField=${sortField}&sortDirection=${sortDirection}`, {
+      const url = `/api/slots?page=${currentPage}&limit=${limit}${searchParam}&sortField=${sortField}&sortDirection=${sortDirection}`;
+      console.log('Fetching slots with URL:', url);
+      const response = await fetch(url, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch slots');
-      return response.json();
+      const result = await response.json();
+      console.log('Slots API response:', result);
+      return result;
     },
   });
 
@@ -315,6 +319,7 @@ export default function Slots() {
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('Search input changed:', e.target.value);
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
