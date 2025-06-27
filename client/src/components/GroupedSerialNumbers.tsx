@@ -102,20 +102,14 @@ export function GroupedSerialNumbers({ serialNumbers, maxLength = 80 }: GroupedS
   const groupedDisplay = formatGroupedDisplay(groups);
   const originalCount = serialNumbers.split(/[,;\s-]+/).filter(n => n.trim() && /^\d+$/.test(n.trim())).length;
 
-  // If the grouped display is short enough, show it directly
-  if (groupedDisplay.length <= maxLength) {
+  // Always show compact style for multiple serials
+  if (originalCount <= 1) {
     return (
       <div className="flex items-center gap-2">
-        <span className="font-mono text-sm">{groupedDisplay}</span>
-        <Badge variant="secondary" className="text-xs">
-          {originalCount} serials
-        </Badge>
+        <span className="font-mono text-sm">{serialNumbers.trim()}</span>
       </div>
     );
   }
-
-  // Otherwise show a compact version with expand option
-  const compactDisplay = groupedDisplay.substring(0, maxLength) + "...";
 
   return (
     <div className="flex items-center gap-2">
@@ -124,33 +118,34 @@ export function GroupedSerialNumbers({ serialNumbers, maxLength = 80 }: GroupedS
           <Button 
             variant="ghost" 
             size="sm" 
-            className="h-auto p-1 font-mono text-sm hover:bg-gray-100 dark:hover:bg-gray-800"
+            className="h-auto px-2 py-1 text-sm bg-blue-500/20 text-blue-300 border border-blue-500/50 hover:bg-blue-500/30 rounded"
           >
-            {isOpen ? <ChevronDown className="h-3 w-3 mr-1" /> : <ChevronRight className="h-3 w-3 mr-1" />}
-            {compactDisplay}
+            Multiple Serials ({originalCount})
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-96 p-4" align="start">
+        <PopoverContent className="w-96 p-4 glass-card border-white/10" align="start">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="font-semibold">Grouped Serial Numbers</h4>
-              <Badge variant="secondary">{originalCount} total</Badge>
+              <h4 className="font-semibold text-white">Serial Numbers Review</h4>
+              <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/50">
+                {originalCount} total
+              </Badge>
             </div>
             
             <div className="space-y-2 max-h-60 overflow-y-auto">
               {groups.map((group, index) => (
-                <div key={index} className="border-l-2 border-blue-200 pl-3">
-                  <div className="font-medium text-blue-700 dark:text-blue-400">
+                <div key={index} className="border-l-2 border-blue-400 pl-3">
+                  <div className="font-medium text-blue-400">
                     {group.year}
                   </div>
-                  <div className="font-mono text-sm text-gray-600 dark:text-gray-300">
+                  <div className="font-mono text-sm text-slate-300">
                     {group.ranges.join(', ')}
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="pt-2 border-t text-xs text-gray-500">
+            <div className="pt-2 border-t border-white/10 text-xs text-slate-400">
               <strong>Original:</strong> {serialNumbers.length > 100 ? 
                 serialNumbers.substring(0, 100) + "..." : 
                 serialNumbers
@@ -159,10 +154,6 @@ export function GroupedSerialNumbers({ serialNumbers, maxLength = 80 }: GroupedS
           </div>
         </PopoverContent>
       </Popover>
-      
-      <Badge variant="secondary" className="text-xs">
-        {originalCount} serials
-      </Badge>
     </div>
   );
 }
