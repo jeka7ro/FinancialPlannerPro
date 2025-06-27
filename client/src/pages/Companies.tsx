@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -240,6 +240,9 @@ export default function Companies() {
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Company</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Add a new gaming company to the system with registration and contact details.
+              </DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -576,6 +579,9 @@ export default function Companies() {
         <DialogContent className="glass-dialog border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-white">Edit Company</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Update the company information and business details.
+            </DialogDescription>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">

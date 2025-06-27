@@ -4,7 +4,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
@@ -235,6 +235,9 @@ export default function Users() {
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create New User</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Create a new system user with role permissions and location access.
+              </DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -577,6 +580,9 @@ export default function Users() {
         <DialogContent className="glass-card border-white/10 max-w-md">
           <DialogHeader>
             <DialogTitle className="text-white">Edit User</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Modify user account settings, role permissions, and location assignments.
+            </DialogDescription>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
