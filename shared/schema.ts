@@ -138,6 +138,7 @@ export const invoices = pgTable("invoices", {
   id: serial("id").primaryKey(),
   invoiceNumber: varchar("invoice_number", { length: 100 }).notNull().unique(),
   companyId: integer("company_id").references(() => companies.id),
+  sellerCompanyId: integer("seller_company_id").references(() => companies.id),
   locationId: integer("location_id").references(() => locations.id),
   invoiceDate: timestamp("invoice_date").notNull(),
   dueDate: timestamp("due_date").notNull(),
@@ -150,6 +151,7 @@ export const invoices = pgTable("invoices", {
   licenseDate: timestamp("license_date"), // Date for ONJN license connection
   amortizationMonths: integer("amortization_months"), // Number of months for amortization
   propertyType: varchar("property_type", { length: 50 }).default("property"), // property or rent
+  currency: varchar("currency", { length: 3 }).default("EUR"), // LEI, USD, EUR
   notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

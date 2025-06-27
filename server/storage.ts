@@ -695,6 +695,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteInvoice(id: number): Promise<void> {
+    // First remove any references from slots table
+    await db.update(slots)
+      .set({ invoiceId: null })
+      .where(eq(slots.invoiceId, id));
+    
+    // Then delete the invoice
     await db.delete(invoices).where(eq(invoices.id, id));
   }
 

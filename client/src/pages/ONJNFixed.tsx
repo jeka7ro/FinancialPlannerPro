@@ -14,6 +14,7 @@ import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
 import { InsertOnjnReport, insertOnjnReportSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 
 // Notification types for ONJN system
 const notificationTypes = [
@@ -308,11 +309,9 @@ export default function ONJNFixed() {
                   <label className="block text-sm font-medium text-white mb-2">
                     Attachments
                   </label>
-                  <input 
-                    type="file" 
-                    multiple 
-                    className="form-input w-full"
-                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                  <AttachmentButton
+                    entityType="onjn_notification"
+                    entityId={0}
                   />
                 </div>
                 

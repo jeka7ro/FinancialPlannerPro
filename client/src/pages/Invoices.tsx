@@ -33,6 +33,20 @@ const getPropertyTypeColor = (propertyType: string) => {
   }
 };
 
+// Utility function for currency symbols
+const getCurrencySymbol = (currency: string) => {
+  switch (currency?.toUpperCase()) {
+    case 'LEI':
+      return 'lei';
+    case 'USD':
+      return '$';
+    case 'EUR':
+      return '€';
+    default:
+      return '€';
+  }
+};
+
 export default function Invoices() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -299,7 +313,7 @@ export default function Invoices() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   <FormField
                     control={form.control}
                     name="companyId"
@@ -310,6 +324,30 @@ export default function Invoices() {
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select company" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {companies?.companies?.map((company: any) => (
+                              <SelectItem key={company.id} value={company.id.toString()}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="sellerCompanyId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Seller Company</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select seller company" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="glass-card border-white/10">
@@ -521,7 +559,7 @@ export default function Invoices() {
                     name="totalAmount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Total Amount (€)</FormLabel>
+                        <FormLabel className="text-white">Total Amount</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
@@ -531,6 +569,28 @@ export default function Invoices() {
                             placeholder="0.00"
                           />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Currency</FormLabel>
+                        <Select value={field.value || "EUR"} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="LEI">LEI (lei)</SelectItem>
+                            <SelectItem value="USD">USD ($)</SelectItem>
+                            <SelectItem value="EUR">EUR (€)</SelectItem>
+                          </SelectContent>
+                        </Select>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -789,13 +849,13 @@ export default function Invoices() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-4 gap-4">
                     <FormField
                       control={editForm.control}
                       name="subtotal"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Subtotal (€)</FormLabel>
+                          <FormLabel className="text-white">Subtotal</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -815,7 +875,7 @@ export default function Invoices() {
                       name="taxAmount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Tax Amount (€)</FormLabel>
+                          <FormLabel className="text-white">Tax Amount</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -835,7 +895,7 @@ export default function Invoices() {
                       name="totalAmount"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Total Amount (€)</FormLabel>
+                          <FormLabel className="text-white">Total Amount</FormLabel>
                           <FormControl>
                             <Input 
                               {...field} 
@@ -846,6 +906,28 @@ export default function Invoices() {
                               placeholder="0.00"
                             />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Currency</FormLabel>
+                          <Select value={field.value || "EUR"} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select currency" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              <SelectItem value="LEI">LEI (lei)</SelectItem>
+                              <SelectItem value="USD">USD ($)</SelectItem>
+                              <SelectItem value="EUR">EUR (€)</SelectItem>
+                            </SelectContent>
+                          </Select>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -936,11 +1018,13 @@ export default function Invoices() {
                     <tr className="border-b border-white/10">
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Seller</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amortization</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property Type</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Currency</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amount</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Due Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
@@ -964,10 +1048,22 @@ export default function Invoices() {
                           </div>
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.companyId ? `Company ${invoice.companyId}` : 'No company'}
+                          {invoice.companyId ? 
+                            companies?.companies?.find((c: any) => c.id === invoice.companyId)?.name || `Company ${invoice.companyId}` : 
+                            'No company'
+                          }
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.locationId ? `Location ${invoice.locationId}` : 'No location'}
+                          {invoice.sellerCompanyId ? 
+                            companies?.companies?.find((c: any) => c.id === invoice.sellerCompanyId)?.name || `Seller ${invoice.sellerCompanyId}` : 
+                            'No seller'
+                          }
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.locationId ? 
+                            locations?.locations?.find((l: any) => l.id === invoice.locationId)?.name || `Location ${invoice.locationId}` : 
+                            'No location'
+                          }
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           <GroupedSerialNumbers serialNumbers={invoice.serialNumbers || ''} />
@@ -983,8 +1079,13 @@ export default function Invoices() {
                             {invoice.propertyType || 'property'}
                           </Badge>
                         </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
+                            {(invoice as any).currency || 'EUR'}
+                          </span>
+                        </td>
                         <td className="py-4 px-4 text-sm font-semibold text-white">
-                          €{Number(invoice.totalAmount).toLocaleString()}
+                          {getCurrencySymbol((invoice as any).currency || 'EUR')}{Number(invoice.totalAmount).toLocaleString()}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {new Date(invoice.dueDate).toLocaleDateString()}
