@@ -10,9 +10,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
 import { InsertOnjnReport, insertOnjnReportSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 
 // Notification types for ONJN system
 const notificationTypes = [
@@ -500,7 +501,7 @@ export default function ONJNFixed() {
                     {new Date(report.commissionDate).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="text-white">
-                    {report.serialNumbers || 'N/A'}
+                    <GroupedSerialNumbers serialNumbers={report.serialNumbers || ''} />
                   </TableCell>
                   <TableCell className="text-white">
                     <span className={`px-2 py-1 rounded text-xs ${

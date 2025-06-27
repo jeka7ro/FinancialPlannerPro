@@ -17,49 +17,9 @@ import { Badge } from "@/components/ui/badge";
 import { Upload, Edit, Trash2, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 
-// Serial Numbers Display Component
-const SerialNumbersDisplay = ({ serialNumbers }: { serialNumbers: string | null }) => {
-  if (!serialNumbers) {
-    return <span className="text-slate-500">No serials</span>;
-  }
 
-  const serials = serialNumbers.split(' ').filter((sn: string) => sn.trim());
-  
-  if (serials.length <= 1) {
-    return (
-      <Badge variant="outline" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/50">
-        {serials[0]}
-      </Badge>
-    );
-  }
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-auto p-1 text-xs bg-blue-500/20 text-blue-300 border border-blue-500/50 hover:bg-blue-500/30"
-        >
-          multiple serials ({serials.length}) <ChevronDown className="ml-1 h-3 w-3" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 glass-card border-white/10">
-        <div className="space-y-2">
-          <h4 className="font-medium text-white">Serial Numbers</h4>
-          <div className="flex flex-wrap gap-1">
-            {serials.map((serialNumber: string, index: number) => (
-              <Badge key={index} variant="outline" className="text-xs bg-blue-500/20 text-blue-300 border-blue-500/50">
-                {serialNumber}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-};
 
 // Utility function for property type colors
 const getPropertyTypeColor = (propertyType: string) => {
@@ -1010,7 +970,7 @@ export default function Invoices() {
                           {invoice.locationId ? `Location ${invoice.locationId}` : 'No location'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          <SerialNumbersDisplay serialNumbers={invoice.serialNumbers} />
+                          <GroupedSerialNumbers serialNumbers={invoice.serialNumbers || ''} />
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {invoice.licenseDate ? new Date(invoice.licenseDate).toLocaleDateString() : 'No license date'}
