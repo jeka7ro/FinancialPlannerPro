@@ -77,12 +77,34 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const ONJN_LOCAL_NOTIFICATION_TYPES = [
+  "Obtaining Authorization",
+  "Change of Location", 
+  "Remove from Location"
+];
+
+const ONJN_CENTRAL_NOTIFICATION_TYPES = [
+  "New Commission",
+  "Sales Notification",
+  "Buy Notification", 
+  "Jackpot List",
+  "Change Location",
+  "Software Update",
+  "Offline",
+  "Autoexcluded clients",
+  "Remove Authorization",
+  "Legal Notification"
+];
+
 export default function ONJN() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [editingReport, setEditingReport] = useState<any>(null);
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [notificationAuthority, setNotificationAuthority] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const limit = 10;
@@ -222,7 +244,7 @@ export default function ONJN() {
       commissionDate: report.commissionDate ? new Date(report.commissionDate) : new Date(),
       serialNumbers: report.serialNumbers || "",
       companyId: report.companyId || undefined,
-      locationId: report.locationId || undefined,
+      locationIds: report.locationIds || "",
       submissionDate: report.submissionDate ? new Date(report.submissionDate) : undefined,
       status: report.status || "draft",
       notes: report.notes || "",
@@ -261,12 +283,7 @@ export default function ONJN() {
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <ImportExportDialog module="onjn-reports" moduleName="License Commissions">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
+
         </div>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
@@ -343,7 +360,7 @@ export default function ONJN() {
                   />
                   <FormField
                     control={form.control}
-                    name="locationId"
+                    name="locationIds"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Location</FormLabel>
@@ -664,7 +681,7 @@ export default function ONJN() {
                 />
                 <FormField
                   control={editForm.control}
-                  name="locationId"
+                  name="locationIds"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Location</FormLabel>
