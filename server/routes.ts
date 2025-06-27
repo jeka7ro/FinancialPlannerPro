@@ -672,18 +672,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const invoiceData = insertInvoiceSchema.parse(req.body);
       const invoice = await storage.createInvoice(invoiceData);
       
-      // If invoice has license date and serial numbers, create ONJN report
-      if (invoiceData.licenseDate && invoiceData.serialNumbers) {
+      // If invoice has serial numbers, create ONJN report
+      if (invoiceData.serialNumbers) {
         const serialNumbers = invoiceData.serialNumbers.split(' ').filter(sn => sn.trim());
         
         for (const serialNumber of serialNumbers) {
           try {
             await storage.createOnjnReport({
               commissionType: 'license_commission',
-              commissionDate: invoiceData.licenseDate,
+              commissionDate: new Date(),
               serialNumbers: serialNumber,
               companyId: invoiceData.companyId,
-              locationId: invoiceData.locationId,
+              locationIds: invoiceData.locationIds || '',
               status: 'pending'
             });
           } catch (onjnError) {
@@ -740,6 +740,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete invoice error:", error);
       res.status(500).json({ message: "Failed to delete invoice" });
+    }
+  });
+
+  app.post("/api/invoices/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid IDs provided" });
+      }
+      
+      for (const id of ids) {
+        await storage.deleteInvoice(parseInt(id));
+      }
+      
+      res.json({ message: `${ids.length} invoices deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete invoices error:", error);
+      res.status(500).json({ message: "Failed to delete invoices" });
     }
   });
 
@@ -1034,6 +1052,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/legal-documents/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid IDs provided" });
+      }
+      
+      for (const id of ids) {
+        await storage.deleteLegalDocument(parseInt(id));
+      }
+      
+      res.json({ message: `${ids.length} legal documents deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete legal documents error:", error);
+      res.status(500).json({ message: "Failed to delete legal documents" });
+    }
+  });
+
   // ONJN Report routes
   app.get("/api/onjn-reports", requireAuth, async (req, res) => {
     try {
@@ -1102,6 +1138,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Delete ONJN report error:", error);
       res.status(500).json({ message: "Failed to delete ONJN report" });
+    }
+  });
+
+  app.post("/api/onjn-reports/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid IDs provided" });
+      }
+      
+      for (const id of ids) {
+        await storage.deleteOnjnReport(parseInt(id));
+      }
+      
+      res.json({ message: `${ids.length} ONJN reports deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete ONJN reports error:", error);
+      res.status(500).json({ message: "Failed to delete ONJN reports" });
     }
   });
 

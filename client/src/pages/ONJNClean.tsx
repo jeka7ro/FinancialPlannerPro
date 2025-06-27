@@ -15,6 +15,8 @@ import { InsertOnjnReport, insertOnjnReportSchema } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 import { AttachmentButton } from "@/components/ui/attachment-button";
+import { BulkOperations } from "@/components/ui/bulk-operations";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function ONJNClean() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,6 +25,7 @@ export default function ONJNClean() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [editingReport, setEditingReport] = useState<any>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const limit = 10;
@@ -126,6 +129,68 @@ export default function ONJNClean() {
       });
     },
   });
+
+  // Bulk delete mutation
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      return await apiRequest("POST", '/api/onjn-reports/bulk-delete', { ids });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] });
+      setSelectedItems(new Set());
+      toast({
+        title: "Success",
+        description: "Selected ONJN reports deleted successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete selected ONJN reports. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Search handler
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  // Bulk operations handlers
+  const handleSelectAll = () => {
+    if (selectedItems.size === data?.onjnReports?.length) {
+      setSelectedItems(new Set());
+    } else {
+      const allIds = data?.onjnReports?.map((item: any) => item.id) || [];
+      setSelectedItems(new Set(allIds.filter((id: any): id is number => typeof id === 'number')));
+    }
+  };
+
+  const handleSelectItem = (id: number) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedItems.size === 0) return;
+    if (window.confirm(`Are you sure you want to delete ${selectedItems.size} ONJN reports?`)) {
+      bulkDeleteMutation.mutate(Array.from(selectedItems));
+    }
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: "Bulk edit functionality will be implemented soon.",
+    });
+  };
 
   // Forms
   const form = useForm<InsertOnjnReport>({
@@ -373,79 +438,104 @@ export default function ONJNClean() {
               No ONJN reports found
             </div>
           ) : (
-            <div className="overflow-x-auto -mx-6">
-              <table className="w-full min-w-max">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
-                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
-                    <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.onjnReports.map((report: any) => (
-                    <tr key={report.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                      <td className="py-4 px-4 text-sm font-medium text-white">
-                        {report.id}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        {report.commissionDate ? new Date(report.commissionDate).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        <GroupedSerialNumbers serialNumbers={report.serialNumbers || ''} />
-                      </td>
-                      <td className="py-4 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          report.status === 'approved' ? 'bg-green-500/20 text-green-300' :
-                          report.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
-                          report.status === 'rejected' ? 'bg-red-500/20 text-red-300' :
-                          'bg-gray-500/20 text-gray-300'
-                        }`}>
-                          {report.status}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'N/A'}
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        N/A
-                      </td>
-                      <td className="py-4 px-4">
-                        <AttachmentButton
-                          entityType="onjn_report"
-                          entityId={report.id}
+            <>
+              {/* Bulk Operations */}
+              {selectedItems.size > 0 && (
+                <div className="mb-4">
+                  <BulkOperations
+                    selectedCount={selectedItems.size}
+                    onBulkEdit={handleBulkEdit}
+                    onBulkDelete={handleBulkDelete}
+                  />
+                </div>
+              )}
+              
+              <div className="overflow-x-auto -mx-6">
+                <table className="w-full min-w-max">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-16">
+                        <Checkbox
+                          checked={selectedItems.size === data?.onjnReports?.length && data?.onjnReports?.length > 0}
+                          onCheckedChange={handleSelectAll}
                         />
-                      </td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleEdit(report)}
-                            className="text-slate-400 hover:text-slate-300"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => deleteMutation.mutate(report.id)}
-                            className="text-red-400 hover:text-red-300"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
+                      </th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {data.onjnReports.map((report: any) => (
+                      <tr key={report.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedItems.has(report.id)}
+                            onCheckedChange={() => handleSelectItem(report.id)}
+                          />
+                        </td>
+                        <td className="py-4 px-4 text-sm font-medium text-white">
+                          {report.id}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {report.commissionDate ? new Date(report.commissionDate).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          <GroupedSerialNumbers serialNumbers={report.serialNumbers || ''} />
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            report.status === 'approved' ? 'bg-green-500/20 text-green-300' :
+                            report.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
+                            report.status === 'rejected' ? 'bg-red-500/20 text-red-300' :
+                            'bg-gray-500/20 text-gray-300'
+                          }`}>
+                            {report.status}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          N/A
+                        </td>
+                        <td className="py-4 px-4">
+                          <AttachmentButton
+                            entityType="onjn_report"
+                            entityId={report.id}
+                          />
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleEdit(report)}
+                              className="text-slate-400 hover:text-slate-300"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => deleteMutation.mutate(report.id)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

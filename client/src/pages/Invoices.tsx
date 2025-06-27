@@ -18,6 +18,8 @@ import { Upload, Edit, Trash2, ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
+import { BulkOperations } from "@/components/ui/bulk-operations";
+import { Checkbox } from "@/components/ui/checkbox";
 
 
 
@@ -53,6 +55,8 @@ export default function Invoices() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<any>(null);
+  const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [isImportExportOpen, setIsImportExportOpen] = useState(false);
   const { toast } = useToast();
   const limit = 10;
 
@@ -153,6 +157,27 @@ export default function Invoices() {
     },
   });
 
+  const bulkDeleteMutation = useMutation({
+    mutationFn: async (ids: number[]) => {
+      await Promise.all(ids.map(id => apiRequest("DELETE", `/api/invoices/${id}`)));
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: `${selectedItems.size} invoices deleted successfully`,
+      });
+      setSelectedItems(new Set());
+      queryClient.invalidateQueries({ queryKey: ["/api/invoices"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to delete invoices",
+        variant: "destructive",
+      });
+    },
+  });
+
   const form = useForm<InsertInvoice>({
     resolver: zodResolver(insertInvoiceSchema),
     defaultValues: {
@@ -236,6 +261,53 @@ export default function Invoices() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.size === data?.invoices?.length) {
+      setSelectedItems(new Set());
+    } else {
+      const allIds = data?.invoices?.map((item: any) => item.id) || [];
+      setSelectedItems(new Set(allIds.filter((id: any): id is number => typeof id === 'number')));
+    }
+  };
+
+  const handleSelectItem = (id: number) => {
+    const newSelected = new Set(selectedItems);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedItems(newSelected);
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedItems.size === 0) return;
+    if (window.confirm(`Are you sure you want to delete ${selectedItems.size} invoices?`)) {
+      bulkDeleteMutation.mutate(Array.from(selectedItems));
+    }
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: "Bulk edit functionality will be implemented soon",
+    });
+  };
+
+  const handleExport = (format: 'pdf' | 'excel') => {
+    toast({
+      title: "Export",
+      description: `Exporting ${format.toUpperCase()} format...`,
+    });
+  };
+
+  const handleImport = (file: File) => {
+    toast({
+      title: "Import",
+      description: "Import functionality will be implemented soon",
+    });
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
@@ -1029,10 +1101,27 @@ export default function Invoices() {
             </div>
           ) : (
             <>
+              {/* Bulk Operations */}
+              {selectedItems.size > 0 && (
+                <div className="mb-4">
+                  <BulkOperations
+                    selectedCount={selectedItems.size}
+                    onBulkEdit={handleBulkEdit}
+                    onBulkDelete={handleBulkDelete}
+                  />
+                </div>
+              )}
+              
               <div className="overflow-x-auto -mx-6">
                 <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-16">
+                        <Checkbox
+                          checked={selectedItems.size === data?.invoices?.length && data?.invoices?.length > 0}
+                          onCheckedChange={handleSelectAll}
+                        />
+                      </th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
@@ -1053,6 +1142,12 @@ export default function Invoices() {
                   <tbody>
                     {data.invoices.map((invoice: any) => (
                       <tr key={invoice.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4">
+                          <Checkbox
+                            checked={selectedItems.has(invoice.id)}
+                            onCheckedChange={() => handleSelectItem(invoice.id)}
+                          />
+                        </td>
                         <td className="py-4 px-4 text-sm font-medium text-white">
                           {invoice.id}
                         </td>
