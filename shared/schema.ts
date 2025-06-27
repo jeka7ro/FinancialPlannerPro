@@ -177,7 +177,7 @@ export const legalDocuments = pgTable("legal_documents", {
   title: varchar("title", { length: 255 }).notNull(),
   documentType: varchar("document_type", { length: 100 }).notNull(),
   companyId: integer("company_id").references(() => companies.id),
-  locationId: integer("location_id").references(() => locations.id),
+  locationIds: text("location_ids"), // Multiple location IDs separated by commas
   issueDate: timestamp("issue_date"),
   expiryDate: timestamp("expiry_date"),
   issuingAuthority: varchar("issuing_authority", { length: 255 }),
@@ -188,14 +188,20 @@ export const legalDocuments = pgTable("legal_documents", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// ONJN Reports table - License Commission
+// ONJN Reports table - License Commission and Notifications
 export const onjnReports = pgTable("onjn_reports", {
   id: serial("id").primaryKey(),
-  commissionType: varchar("commission_type", { length: 100 }).notNull().default("license_commission"),
-  commissionDate: timestamp("commission_date").notNull(),
+  type: varchar("type", { length: 100 }).notNull().default("license_commission"), // "license_commission" or "notification"
+  // For license commissions
+  commissionType: varchar("commission_type", { length: 100 }),
+  commissionDate: timestamp("commission_date"),
   serialNumbers: text("serial_numbers"), // Multiple serial numbers separated by spaces, like invoices
+  // For notifications
+  notificationAuthority: varchar("notification_authority", { length: 50 }), // "onjn_central" or "onjn_local"
+  notificationType: varchar("notification_type", { length: 100 }), // Various notification types
+  notificationDate: timestamp("notification_date"),
+  locationIds: text("location_ids"), // Multiple location IDs separated by commas
   companyId: integer("company_id").references(() => companies.id),
-  locationId: integer("location_id").references(() => locations.id),
   submissionDate: timestamp("submission_date"),
   status: varchar("status", { length: 50 }).notNull().default("draft"),
   notes: text("notes"),
@@ -334,20 +340,12 @@ export const legalDocumentsRelations = relations(legalDocuments, ({ one }) => ({
     fields: [legalDocuments.companyId],
     references: [companies.id],
   }),
-  location: one(locations, {
-    fields: [legalDocuments.locationId],
-    references: [locations.id],
-  }),
 }));
 
 export const onjnReportsRelations = relations(onjnReports, ({ one, many }) => ({
   company: one(companies, {
     fields: [onjnReports.companyId],
     references: [companies.id],
-  }),
-  location: one(locations, {
-    fields: [onjnReports.locationId],
-    references: [locations.id],
   }),
   slots: many(slots),
 }));
