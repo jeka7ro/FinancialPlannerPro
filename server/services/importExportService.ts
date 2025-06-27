@@ -229,6 +229,189 @@ export class ImportExportService {
     return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
   }
 
+  async exportSlotsToExcel(): Promise<Buffer> {
+    const { slots } = await storage.getSlots(1, 1000);
+    const exportData = slots.map(slot => ({
+      id: slot.id,
+      cabinetId: slot.cabinetId,
+      gameMixId: slot.gameMixId,
+      providerId: slot.providerId,
+      exciterType: slot.exciterType,
+      denomination: slot.denomination,
+      maxBet: slot.maxBet,
+      rtp: slot.rtp,
+      propertyType: slot.propertyType,
+      serialNr: slot.serialNr,
+      year: slot.year,
+      gamingPlaces: slot.gamingPlaces,
+      isActive: slot.isActive,
+      createdAt: slot.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Slots');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportProvidersToExcel(): Promise<Buffer> {
+    const { providers } = await storage.getProviders(1, 1000);
+    const exportData = providers.map(provider => ({
+      id: provider.id,
+      name: provider.name,
+      companyName: provider.companyName,
+      contactPerson: provider.contactPerson,
+      email: provider.email,
+      phone: provider.phone,
+      address: provider.address,
+      city: provider.city,
+      country: provider.country,
+      website: provider.website,
+      isActive: provider.isActive,
+      createdAt: provider.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Providers');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportCabinetsToExcel(): Promise<Buffer> {
+    const { cabinets } = await storage.getCabinets(1, 1000);
+    const exportData = cabinets.map(cabinet => ({
+      id: cabinet.id,
+      serialNumber: cabinet.serialNumber,
+      model: cabinet.model,
+      manufacturer: cabinet.manufacturer,
+      providerId: cabinet.providerId,
+      locationId: cabinet.locationId,
+      status: cabinet.status,
+      isActive: cabinet.isActive,
+      createdAt: cabinet.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Cabinets');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportLocationsToExcel(): Promise<Buffer> {
+    const { locations } = await storage.getLocations(1, 1000);
+    const exportData = locations.map(location => ({
+      id: location.id,
+      name: location.name,
+      address: location.address,
+      city: location.city,
+      country: location.country,
+      phone: location.phone,
+      email: location.email,
+      companyId: location.companyId,
+      managerId: location.managerId,
+      isActive: location.isActive,
+      createdAt: location.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Locations');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportInvoicesToExcel(): Promise<Buffer> {
+    const { invoices } = await storage.getInvoices(1, 1000);
+    const exportData = invoices.map(invoice => ({
+      id: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+      sellerCompany: invoice.sellerCompany,
+      buyerCompany: invoice.buyerCompany,
+      amount: invoice.amount,
+      currency: invoice.currency,
+      issueDate: invoice.issueDate,
+      dueDate: invoice.dueDate,
+      status: invoice.status,
+      propertyType: invoice.propertyType,
+      serialNumbers: invoice.serialNumbers,
+      locationIds: invoice.locationIds,
+      amortization: invoice.amortization,
+      notes: invoice.notes,
+      createdAt: invoice.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Invoices');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportLegalDocumentsToExcel(): Promise<Buffer> {
+    const { legalDocuments } = await storage.getLegalDocuments(1, 1000);
+    const exportData = legalDocuments.map(doc => ({
+      id: doc.id,
+      title: doc.title,
+      documentType: doc.documentType,
+      issueDate: doc.issueDate,
+      expiryDate: doc.expiryDate,
+      status: doc.status,
+      notes: doc.notes,
+      createdAt: doc.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Legal Documents');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportOnjnReportsToExcel(): Promise<Buffer> {
+    const { onjnReports } = await storage.getOnjnReports(1, 1000);
+    const exportData = onjnReports.map(report => ({
+      id: report.id,
+      type: report.type,
+      commissionDate: report.commissionDate,
+      serialNumbers: report.serialNumbers,
+      notes: report.notes,
+      createdAt: report.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'ONJN Reports');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
+  async exportRentAgreementsToExcel(): Promise<Buffer> {
+    const { rentAgreements } = await storage.getRentAgreements(1, 1000);
+    const exportData = rentAgreements.map(agreement => ({
+      id: agreement.id,
+      agreementNumber: agreement.agreementNumber,
+      landlordName: agreement.landlordName,
+      tenantName: agreement.tenantName,
+      propertyAddress: agreement.propertyAddress,
+      monthlyRent: agreement.monthlyRent,
+      currency: agreement.currency,
+      startDate: agreement.startDate,
+      endDate: agreement.endDate,
+      status: agreement.status,
+      notes: agreement.notes,
+      createdAt: agreement.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Rent Agreements');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
   async exportLocationsToPDF(): Promise<Buffer> {
     const { locations } = await storage.getLocations(1, 1000);
     
@@ -312,6 +495,22 @@ export class ImportExportService {
         return this.exportCompaniesToExcel();
       case 'game-mixes':
         return this.exportGameMixesToExcel();
+      case 'slots':
+        return this.exportSlotsToExcel();
+      case 'providers':
+        return this.exportProvidersToExcel();
+      case 'cabinets':
+        return this.exportCabinetsToExcel();
+      case 'locations':
+        return this.exportLocationsToExcel();
+      case 'invoices':
+        return this.exportInvoicesToExcel();
+      case 'legal-documents':
+        return this.exportLegalDocumentsToExcel();
+      case 'onjn-reports':
+        return this.exportOnjnReportsToExcel();
+      case 'rent-agreements':
+        return this.exportRentAgreementsToExcel();
       // Add other modules as needed
       default:
         throw new Error(`Export not supported for module: ${moduleName}`);
