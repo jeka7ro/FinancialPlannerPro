@@ -214,13 +214,15 @@ export default function Companies() {
 
   return (
     <div className="space-y-6">
-      {/* Actions */}
+      {/* Header with actions */}
       <div className="flex items-center justify-between">
-        <BulkOperations 
-          selectedCount={selectedCompanies.length}
-          onBulkEdit={handleBulkEdit}
-          onBulkDelete={handleBulkDelete}
-        />
+        <div className="flex items-center gap-4">
+          <BulkOperations 
+            selectedCount={selectedCompanies.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <ImportExportDialog module="companies" moduleName="Companies">
             <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">

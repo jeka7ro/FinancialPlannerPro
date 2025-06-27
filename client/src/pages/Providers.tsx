@@ -211,11 +211,13 @@ export default function Providers() {
     <div className="space-y-6">
       {/* Actions */}
       <div className="flex items-center justify-between">
-        <BulkOperations 
-          selectedCount={selectedProviders.length}
-          onBulkEdit={handleBulkEdit}
-          onBulkDelete={handleBulkDelete}
-        />
+        <div className="flex items-center gap-4">
+          <BulkOperations 
+            selectedCount={selectedProviders.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <ImportExportDialog module="providers" moduleName="Providers">
             <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
