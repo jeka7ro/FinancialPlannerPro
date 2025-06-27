@@ -119,6 +119,7 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 27, 2025: Updated ID columns across all modules to display row numbers (1, 2, 3...) instead of database IDs for consistent user-friendly table numbering
 - June 27, 2025: Fixed attachment count display issue - attachment counts now load immediately and persist after restart in Companies and Invoices modules
 - June 27, 2025: Completed comprehensive bulk operations implementation across Invoices, ONJN, and Legal modules with checkbox selection and bulk delete functionality
 - June 27, 2025: Added server-side bulk delete routes (/api/invoices/bulk-delete, /api/onjn-reports/bulk-delete, /api/legal-documents/bulk-delete) with proper error handling

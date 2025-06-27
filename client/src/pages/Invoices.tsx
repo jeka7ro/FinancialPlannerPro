@@ -1140,7 +1140,7 @@ export default function Invoices() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.invoices.map((invoice: any) => (
+                    {data.invoices.map((invoice: any, index: number) => (
                       <tr key={invoice.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
                         <td className="py-4 px-4">
                           <Checkbox
@@ -1149,7 +1149,7 @@ export default function Invoices() {
                           />
                         </td>
                         <td className="py-4 px-4 text-sm font-medium text-white">
-                          {invoice.id}
+                          {(currentPage - 1) * limit + index + 1}
                         </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">

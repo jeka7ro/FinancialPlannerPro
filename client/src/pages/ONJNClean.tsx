@@ -471,7 +471,7 @@ export default function ONJNClean() {
                     </tr>
                   </thead>
                   <tbody>
-                    {data.onjnReports.map((report: any) => (
+                    {data.onjnReports.map((report: any, index: number) => (
                       <tr key={report.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
                         <td className="py-4 px-4">
                           <Checkbox
@@ -480,7 +480,7 @@ export default function ONJNClean() {
                           />
                         </td>
                         <td className="py-4 px-4 text-sm font-medium text-white">
-                          {report.id}
+                          {(currentPage - 1) * limit + index + 1}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {report.commissionDate ? new Date(report.commissionDate).toLocaleDateString() : 'N/A'}

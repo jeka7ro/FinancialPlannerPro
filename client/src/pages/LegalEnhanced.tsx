@@ -659,10 +659,10 @@ export default function LegalEnhanced() {
                 </tr>
               </thead>
               <tbody>
-                {data?.legalDocuments?.map((document: any) => (
+                {data?.legalDocuments?.map((document: any, index: number) => (
                   <tr key={document.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
                     <td className="py-4 px-4 text-sm font-medium text-white">
-                      {document.id}
+                      {index + 1}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
