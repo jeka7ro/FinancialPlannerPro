@@ -211,6 +211,24 @@ export class ImportExportService {
     return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
   }
 
+  async exportGameMixesToExcel(): Promise<Buffer> {
+    const { gameMixes } = await storage.getGameMixes(1, 1000);
+    const exportData = gameMixes.map(gameMix => ({
+      id: gameMix.id,
+      name: gameMix.name,
+      description: gameMix.description,
+      providerId: gameMix.providerId,
+      status: gameMix.status,
+      createdAt: gameMix.createdAt
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(exportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Game Mixes');
+    
+    return XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+  }
+
   async exportLocationsToPDF(): Promise<Buffer> {
     const { locations } = await storage.getLocations(1, 1000);
     
@@ -292,6 +310,8 @@ export class ImportExportService {
         return this.exportUsersToExcel();
       case 'companies':
         return this.exportCompaniesToExcel();
+      case 'game-mixes':
+        return this.exportGameMixesToExcel();
       // Add other modules as needed
       default:
         throw new Error(`Export not supported for module: ${moduleName}`);
