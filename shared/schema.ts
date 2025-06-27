@@ -57,9 +57,7 @@ export const userLocations = pgTable("user_locations", {
   userId: integer("user_id").notNull().references(() => users.id),
   locationId: integer("location_id").notNull().references(() => locations.id),
   createdAt: timestamp("created_at").defaultNow(),
-}, (table) => ({
-  uniqueUserLocation: primaryKey({ columns: [table.userId, table.locationId] })
-}));
+});
 
 // Providers table
 export const providers = pgTable("providers", {
