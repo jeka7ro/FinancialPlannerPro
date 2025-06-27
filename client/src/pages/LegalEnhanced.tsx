@@ -640,8 +640,8 @@ export default function LegalEnhanced() {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
+          <div className="overflow-x-auto -mx-6">
+            <table className="w-full min-w-max">
               <thead>
                 <tr className="border-b border-white/10">
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>

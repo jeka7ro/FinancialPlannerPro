@@ -17,8 +17,8 @@ import Slots from "@/pages/Slots";
 import Invoices from "@/pages/Invoices";
 import RentManagement from "@/pages/RentManagement";
 import Users from "@/pages/Users";
-import Legal from "@/pages/Legal";
-import ONJNFixed from "@/pages/ONJNFixed";
+import Legal from "@/pages/LegalEnhanced";
+import ONJNClean from "@/pages/ONJNClean";
 import Settings from "@/pages/Settings";
 
 import MainLayout from "@/components/layout/MainLayout";
@@ -218,7 +218,7 @@ function AuthenticatedApp() {
         <Route path="/rent-management" component={RentManagement} />
         <Route path="/users" component={Users} />
         <Route path="/legal" component={Legal} />
-        <Route path="/onjn" component={ONJNFixed} />
+        <Route path="/onjn" component={ONJNClean} />
         <Route path="/settings" component={Settings} />
         <Route component={NotFound} />
       </Switch>

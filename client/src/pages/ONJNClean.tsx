@@ -1,0 +1,556 @@
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
+import { InsertOnjnReport, insertOnjnReportSchema } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
+import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
+import { AttachmentButton } from "@/components/ui/attachment-button";
+
+export default function ONJNClean() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
+  const [editingReport, setEditingReport] = useState<any>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const limit = 10;
+
+  // Fetch ONJN reports
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['/api/onjn-reports', currentPage, limit, searchTerm],
+    queryFn: async () => {
+      const response = await fetch(`/api/onjn-reports?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`, {
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to fetch ONJN reports');
+      return response.json();
+    },
+  });
+
+  // Fetch companies
+  const { data: companies } = useQuery({
+    queryKey: ['/api/companies'],
+    queryFn: async () => {
+      const response = await fetch('/api/companies', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch companies');
+      return response.json();
+    },
+  });
+
+  // Fetch locations
+  const { data: locations } = useQuery({
+    queryKey: ['/api/locations'],
+    queryFn: async () => {
+      const response = await fetch('/api/locations', { credentials: 'include' });
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      return response.json();
+    },
+  });
+
+  // Create mutation
+  const createMutation = useMutation({
+    mutationFn: async (data: InsertOnjnReport) => {
+      return await apiRequest("POST", "/api/onjn-reports", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] });
+      setIsCreateDialogOpen(false);
+      setIsNotificationDialogOpen(false);
+      form.reset();
+      toast({
+        title: "Success",
+        description: "ONJN report created successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to create ONJN report. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update mutation
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertOnjnReport> }) => {
+      return await apiRequest("PUT", `/api/onjn-reports/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] });
+      setIsEditDialogOpen(false);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "ONJN report updated successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update ONJN report. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Delete mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return await apiRequest("DELETE", `/api/onjn-reports/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] });
+      toast({
+        title: "Success",
+        description: "ONJN report deleted successfully.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to delete ONJN report. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Forms
+  const form = useForm<InsertOnjnReport>({
+    resolver: zodResolver(insertOnjnReportSchema),
+    defaultValues: {
+      type: "license_commission",
+      commissionType: "license_commission",
+      serialNumbers: "",
+      status: "draft",
+      notes: "",
+    },
+  });
+
+  const editForm = useForm<InsertOnjnReport>({
+    resolver: zodResolver(insertOnjnReportSchema),
+    defaultValues: {
+      type: "license_commission",
+      commissionType: "license_commission",
+      serialNumbers: "",
+      status: "draft",
+      notes: "",
+    },
+  });
+
+  const handleEdit = (report: any) => {
+    setEditingReport(report);
+    editForm.reset({
+      type: report.type || "license_commission",
+      commissionType: report.commissionType || "license_commission",
+      serialNumbers: report.serialNumbers || "",
+      companyId: report.companyId,
+      commissionDate: report.commissionDate ? new Date(report.commissionDate) : undefined,
+      submissionDate: report.submissionDate ? new Date(report.submissionDate) : undefined,
+      status: report.status || "draft",
+      notes: report.notes || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const onSubmit = (data: InsertOnjnReport) => {
+    createMutation.mutate(data);
+  };
+
+  const onEditSubmit = (data: InsertOnjnReport) => {
+    if (editingReport) {
+      updateMutation.mutate({ id: editingReport.id, data });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">ONJN</h1>
+          <p className="text-slate-400">Romanian gambling authority compliance</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" className="border-white/20 text-slate-300">
+            Export
+          </Button>
+          <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Bell className="mr-2 h-4 w-4" />
+                New Notification
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="glass-card border-white/10 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Create ONJN Notification</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <p className="text-slate-300">Notification functionality will be implemented here.</p>
+                <div className="flex justify-end">
+                  <Button onClick={() => setIsNotificationDialogOpen(false)}>Close</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-green-600 hover:bg-green-700 text-white">
+                <Plus className="mr-2 h-4 w-4" />
+                Create License Commission
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="glass-card border-white/10 max-w-2xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Create License Commission</DialogTitle>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="commissionDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Commission Date</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            className="glass-card border-white/20 text-white" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="serialNumbers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Serial Numbers</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter serial numbers separated by spaces" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="companyId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Company</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select company" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {companies?.companies?.map((company: any) => (
+                              <SelectItem key={company.id} value={company.id.toString()}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Status</FormLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="draft">Draft</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Notes</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter any additional notes" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="flex justify-end space-x-4">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      onClick={() => setIsCreateDialogOpen(false)}
+                      className="text-slate-400 hover:text-white"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
+                      className="bg-green-600 hover:bg-green-700"
+                      disabled={createMutation.isPending}
+                    >
+                      {createMutation.isPending ? "Creating..." : "Create Commission"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+        </div>
+      </div>
+
+      {/* Search and Table */}
+      <Card className="glass-card border-white/10">
+        <CardHeader>
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+              <Input
+                placeholder="Search ONJN reports..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 glass-card border-white/20 text-slate-300"
+              />
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-slate-400">
+              <span className="text-2xl mb-2 block">⚠️</span>
+              Failed to load ONJN reports
+            </div>
+          ) : !data?.onjnReports?.length ? (
+            <div className="text-center py-8 text-slate-400">
+              <span className="text-2xl mb-2 block">📋</span>
+              No ONJN reports found
+            </div>
+          ) : (
+            <div className="overflow-x-auto -mx-6">
+              <table className="w-full min-w-max">
+                <thead>
+                  <tr className="border-b border-white/10">
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Commission Date</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
+                    <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.onjnReports.map((report: any) => (
+                    <tr key={report.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                      <td className="py-4 px-4 text-sm font-medium text-white">
+                        {report.id}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        {report.commissionDate ? new Date(report.commissionDate).toLocaleDateString() : 'N/A'}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        <GroupedSerialNumbers serialNumbers={report.serialNumbers || ''} />
+                      </td>
+                      <td className="py-4 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          report.status === 'approved' ? 'bg-green-500/20 text-green-300' :
+                          report.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
+                          report.status === 'rejected' ? 'bg-red-500/20 text-red-300' :
+                          'bg-gray-500/20 text-gray-300'
+                        }`}>
+                          {report.status}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'N/A'}
+                      </td>
+                      <td className="py-4 px-4 text-sm text-slate-300">
+                        N/A
+                      </td>
+                      <td className="py-4 px-4">
+                        <AttachmentButton
+                          entityType="onjn_report"
+                          entityId={report.id}
+                        />
+                      </td>
+                      <td className="py-4 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEdit(report)}
+                            className="text-slate-400 hover:text-slate-300"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => deleteMutation.mutate(report.id)}
+                            className="text-red-400 hover:text-red-300"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit License Commission</DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="commissionDate"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Commission Date</FormLabel>
+                    <FormControl>
+                      <Input 
+                        type="date" 
+                        {...field} 
+                        value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        className="glass-card border-white/20 text-white" 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={editForm.control}
+                name="serialNumbers"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Serial Numbers</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter serial numbers separated by spaces" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Status</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="glass-card border-white/20 text-white">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        <SelectItem value="draft">Draft</SelectItem>
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="approved">Approved</SelectItem>
+                        <SelectItem value="rejected">Rejected</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Notes</FormLabel>
+                    <FormControl>
+                      <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter any additional notes" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="bg-green-600 hover:bg-green-700"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Commission"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
