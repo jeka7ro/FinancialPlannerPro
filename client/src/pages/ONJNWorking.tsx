@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -506,10 +506,13 @@ export default function ONJNWorking() {
                 New Notification
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-slate-100">Create New ONJN Notification</DialogTitle>
-              </DialogHeader>
+                    <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-slate-100">Create New ONJN Notification</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Submit a notification to the Romanian National Gambling Office (ONJN).
+            </DialogDescription>
+          </DialogHeader>
               <Form {...notificationForm}>
                 <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-4">
                   <FormField
@@ -691,10 +694,13 @@ export default function ONJNWorking() {
                 New License Commission
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/20 max-w-2xl">
-              <DialogHeader>
-                <DialogTitle className="text-slate-100">Create License Commission</DialogTitle>
-              </DialogHeader>
+                    <DialogContent className="glass-card border-white/20 max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-slate-100">Create License Commission</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Register new equipment with ONJN licensing commission for regulatory compliance.
+            </DialogDescription>
+          </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
@@ -939,6 +945,9 @@ export default function ONJNWorking() {
         <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-slate-100">Edit ONJN Report</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Modify the ONJN report details and submission information.
+            </DialogDescription>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
