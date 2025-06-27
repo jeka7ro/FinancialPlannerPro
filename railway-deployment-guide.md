@@ -17,7 +17,7 @@ git add .
 git commit -m "Initial commit - CASHPOT Gaming Management System"
 
 # Add your GitHub repository as remote
-git remote add origin https://github.com/yourusername/cashpot-gaming-system.git
+git remote add origin https://github.com/jeka7ro/cashpot-gaming-system.git
 
 # Push to GitHub
 git push -u origin main

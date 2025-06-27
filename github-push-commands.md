@@ -31,8 +31,8 @@ git commit -m "Initial commit: CASHPOT Gaming Management System with complete Ra
 # Set main branch as default
 git branch -M main
 
-# Add your GitHub repository as remote (REPLACE WITH YOUR ACTUAL GITHUB URL)
-git remote add origin https://github.com/YOURUSERNAME/cashpot-gaming-system.git
+# Add your GitHub repository as remote
+git remote add origin https://github.com/jeka7ro/cashpot-gaming-system.git
 
 # Push to GitHub
 git push -u origin main
