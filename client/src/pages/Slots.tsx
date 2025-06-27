@@ -250,13 +250,23 @@ export default function Slots() {
   });
 
   const onSubmit = (data: InsertSlot) => {
-    createMutation.mutate(data);
+    // Convert Date object to ISO string for server compatibility
+    const formattedData = {
+      ...data,
+      commissionDate: data.commissionDate instanceof Date ? data.commissionDate.toISOString() : data.commissionDate
+    } as any;
+    createMutation.mutate(formattedData);
   };
 
   const onEditSubmit = (data: InsertSlot) => {
     if (editingSlot) {
-      console.log("Form data being sent:", data);
-      updateMutation.mutate({ id: editingSlot.id, data });
+      // Convert Date object to ISO string for server compatibility
+      const formattedData = {
+        ...data,
+        commissionDate: data.commissionDate instanceof Date ? data.commissionDate.toISOString() : data.commissionDate
+      } as Partial<InsertSlot>;
+      console.log("Form data being sent:", formattedData);
+      updateMutation.mutate({ id: editingSlot.id, data: formattedData });
     }
   };
 

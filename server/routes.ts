@@ -571,6 +571,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       });
       
+      // Handle date fields - convert ISO strings to Date objects
+      if (preprocessedData.commissionDate && typeof preprocessedData.commissionDate === 'string') {
+        preprocessedData.commissionDate = new Date(preprocessedData.commissionDate);
+      }
+      
       const slotData = insertSlotSchema.parse(preprocessedData);
       const slot = await storage.createSlot(slotData);
       res.status(201).json(slot);
@@ -612,6 +617,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           preprocessedData[field] = undefined;
         }
       });
+      
+      // Handle date fields - convert ISO strings to Date objects
+      if (preprocessedData.commissionDate && typeof preprocessedData.commissionDate === 'string') {
+        preprocessedData.commissionDate = new Date(preprocessedData.commissionDate);
+      }
       
       console.log("Preprocessed data:", preprocessedData);
       
