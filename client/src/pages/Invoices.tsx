@@ -37,7 +37,7 @@ const getPropertyTypeColor = (propertyType: string) => {
 const getCurrencySymbol = (currency: string) => {
   switch (currency?.toUpperCase()) {
     case 'LEI':
-      return 'L';
+      return '';
     case 'USD':
       return '$';
     case 'EUR':
@@ -704,6 +704,33 @@ export default function Invoices() {
                         </FormItem>
                       )}
                     />
+                    <FormField
+                      control={editForm.control}
+                      name="sellerCompanyId"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Seller Company</FormLabel>
+                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select seller company" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {companies?.companies?.map((company: any) => (
+                                <SelectItem key={company.id} value={company.id.toString()}>
+                                  {company.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-4">
                     <FormField
                       control={editForm.control}
                       name="locationId"

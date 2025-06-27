@@ -126,7 +126,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 27, 2025: Implemented notification form with authority selection (ONJN Central/Local), notification types, commission data selection, multiple location checkboxes, date fields, notes, and file attachments
 - June 27, 2025: Standardized table structure across Invoice, Legal, and ONJN modules to match Slots format with ID, Created timestamp, and Created By user columns
 - June 27, 2025: Added Export button to ONJN module header for consistency with other modules
-- June 27, 2025: Fixed currency display in Invoice module - changed LEI symbol from "lei" text to "L" symbol for cleaner presentation
+- June 27, 2025: Fixed currency display in Invoice module - removed LEI currency symbol completely for cleaner presentation
+- June 27, 2025: Added missing Seller Company field to invoice edit form for complete invoice management
 - June 26, 2025: Successfully implemented actual provider logo display in Cabinets table using attachment system
 - June 26, 2025: Provider logos now load from attachment system and display properly with white background for visibility
 - June 26, 2025: Redesigned Slots table layout with user-requested column order: Slot ID (auto-increment), Provider, Cabinet, Game Mix, Location, etc.
