@@ -536,186 +536,191 @@ export default function Providers() {
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search providers..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
+      {/* Enhanced Search */}
+      <div className="search-card">
+        <div className="relative">
+          <Input
+            type="text"
+            placeholder="Search providers by name, company, or location..."
+            value={searchTerm}
+            onChange={handleSearch}
+            className="enhanced-input pl-12 pr-4 py-4 text-base"
+          />
+          <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 text-lg">🚚</span>
+        </div>
+      </div>
+
+      {/* Enhanced Providers Table */}
+      <div className="content-card">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold heading-gradient">Providers</h2>
+            <p className="text-slate-400 mt-1">Equipment and service providers management</p>
           </div>
-        </CardContent>
-      </Card>
+          <div className="text-sm text-slate-400">
+            {data?.total || 0} total providers
+          </div>
+        </div>
 
-      {/* Providers List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Providers</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load providers
-            </div>
-          ) : !data?.providers?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">🚚</span>
-              No providers found
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 w-12">
+        {isLoading ? (
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="loading-shimmer h-20"></div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center py-12 text-slate-400">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">Failed to load providers</h3>
+            <p>Please try refreshing the page or check your connection.</p>
+          </div>
+        ) : !data?.providers?.length ? (
+          <div className="text-center py-12 text-slate-400">
+            <div className="text-6xl mb-4">🚚</div>
+            <h3 className="text-xl font-semibold text-white mb-2">No providers found</h3>
+            <p>Get started by adding your first service provider.</p>
+          </div>
+        ) : (
+          <>
+            <div className="enhanced-table-wrapper">
+              <table className="enhanced-table">
+                <thead>
+                  <tr>
+                    <th className="w-12">
+                      <Checkbox
+                        checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="border-white/30"
+                      />
+                    </th>
+                    <th>Provider</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Contact</th>
+                    <th>Status</th>
+                    <th>Logo</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.providers.map((provider: any) => (
+                    <tr key={provider.id}>
+                      <td>
                         <Checkbox
-                          checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
-                          onCheckedChange={handleSelectAll}
-                          className="border-white/20"
+                          checked={selectedProviders.includes(provider.id)}
+                          onCheckedChange={() => handleSelectProvider(provider.id)}
+                          className="border-white/30"
                         />
-                      </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Provider</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-40">Company</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Location</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-48">Contact</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-24">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-20">Logo</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400 w-24">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.providers.map((provider: any) => (
-                      <tr key={provider.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
-                          <Checkbox
-                            checked={selectedProviders.includes(provider.id)}
-                            onCheckedChange={() => handleSelectProvider(provider.id)}
-                            className="border-white/20"
-                          />
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="flex items-center gap-3">
-                            <ProviderLogo providerId={provider.id} size="md" />
-                            <div>
-                              <p className="text-sm font-medium text-white">{provider.name}</p>
-                              <p className="text-xs text-slate-400">{provider.contactPerson || 'No contact person'}</p>
-                            </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <ProviderLogo providerId={provider.id} size="md" />
+                          <div>
+                            <div className="table-cell-primary">{provider.name}</div>
+                            <div className="table-cell-secondary">{provider.contactPerson || 'No contact person'}</div>
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        </div>
+                      </td>
+                      <td>
+                        <span className="table-cell-accent">
                           {provider.companyName || 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
+                        </span>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
                           {provider.city && provider.country ? `${provider.city}, ${provider.country}` : 'Not specified'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <div className="text-sm text-slate-300">
-                            {provider.email && (
-                              <p>{provider.email}</p>
-                            )}
-                            {provider.phone && (
-                              <p className="text-xs text-slate-400">{provider.phone}</p>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge className={provider.isActive ? 'status-active' : 'status-inactive'}>
-                            {provider.isActive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4">
-                          <AttachmentButton 
-                            entityType="provider" 
-                            entityId={provider.id}
-                          />
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-amber-500 hover:text-amber-400"
-                              onClick={() => handleEdit(provider)}
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="text-red-500 hover:text-red-400"
-                              onClick={() => handleDelete(provider.id)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div>
+                          {provider.email && (
+                            <div className="table-cell-primary">{provider.email}</div>
+                          )}
+                          {provider.phone && (
+                            <div className="table-cell-secondary">{provider.phone}</div>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${provider.isActive ? 'status-active' : 'status-inactive'}`}>
+                          {provider.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                      <td>
+                        <AttachmentButton 
+                          entityType="provider" 
+                          entityId={provider.id}
+                        />
+                      </td>
+                      <td>
+                        <div className="action-button-group justify-end">
+                          <button 
+                            className="action-button text-amber-500 hover:text-amber-400"
+                            onClick={() => handleEdit(provider)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            className="action-button text-red-500 hover:text-red-400"
+                            onClick={() => handleDelete(provider.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
+            {/* Enhanced Pagination */}
+            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+              <div className="text-sm text-slate-400">
+                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
               </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+              <div className="flex space-x-2">
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  className="action-button text-slate-400 hover:text-white"
+                >
+                  Previous
+                </Button>
+                {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                  const page = i + 1;
+                  return (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className={currentPage === page 
+                        ? "bg-blue-500 text-white px-3 py-1 rounded-lg" 
+                        : "action-button text-slate-400 hover:text-white"
+                      }
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+                <Button 
+                  variant="ghost"
+                  size="sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  className="action-button text-slate-400 hover:text-white"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
