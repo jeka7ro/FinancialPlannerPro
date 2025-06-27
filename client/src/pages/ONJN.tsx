@@ -285,13 +285,156 @@ export default function ONJN() {
         <div className="flex items-center gap-2">
 
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Create License Commission
-            </Button>
-          </DialogTrigger>
+        <div className="flex items-center gap-2">
+          <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white bg-blue-600 hover:bg-blue-700">
+                <span className="mr-2">🔔</span>
+                New Notification
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="glass-card border-white/10 text-white max-w-3xl">
+              <DialogHeader>
+                <DialogTitle className="text-white">Create ONJN Notification</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      Notification Authority
+                    </label>
+                    <select 
+                      value={notificationAuthority} 
+                      onChange={(e) => setNotificationAuthority(e.target.value)}
+                      className="form-input w-full"
+                    >
+                      <option value="">Select Authority</option>
+                      <option value="ONJN Central">ONJN Central</option>
+                      <option value="ONJN Local">ONJN Local</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      Notification Type
+                    </label>
+                    <select className="form-input w-full">
+                      <option value="">Select Type</option>
+                      {notificationTypes.map((type: string) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Commission Data Selection
+                  </label>
+                  <select className="form-input w-full">
+                    <option value="">Select Commission Data</option>
+                    {data?.onjnReports?.map((report: any) => (
+                      <option key={report.id} value={report.id}>
+                        {report.serialNumbers} - {new Date(report.commissionDate).toLocaleDateString()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Locations
+                  </label>
+                  <div className="space-y-2">
+                    {locations?.locations?.map((location: any) => (
+                      <label key={location.id} className="flex items-center space-x-2">
+                        <input 
+                          type="checkbox" 
+                          checked={selectedLocations.includes(location.id.toString())}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedLocations([...selectedLocations, location.id.toString()]);
+                            } else {
+                              setSelectedLocations(selectedLocations.filter(id => id !== location.id.toString()));
+                            }
+                          }}
+                          className="rounded border-gray-300"
+                        />
+                        <span className="text-white">{location.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      Notification Date
+                    </label>
+                    <input 
+                      type="date" 
+                      className="form-input w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">
+                      Submission Date
+                    </label>
+                    <input 
+                      type="date" 
+                      className="form-input w-full"
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Notes
+                  </label>
+                  <textarea 
+                    className="form-input w-full h-24" 
+                    placeholder="Enter notification notes..."
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-white mb-2">
+                    Attachments
+                  </label>
+                  <input 
+                    type="file" 
+                    multiple 
+                    className="form-input w-full"
+                    accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
+                  />
+                </div>
+                
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    onClick={() => setIsNotificationDialogOpen(false)}
+                    className="text-slate-400 hover:text-white"
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    type="button" 
+                    className="btn-gaming"
+                  >
+                    Create Notification
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="floating-action text-white">
+                <span className="mr-2">➕</span>
+                Create License Commission
+              </Button>
+            </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-white">Create License Commission</DialogTitle>
@@ -785,6 +928,112 @@ export default function ONJN() {
           </Form>
         </DialogContent>
       </Dialog>
+      
+      {/* Main Content */}
+      <div className="space-y-6">
+        {/* Search */}
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Input
+              placeholder="Search ONJN reports..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10 glass-card border-white/10 text-white placeholder-gray-400"
+            />
+          </div>
+        </div>
+
+        {/* Table */}
+        {isLoading ? (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        ) : error ? (
+          <div className="text-center py-8 text-red-400">
+            Error loading ONJN reports: {error.message}
+          </div>
+        ) : (
+          <div className="glass-card border-white/10 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-white/10 hover:bg-white/5">
+                  <TableHead className="text-white">Commission Date</TableHead>
+                  <TableHead className="text-white">Serial Numbers</TableHead>
+                  <TableHead className="text-white">Status</TableHead>
+                  <TableHead className="text-white">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.onjnReports?.map((report: any) => (
+                  <TableRow key={report.id} className="border-white/10 hover:bg-white/5">
+                    <TableCell className="text-white">
+                      {new Date(report.commissionDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-white">
+                      {report.serialNumbers || 'N/A'}
+                    </TableCell>
+                    <TableCell className="text-white">
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        report.status === 'approved' ? 'bg-green-600' :
+                        report.status === 'pending' ? 'bg-yellow-600' :
+                        'bg-gray-600'
+                      }`}>
+                        {report.status}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(report)}
+                          className="text-blue-400 hover:text-blue-300"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteMutation.mutate(report.id)}
+                          className="text-red-400 hover:text-red-300"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {data?.total > limit && (
+          <div className="flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="glass-card border-white/10 text-white"
+            >
+              Previous
+            </Button>
+            <span className="text-white">
+              Page {currentPage} of {Math.ceil(data.total / limit)}
+            </span>
+            <Button
+              variant="outline"
+              onClick={() => setCurrentPage(Math.min(Math.ceil(data.total / limit), currentPage + 1))}
+              disabled={currentPage >= Math.ceil(data.total / limit)}
+              className="glass-card border-white/10 text-white"
+            >
+              Next
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
