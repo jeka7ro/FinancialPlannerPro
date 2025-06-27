@@ -239,10 +239,10 @@ export default function ONJNFixed() {
                     Commission Data Selection
                   </label>
                   <select className="form-input w-full">
-                    <option value="">Select Commission Data</option>
+                    <option value="">Select Commission</option>
                     {data?.onjnReports?.map((report: any) => (
                       <option key={report.id} value={report.id}>
-                        {report.serialNumbers} - {new Date(report.commissionDate).toLocaleDateString()}
+                        Commission #{report.id} - {new Date(report.commissionDate).toLocaleDateString()} ({report.status})
                       </option>
                     ))}
                   </select>
