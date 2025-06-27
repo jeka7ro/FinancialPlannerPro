@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCabinetSchema, type InsertCabinet, type Cabinet } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2, Plus } from "lucide-react";
+import { Upload, Edit, Trash2, Plus, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -217,28 +217,12 @@ export default function Cabinets() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center text-red-500 py-8">
-        Error loading cabinets: {error.message}
-      </div>
-    );
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-      case 'maintenance': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'inactive': return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
-      default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+      case 'active': return 'status-active';
+      case 'maintenance': return 'status-maintenance';
+      case 'inactive': return 'status-inactive';
+      default: return 'status-inactive';
     }
   };
 
@@ -258,26 +242,104 @@ export default function Cabinets() {
     }
   };
 
+  const handleBulkDelete = () => {
+    if (selectedCabinets.length === 0) return;
+    if (window.confirm(`Are you sure you want to delete ${selectedCabinets.length} cabinets?`)) {
+      bulkDeleteMutation.mutate(selectedCabinets);
+    }
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedCabinets.length} cabinets`,
+    });
+  };
+
+  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="loading-shimmer h-32 rounded-xl"></div>
+        <div className="loading-shimmer h-96 rounded-xl"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="empty-state">
+        <span className="empty-state-icon">⚠️</span>
+        <p className="empty-state-title">Failed to load cabinets</p>
+        <p className="empty-state-description">Error loading cabinets: {(error as Error).message}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <div className="flex justify-end items-center">
+      {/* Enhanced Search Interface */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">🗄️</span>
+              </div>
+              <div>
+                <h3 className="search-title">Gaming Cabinets</h3>
+                <p className="search-subtitle">Hardware and cabinet equipment management</p>
+              </div>
+            </div>
+          </div>
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" />
+            <Input
+              type="text"
+              placeholder="Search cabinets by model, provider, or status..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions and Bulk Operations */}
+      <div className="flex items-center justify-between">
+        {selectedCabinets.length > 0 ? (
+          <BulkOperations
+            selectedCount={selectedCabinets.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        ) : (
+          <div></div>
+        )}
         <div className="flex gap-3">
           <ImportExportDialog 
             module="cabinets"
             moduleName="Cabinets"
           >
-            Import/Export
+            <Button className="btn-secondary">
+              <Upload className="h-4 w-4 mr-2" />
+              Import/Export
+            </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Button className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
-                Add new
+                Add Cabinet
               </Button>
             </DialogTrigger>
             <DialogContent className="glass-card border-white/10 max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Add New Cabinet</DialogTitle>
+                <DialogTitle className="text-white flex items-center gap-2">
+                  <span className="text-xl">🗄️</span>
+                  Add New Cabinet
+                </DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -287,9 +349,9 @@ export default function Cabinets() {
                       name="model"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Cabinet Name</FormLabel>
+                          <FormLabel className="text-white">Cabinet Model</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" />
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter cabinet model" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -321,31 +383,28 @@ export default function Cabinets() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Status</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              <SelectItem value="active">Active</SelectItem>
-                              <SelectItem value="maintenance">Maintenance</SelectItem>
-                              <SelectItem value="inactive">Inactive</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Status</FormLabel>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="form-input">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="maintenance">Maintenance</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
                   <div className="flex justify-end space-x-4">
                     <Button 
@@ -358,7 +417,7 @@ export default function Cabinets() {
                     </Button>
                     <Button 
                       type="submit" 
-                      className="btn-gaming"
+                      className="btn-primary"
                       disabled={createMutation.isPending}
                     >
                       {createMutation.isPending ? "Creating..." : "Create Cabinet"}
@@ -371,10 +430,14 @@ export default function Cabinets() {
         </div>
       </div>
 
+      {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="glass-card border-white/10 max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Cabinet</DialogTitle>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <span className="text-xl">🗄️</span>
+              Edit Cabinet
+            </DialogTitle>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
@@ -384,7 +447,7 @@ export default function Cabinets() {
                   name="model"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Cabinet Name</FormLabel>
+                      <FormLabel className="text-white">Cabinet Model</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} className="form-input" />
                       </FormControl>
@@ -418,31 +481,28 @@ export default function Cabinets() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="status"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Status</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger className="form-input">
-                            <SelectValue placeholder="Select status" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="glass-card border-white/10">
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="maintenance">Maintenance</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-              </div>
+              <FormField
+                control={editForm.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Status</FormLabel>
+                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="form-input">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        <SelectItem value="active">Active</SelectItem>
+                        <SelectItem value="maintenance">Maintenance</SelectItem>
+                        <SelectItem value="inactive">Inactive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="flex justify-end space-x-4">
                 <Button 
@@ -455,7 +515,7 @@ export default function Cabinets() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="btn-gaming"
+                  className="btn-primary"
                   disabled={updateMutation.isPending}
                 >
                   {updateMutation.isPending ? "Updating..." : "Update Cabinet"}
@@ -466,156 +526,153 @@ export default function Cabinets() {
         </DialogContent>
       </Dialog>
 
-      <Card className="glass-card border-white/10">
-        <CardHeader className="border-b border-white/10">
-          <div className="flex justify-between items-center">
-            <div className="flex gap-4 w-full justify-end">
-              <Input
-                placeholder="Search cabinets..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-64 form-input"
-              />
-            </div>
-          </div>
+      {/* Enhanced Table */}
+      <Card className="data-table">
+        <CardHeader className="data-table-header">
+          <CardTitle className="text-white flex items-center gap-2">
+            <span>🗄️</span>
+            Gaming Cabinets
+            {data?.total && <span className="count-badge">{data.total}</span>}
+          </CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
-          {selectedCabinets.length > 0 && (
-            <div className="p-4 border-b border-white/10">
-              <BulkOperations
-                selectedCount={selectedCabinets.length}
-                onBulkEdit={() => {}} // Not implemented for cabinets
-                onBulkDelete={() => bulkDeleteMutation.mutate(selectedCabinets)}
-              />
-            </div>
-          )}
-          
+        <CardContent className="data-table-content">
           {data?.cabinets?.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-slate-400 text-lg">No cabinets found</p>
-              <p className="text-slate-500 mt-2">Add your first cabinet to get started</p>
+            <div className="empty-state">
+              <span className="empty-state-icon">🗄️</span>
+              <p className="empty-state-title">No cabinets found</p>
+              <p className="empty-state-description">Add your first cabinet to get started</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/10">
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">
-                      <Checkbox
-                        checked={selectedCabinets.length === data?.cabinets?.length && data?.cabinets?.length > 0}
-                        onCheckedChange={toggleSelectAll}
-                        className="border-white/20"
-                      />
-                    </th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Provider</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Cabinet Name</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Status</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Attachments</th>
-                    <th className="text-left py-4 px-4 text-slate-300 font-medium">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data?.cabinets?.map((cabinet: Cabinet) => (
-                    <tr key={cabinet.id} className="border-b border-white/5 hover:bg-white/5">
-                      <td className="py-4 px-4">
+            <>
+              <div className="table-container">
+                <table className="enhanced-table">
+                  <thead>
+                    <tr>
+                      <th className="w-12">
                         <Checkbox
-                          checked={selectedCabinets.includes(cabinet.id)}
-                          onCheckedChange={() => toggleCabinetSelection(cabinet.id)}
-                          className="border-white/20"
+                          checked={selectedCabinets.length === data?.cabinets?.length && data?.cabinets?.length > 0}
+                          onCheckedChange={toggleSelectAll}
+                          className="checkbox-custom"
                         />
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        <div className="flex items-center space-x-3">
-                          {cabinet.providerId ? (
-                            <ProviderLogo 
-                              providerId={cabinet.providerId} 
-                              providerName={providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || ''} 
-                            />
-                          ) : (
-                            <div className="w-8 h-8 bg-slate-700 rounded flex items-center justify-center text-xs text-slate-300">
-                              N/A
-                            </div>
-                          )}
-                          <span>
-                            {cabinet.providerId ? (
-                              providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || `Provider ID: ${cabinet.providerId}`
-                            ) : (
-                              <span className="text-slate-500 italic">No provider assigned</span>
-                            )}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-4 px-4 text-sm text-slate-300">
-                        {cabinet.model}
-                      </td>
-                      <td className="py-4 px-4">
-                        <Badge className={`${getStatusColor(cabinet.status)} border`}>
-                          {cabinet.status}
-                        </Badge>
-                      </td>
-
-                      <td className="py-4 px-4">
-                        <AttachmentButton 
-                          entityType="cabinet" 
-                          entityId={cabinet.id}
-                        />
-                      </td>
-                      <td className="py-4 px-4">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => openEditDialog(cabinet)}
-                            className="text-slate-400 hover:text-white hover:bg-white/10"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteMutation.mutate(cabinet.id)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </td>
+                      </th>
+                      <th>Cabinet</th>
+                      <th>Provider</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                  </thead>
+                  <tbody>
+                    {data?.cabinets?.map((cabinet: Cabinet) => (
+                      <tr key={cabinet.id} className="table-row">
+                        <td>
+                          <Checkbox
+                            checked={selectedCabinets.includes(cabinet.id)}
+                            onCheckedChange={() => toggleCabinetSelection(cabinet.id)}
+                            className="checkbox-custom"
+                          />
+                        </td>
+                        <td>
+                          <div className="flex items-center space-x-3">
+                            <div className="entity-avatar bg-amber-500/20">
+                              <span className="text-amber-400">🗄️</span>
+                            </div>
+                            <div>
+                              <p className="entity-title">{cabinet.model}</p>
+                              <p className="entity-subtitle">Cabinet #{cabinet.id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            {cabinet.providerId && (
+                              <ProviderLogo 
+                                providerId={cabinet.providerId} 
+                                providerName={providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || 'Unknown'} 
+                              />
+                            )}
+                            <span className="text-slate-300 text-sm">
+                              {providers?.providers?.find((p: any) => p.id === cabinet.providerId)?.name || 'No provider'}
+                            </span>
+                          </div>
+                        </td>
+                        <td>
+                          <Badge className={getStatusColor(cabinet.status)}>
+                            {cabinet.status}
+                          </Badge>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => openEditDialog(cabinet)}
+                              className="action-button action-button-edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleDelete(cabinet.id)}
+                              className="action-button action-button-delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <AttachmentButton
+                              entityType="cabinets"
+                              entityId={cabinet.id}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          {data?.cabinets?.length > 0 && (
-            <div className="flex justify-between items-center p-4 border-t border-white/10">
-              <div className="text-sm text-slate-400">
-                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-              </div>
-              <div className="flex space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className="border-white/20 text-slate-400 hover:text-white"
-                >
-                  Previous
-                </Button>
-                <span className="flex items-center px-3 py-1 text-sm text-slate-400 bg-white/5 rounded border border-white/10">
-                  {currentPage}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCurrentPage(prev => prev + 1)}
-                  disabled={currentPage * limit >= data.total}
-                  className="border-white/20 text-slate-400 hover:text-white"
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
+              {/* Enhanced Pagination */}
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <div className="pagination-info">
+                    Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} cabinets
+                  </div>
+                  <div className="pagination-controls">
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="pagination-button"
+                    >
+                      Previous
+                    </Button>
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = i + 1;
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? "pagination-button-active" : "pagination-button"}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="pagination-button"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

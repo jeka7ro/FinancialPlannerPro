@@ -14,12 +14,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertRentAgreementSchema, type InsertRentAgreement } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Search, Plus, Home, Edit, Trash2, Euro, Calendar } from "lucide-react";
+import { BulkOperations } from "@/components/ui/bulk-operations";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function RentManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingAgreement, setEditingAgreement] = useState<any>(null);
+  const [selectedAgreements, setSelectedAgreements] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -78,6 +83,29 @@ export default function RentManagement() {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertRentAgreement> }) => {
+      return await apiRequest("PUT", `/api/rent-agreements/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/rent-agreements'] });
+      setIsEditDialogOpen(false);
+      setEditingAgreement(null);
+      editForm.reset();
+      toast({
+        title: "Success",
+        description: "Rent agreement updated successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to update rent agreement. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/rent-agreements/${id}`),
     onSuccess: () => {
@@ -108,13 +136,42 @@ export default function RentManagement() {
     },
   });
 
+  const editForm = useForm<InsertRentAgreement>({
+    resolver: zodResolver(insertRentAgreementSchema),
+    defaultValues: {
+      agreementNumber: "",
+      startDate: new Date(),
+      endDate: new Date(),
+      monthlyRent: "0",
+      securityDeposit: "0",
+      status: "active",
+    },
+  });
+
   const onSubmit = (data: InsertRentAgreement) => {
     createMutation.mutate(data);
   };
 
+  const onEditSubmit = (data: InsertRentAgreement) => {
+    if (editingAgreement) {
+      updateMutation.mutate({ id: editingAgreement.id, data });
+    }
+  };
+
   const handleEdit = (rentAgreement: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit rent agreement:', rentAgreement);
+    setEditingAgreement(rentAgreement);
+    editForm.reset({
+      agreementNumber: rentAgreement.agreementNumber || "",
+      companyId: rentAgreement.companyId,
+      locationId: rentAgreement.locationId,
+      startDate: rentAgreement.startDate ? new Date(rentAgreement.startDate) : new Date(),
+      endDate: rentAgreement.endDate ? new Date(rentAgreement.endDate) : new Date(),
+      monthlyRent: rentAgreement.monthlyRent || "0",
+      securityDeposit: rentAgreement.securityDeposit || "0",
+      status: rentAgreement.status || "active",
+      terms: rentAgreement.terms || "",
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleDelete = (id: number) => {
@@ -126,6 +183,38 @@ export default function RentManagement() {
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
+  };
+
+  const handleSelectAll = () => {
+    if (selectedAgreements.length === data?.rentAgreements?.length) {
+      setSelectedAgreements([]);
+    } else {
+      setSelectedAgreements(data?.rentAgreements?.map((a: any) => a.id) || []);
+    }
+  };
+
+  const handleSelectAgreement = (agreementId: number) => {
+    setSelectedAgreements(prev => 
+      prev.includes(agreementId) 
+        ? prev.filter(id => id !== agreementId)
+        : [...prev, agreementId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedAgreements.length} agreements`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedAgreements.length === 0) return;
+    
+    if (window.confirm(`Are you sure you want to delete ${selectedAgreements.length} agreements?`)) {
+      selectedAgreements.forEach(id => deleteMutation.mutate(id));
+      setSelectedAgreements([]);
+    }
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
@@ -145,25 +234,64 @@ export default function RentManagement() {
 
   return (
     <div className="space-y-6">
-      {/* Actions */}
-      <div className="flex items-center justify-end">
+      {/* Enhanced Search Interface */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">🏠</span>
+              </div>
+              <div>
+                <h3 className="search-title">Rent Management</h3>
+                <p className="search-subtitle">Rental agreements and property leasing</p>
+              </div>
+            </div>
+          </div>
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" />
+            <Input
+              type="text"
+              placeholder="Search agreements by number, company, location, or status..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions and Bulk Operations */}
+      <div className="flex items-center justify-between">
+        {selectedAgreements.length > 0 ? (
+          <BulkOperations 
+            selectedCount={selectedAgreements.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        ) : (
+          <div></div>
+        )}
         <div className="flex items-center gap-2">
           <ImportExportDialog module="rent-agreements" moduleName="Rent Agreements">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button className="btn-secondary">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="floating-action text-white">
-                <span className="mr-2">➕</span>
+              <Button className="btn-primary">
+                <Plus className="h-4 w-4 mr-2" />
                 Create Agreement
               </Button>
             </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
             <DialogHeader>
-              <DialogTitle className="text-white">Create New Rent Agreement</DialogTitle>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <span className="text-xl">🏠</span>
+                Create New Rent Agreement
+              </DialogTitle>
               <DialogDescription className="text-slate-400">
                 Create a new rental agreement for a location with specified terms and conditions.
               </DialogDescription>
@@ -370,7 +498,7 @@ export default function RentManagement() {
                   </Button>
                   <Button 
                     type="submit" 
-                    className="btn-gaming"
+                    className="btn-primary"
                     disabled={createMutation.isPending}
                   >
                     {createMutation.isPending ? "Creating..." : "Create Agreement"}
@@ -383,106 +511,194 @@ export default function RentManagement() {
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search agreements..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <span className="text-xl">🏠</span>
+              Edit Rent Agreement
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...editForm}>
+            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              {/* Same form structure as create */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="agreementNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Agreement Number</FormLabel>
+                      <FormControl>
+                        <Input {...field} className="form-input" placeholder="RENT-2024-001" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Status</FormLabel>
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <FormControl>
+                          <SelectTrigger className="form-input">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="glass-card border-white/10">
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="expired">Expired</SelectItem>
+                          <SelectItem value="terminated">Terminated</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
-      {/* Rent Agreements List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Rent Agreements</CardTitle>
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsEditDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-primary"
+                  disabled={updateMutation.isPending}
+                >
+                  {updateMutation.isPending ? "Updating..." : "Update Agreement"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Enhanced Table */}
+      <Card className="data-table">
+        <CardHeader className="data-table-header">
+          <CardTitle className="text-white flex items-center gap-2">
+            <span>🏠</span>
+            Rent Agreements
+            {data?.total && <span className="count-badge">{data.total}</span>}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="data-table-content">
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+                <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load rent agreements
+            <div className="empty-state">
+              <span className="empty-state-icon">⚠️</span>
+              <p className="empty-state-title">Failed to load rent agreements</p>
+              <p className="empty-state-description">There was an error loading the rent agreements</p>
             </div>
           ) : !data?.rentAgreements?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">🏠</span>
-              No rent agreements found
+            <div className="empty-state">
+              <span className="empty-state-icon">🏠</span>
+              <p className="empty-state-title">No rent agreements found</p>
+              <p className="empty-state-description">Create your first rental agreement to get started</p>
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
+              <div className="table-container">
+                <table className="enhanced-table">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Agreement</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Monthly Rent</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Period</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                    <tr>
+                      <th className="w-12">
+                        <Checkbox
+                          checked={selectedAgreements.length === data?.rentAgreements?.length && data?.rentAgreements?.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="checkbox-custom"
+                        />
+                      </th>
+                      <th>Agreement</th>
+                      <th>Company</th>
+                      <th>Location</th>
+                      <th>Monthly Rent</th>
+                      <th>Period</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.rentAgreements.map((agreement: any) => (
-                      <tr key={agreement.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
+                      <tr key={agreement.id} className="table-row">
+                        <td>
+                          <Checkbox
+                            checked={selectedAgreements.includes(agreement.id)}
+                            onCheckedChange={() => handleSelectAgreement(agreement.id)}
+                            className="checkbox-custom"
+                          />
+                        </td>
+                        <td>
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-orange-500 text-sm">🏠</span>
+                            <div className="entity-avatar bg-orange-500/20">
+                              <span className="text-orange-400">🏠</span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-white">{agreement.agreementNumber}</p>
-                              <p className="text-xs text-slate-400">Agreement #{agreement.id}</p>
+                              <p className="entity-title">{agreement.agreementNumber}</p>
+                              <p className="entity-subtitle">Agreement #{agreement.id}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {agreement.companyId ? `Company ${agreement.companyId}` : 'No company'}
+                        <td className="text-slate-300 text-sm">
+                          {companies?.companies?.find((c: any) => c.id === agreement.companyId)?.name || 'No company'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {agreement.locationId ? `Location ${agreement.locationId}` : 'No location'}
+                        <td className="text-slate-300 text-sm">
+                          {locations?.locations?.find((l: any) => l.id === agreement.locationId)?.name || 'No location'}
                         </td>
-                        <td className="py-4 px-4 text-sm font-semibold text-emerald-500">
-                          €{Number(agreement.monthlyRent).toLocaleString()}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          <div>
-                            <p>{new Date(agreement.startDate).toLocaleDateString()}</p>
-                            <p className="text-xs text-slate-400">to {new Date(agreement.endDate).toLocaleDateString()}</p>
+                        <td>
+                          <div className="flex items-center gap-1">
+                            <Euro className="w-4 h-4 text-emerald-400" />
+                            <span className="text-emerald-400 font-semibold">
+                              {Number(agreement.monthlyRent).toLocaleString()}
+                            </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getStatusColor(agreement.status)} border`}>
+                        <td>
+                          <div className="flex items-center gap-1 text-slate-300 text-sm">
+                            <Calendar className="w-3 h-3" />
+                            <div>
+                              <p>{new Date(agreement.startDate).toLocaleDateString()}</p>
+                              <p className="text-xs text-slate-400">to {new Date(agreement.endDate).toLocaleDateString()}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <Badge className={getStatusColor(agreement.status)}>
                             {agreement.status}
                           </Badge>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
+                        <td>
+                          <div className="action-buttons">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleEdit(agreement)}
+                              className="action-button action-button-edit"
+                            >
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                              ✏️
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-emerald-500 hover:text-emerald-400">
-                              📄
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleDelete(agreement.id)}
+                              className="action-button action-button-delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </Button>
                           </div>
                         </td>
@@ -492,49 +708,48 @@ export default function RentManagement() {
                 </table>
               </div>
 
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+              {/* Enhanced Pagination */}
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <div className="pagination-info">
+                    Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} agreements
+                  </div>
+                  <div className="pagination-controls">
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="pagination-button"
+                    >
+                      Previous
+                    </Button>
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = i + 1;
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? "pagination-button-active" : "pagination-button"}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="pagination-button"
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
+              )}
             </>
           )}
         </CardContent>

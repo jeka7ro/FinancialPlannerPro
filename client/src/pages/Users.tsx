@@ -232,7 +232,7 @@ export default function Users() {
               Add new
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Create New User</DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -580,7 +580,7 @@ export default function Users() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/10 max-w-md">
+        <DialogContent className="glass-dialog dialog-sm confirmation-dialog">
           <DialogHeader>
             <DialogTitle className="text-white">Edit User</DialogTitle>
             <DialogDescription className="text-slate-400">

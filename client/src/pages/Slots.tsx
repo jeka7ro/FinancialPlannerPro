@@ -15,7 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertSlotSchema, type InsertSlot } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Upload, Calendar, Plus } from "lucide-react";
+import { Edit, Trash2, Upload, Calendar, Plus, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { safeFormValue } from "@/utils/formUtils";
@@ -23,11 +23,11 @@ import { safeFormValue } from "@/utils/formUtils";
 const getPropertyTypeColor = (propertyType: string) => {
   switch (propertyType?.toLowerCase()) {
     case 'property':
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
+      return 'status-active';
     case 'rent':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      return 'status-maintenance';
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      return 'bg-gray-500/20 text-gray-400';
   }
 };
 
@@ -344,8 +344,6 @@ export default function Slots() {
     setCurrentPage(1);
   };
 
-
-
   const handleSelectAll = () => {
     if (selectedSlots.length === data?.slots.length) {
       setSelectedSlots([]);
@@ -382,30 +380,64 @@ export default function Slots() {
 
   return (
     <div className="space-y-6">
-      {/* Actions */}
+      {/* Enhanced Search Interface */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">🎰</span>
+              </div>
+              <div>
+                <h3 className="search-title">Slot Machines</h3>
+                <p className="search-subtitle">Gaming equipment and machine management</p>
+              </div>
+            </div>
+          </div>
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" />
+            <Input
+              type="text"
+              placeholder="Search slots by serial number, provider, cabinet model, or game mix..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions and Bulk Operations */}
       <div className="flex items-center justify-between">
-        <BulkOperations 
-          selectedCount={selectedSlots.length}
-          onBulkEdit={handleBulkEdit}
-          onBulkDelete={handleBulkDelete}
-        />
+        {selectedSlots.length > 0 ? (
+          <BulkOperations 
+            selectedCount={selectedSlots.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        ) : (
+          <div></div>
+        )}
         <div className="flex items-center gap-2">
           <ImportExportDialog module="slots" moduleName="Slots">
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+            <Button className="btn-secondary">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Button className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
-                Add new
+                Add Slot
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+            <DialogContent className="glass-dialog dialog-xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Create New Slot</DialogTitle>
+                <DialogTitle className="text-white flex items-center gap-2">
+                  <span className="text-xl">🎰</span>
+                  Create New Slot Machine
+                </DialogTitle>
               </DialogHeader>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -496,65 +528,7 @@ export default function Slots() {
                     />
                   </div>
 
-
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="year"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Year</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""} 
-                              className="form-input" 
-                              placeholder="Enter year of manufacture" 
-                              type="number"
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="gamingPlaces"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Gaming Places</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""} 
-                              className="form-input" 
-                              placeholder="Enter number of gaming places" 
-                              type="number"
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="exciterType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Exciter Type</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter exciter type" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <div className="grid grid-cols-3 gap-4">
                     <FormField
                       control={form.control}
                       name="serialNr"
@@ -568,9 +542,19 @@ export default function Slots() {
                         </FormItem>
                       )}
                     />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="exciterType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Exciter Type</FormLabel>
+                          <FormControl>
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Exciter type" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <FormField
                       control={form.control}
                       name="propertyType"
@@ -592,25 +576,6 @@ export default function Slots() {
                         </FormItem>
                       )}
                     />
-                    <FormField
-                      control={form.control}
-                      name="commissionDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Commission Date</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="date"
-                              {...field}
-                              value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : new Date(field.value).toISOString().split('T')[0]) : ""}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                              className="form-input"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
                   </div>
 
                   <div className="flex justify-end space-x-4">
@@ -624,7 +589,7 @@ export default function Slots() {
                     </Button>
                     <Button 
                       type="submit" 
-                      className="btn-gaming"
+                      className="btn-primary"
                       disabled={createMutation.isPending}
                     >
                       {createMutation.isPending ? "Creating..." : "Create Slot"}
@@ -637,162 +602,123 @@ export default function Slots() {
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search slots..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Slots List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Slot Machines</CardTitle>
+      {/* Enhanced Table */}
+      <Card className="data-table">
+        <CardHeader className="data-table-header">
+          <CardTitle className="text-white flex items-center gap-2">
+            <span>🎰</span>
+            Slot Machines
+            {data?.total && <span className="count-badge">{data.total}</span>}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="data-table-content">
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+                <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load slots
+            <div className="empty-state">
+              <span className="empty-state-icon">⚠️</span>
+              <p className="empty-state-title">Failed to load slots</p>
+              <p className="empty-state-description">There was an error loading the slot machines</p>
             </div>
           ) : !data?.slots?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">🎰</span>
-              No slots found
+            <div className="empty-state">
+              <span className="empty-state-icon">🎰</span>
+              <p className="empty-state-title">No slot machines found</p>
+              <p className="empty-state-description">Add your first slot machine to get started</p>
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
+              <div className="table-container">
+                <table className="enhanced-table">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-2 px-3 w-12">
+                    <tr>
+                      <th className="w-12">
                         <Checkbox
                           checked={selectedSlots.length === data?.slots.length && data?.slots.length > 0}
                           onCheckedChange={handleSelectAll}
-                          className="border-white/20"
+                          className="checkbox-custom"
                         />
                       </th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('id')}>Slot ID</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('providerId')}>Provider</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('cabinetId')}>Cabinet</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('gameMixId')}>Game Mix</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-36" onClick={() => handleSort('locationId')}>Location</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('year')}>Year</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('gamingPlaces')}>Gaming Places</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-32" onClick={() => handleSort('exciterType')}>Exciter Type</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-20" onClick={() => handleSort('rtp')}>RTP</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-24" onClick={() => handleSort('serialNr')}>Serial Nr</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-28" onClick={() => handleSort('invoice')}>Invoice</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-36" onClick={() => handleSort('commissionDate')}>Commission Date</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 cursor-pointer hover:text-white transition-colors w-24" onClick={() => handleSort('propertyType')}>Property</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400 w-28">Attachments</th>
-                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400 w-24">Actions</th>
+                      <th>Machine</th>
+                      <th>Provider</th>
+                      <th>Cabinet</th>
+                      <th>Game Mix</th>
+                      <th>Property</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.slots.map((slot: any) => (
-                      <tr key={slot.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-3 px-3">
+                      <tr key={slot.id} className="table-row">
+                        <td>
                           <Checkbox
                             checked={selectedSlots.includes(slot.id)}
                             onCheckedChange={() => handleSelectSlot(slot.id)}
-                            className="border-white/20"
+                            className="checkbox-custom"
                           />
                         </td>
-                        <td className="py-3 px-3 text-sm font-medium text-white">
-                          #{slot.id}
-                        </td>
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-2 text-xs text-slate-400 truncate">
-                            {slot.providerId && <ProviderLogo providerId={slot.providerId} size="sm" />}
-                            <span>{providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}</span>
+                        <td>
+                          <div className="flex items-center space-x-3">
+                            <div className="entity-avatar bg-purple-500/20">
+                              <span className="text-purple-400">🎰</span>
+                            </div>
+                            <div>
+                              <p className="entity-title">{slot.serialNr || 'No serial'}</p>
+                              <p className="entity-subtitle">Slot #{slot.id}</p>
+                            </div>
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {locations?.locations?.find((l: any) => l.id === slot.locationId)?.name || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300">
-                          {slot.year || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300">
-                          {slot.gamingPlaces || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {slot.exciterType || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300">
-                          {slot.rtp ? `${Number(slot.rtp)}%` : 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {slot.serialNr || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 truncate">
-                          {findInvoiceBySerialNumber(slot.serialNr) || 'N/A'}
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300">
-                          <div className="flex items-center gap-1">
-                            {slot.commissionDate && (
-                              <Calendar className="h-3 w-3 text-blue-400" />
-                            )}
-                            <span className="truncate">
-                              {slot.commissionDate 
-                                ? new Date(slot.commissionDate).toLocaleDateString() 
-                                : findCommissionDateBySerialNumber(slot.serialNr) || 'N/A'
-                              }
+                        <td>
+                          <div className="flex items-center gap-2">
+                            {slot.providerId && <ProviderLogo providerId={slot.providerId} size="sm" />}
+                            <span className="text-slate-300 text-sm">
+                              {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
                             </span>
                           </div>
                         </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getPropertyTypeColor(slot.propertyType)} border`}>
-                            {slot.propertyType}
+                        <td className="text-slate-300 text-sm">
+                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'No cabinet'}
+                        </td>
+                        <td className="text-slate-300 text-sm">
+                          {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'No game mix'}
+                        </td>
+                        <td>
+                          <Badge className={getPropertyTypeColor(slot.propertyType)}>
+                            {slot.propertyType || 'property'}
                           </Badge>
                         </td>
-                        <td className="py-4 px-4">
-                          <AttachmentButton 
-                            entityType="slot" 
-                            entityId={slot.id}
-                          />
+                        <td>
+                          <Badge className={slot.isActive ? 'status-active' : 'status-inactive'}>
+                            {slot.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
                         </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                        <td>
+                          <div className="action-buttons">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
                               onClick={() => handleEdit(slot)}
-                              className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
+                              className="action-button action-button-edit"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
                               onClick={() => handleDelete(slot.id)}
-                              className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                              className="action-button action-button-delete"
                             >
-                              <Trash2 className="h-4 w-4" />
+                              <Trash2 className="w-4 h-4" />
                             </Button>
+                            <AttachmentButton
+                              entityType="slots"
+                              entityId={slot.id}
+                            />
                           </div>
                         </td>
                       </tr>
@@ -801,45 +727,90 @@ export default function Slots() {
                 </table>
               </div>
 
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-center space-x-2 mt-6">
-                  <Button
-                    variant="outline"
+              {/* Enhanced Pagination */}
+              <div className="pagination">
+                <div className="pagination-info">
+                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} slots
+                </div>
+                <div className="pagination-controls">
+                  <Button 
+                    variant="ghost"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="border-white/20 text-white hover:bg-white/10"
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                    className="pagination-button"
                   >
                     Previous
                   </Button>
-                  <span className="text-sm text-slate-400">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
+                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                    const page = i + 1;
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className={currentPage === page ? "pagination-button-active" : "pagination-button"}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                  <Button 
+                    variant="ghost"
                     size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="border-white/20 text-white hover:bg-white/10"
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                    className="pagination-button"
                   >
                     Next
                   </Button>
                 </div>
-              )}
+              </div>
             </>
           )}
         </CardContent>
       </Card>
 
-      {/* Edit Dialog */}
+      {/* Edit Dialog - Similar structure to create dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+        <DialogContent className="glass-dialog dialog-xl">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Slot</DialogTitle>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <span className="text-xl">🎰</span>
+              Edit Slot Machine
+            </DialogTitle>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+              <FormField
+                control={editForm.control}
+                name="providerId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Provider</FormLabel>
+                    <Select value={field.value?.toString()} onValueChange={(value) => {
+                      field.onChange(parseInt(value));
+                      handleProviderChange(value, true);
+                    }}>
+                      <FormControl>
+                        <SelectTrigger className="form-input">
+                          <SelectValue placeholder="Select provider" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        {providers?.providers?.map((provider: any) => (
+                          <SelectItem key={provider.id} value={provider.id.toString()}>
+                            {provider.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
@@ -847,14 +818,18 @@ export default function Slots() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Cabinet</FormLabel>
-                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select 
+                        value={field.value?.toString()} 
+                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        disabled={!selectedProviderIdForEdit}
+                      >
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select cabinet" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="glass-card border-white/10">
-                          {cabinets?.cabinets?.map((cabinet: any) => (
+                          {getFilteredCabinets(selectedProviderIdForEdit)?.map((cabinet: any) => (
                             <SelectItem key={cabinet.id} value={cabinet.id.toString()}>
                               {cabinet.model}
                             </SelectItem>
@@ -871,14 +846,18 @@ export default function Slots() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Game Mix</FormLabel>
-                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select 
+                        value={field.value?.toString()} 
+                        onValueChange={(value) => field.onChange(parseInt(value))}
+                        disabled={!selectedProviderIdForEdit}
+                      >
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select game mix" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent className="glass-card border-white/10">
-                          {gameMixes?.gameMixes?.map((gameMix: any) => (
+                          {getFilteredGameMixes(selectedProviderIdForEdit)?.map((gameMix: any) => (
                             <SelectItem key={gameMix.id} value={gameMix.id.toString()}>
                               {gameMix.name}
                             </SelectItem>
@@ -891,91 +870,7 @@ export default function Slots() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="providerId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Provider</FormLabel>
-                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                        <FormControl>
-                          <SelectTrigger className="form-input">
-                            <SelectValue placeholder="Select provider" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="glass-card border-white/10">
-                          {providers?.providers?.map((provider: any) => (
-                            <SelectItem key={provider.id} value={provider.id.toString()}>
-                              {provider.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Year</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          value={field.value || ""} 
-                          className="form-input" 
-                          placeholder="Enter year of manufacture" 
-                          type="number"
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
-                  name="gamingPlaces"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Gaming Places</FormLabel>
-                      <FormControl>
-                        <Input 
-                          {...field} 
-                          value={field.value || ""} 
-                          className="form-input" 
-                          placeholder="Enter number of gaming places" 
-                          type="number"
-                          onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="exciterType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Exciter Type</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter exciter type" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={editForm.control}
                   name="serialNr"
@@ -989,9 +884,19 @@ export default function Slots() {
                     </FormItem>
                   )}
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="exciterType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Exciter Type</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Exciter type" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={editForm.control}
                   name="propertyType"
@@ -1013,25 +918,6 @@ export default function Slots() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={editForm.control}
-                  name="commissionDate"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Commission Date</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="date"
-                          {...field}
-                          value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : new Date(field.value).toISOString().split('T')[0]) : ""}
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                          className="form-input"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
 
               <div className="flex justify-end space-x-4">
@@ -1045,7 +931,7 @@ export default function Slots() {
                 </Button>
                 <Button 
                   type="submit" 
-                  className="btn-gaming"
+                  className="btn-primary"
                   disabled={updateMutation.isPending}
                 >
                   {updateMutation.isPending ? "Updating..." : "Update Slot"}

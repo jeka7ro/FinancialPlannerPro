@@ -226,13 +226,13 @@ export default function Providers() {
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-                <Plus className="h-4 w-4 mr-2" />
-                Add new
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+                      <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Add new
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Provider</DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -393,7 +393,7 @@ export default function Providers() {
 
         {/* Edit Provider Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Edit Provider</DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -563,19 +563,19 @@ export default function Providers() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="loading-container">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="loading-shimmer h-20"></div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="error-state-container">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load providers</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
         ) : !data?.providers?.length ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="empty-state-container">
             <div className="text-6xl mb-4">🚚</div>
             <h3 className="text-xl font-semibold text-white mb-2">No providers found</h3>
             <p>Get started by adding your first service provider.</p>

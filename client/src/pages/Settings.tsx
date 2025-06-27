@@ -14,6 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { Settings as SettingsIcon, User, Shield, Info, Search, Save } from "lucide-react";
 
 // Settings schemas
 const profileSettingsSchema = z.object({
@@ -224,154 +225,188 @@ export default function Settings() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-slate-400">System configuration and preferences</p>
-      </div>
+      {/* Enhanced Header */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">⚙️</span>
+              </div>
+              <div>
+                <h3 className="search-title">System Settings</h3>
+                <p className="search-subtitle">Configure system preferences and user account settings</p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* Settings Tabs */}
-      <Card className="glass-card border-white/10">
+      {/* Enhanced Settings Tabs */}
+      <Card className="data-table">
         <CardContent className="p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 glass-morphism">
-              <TabsTrigger value="profile" className="text-white data-[state=active]:bg-blue-500/20">
-                👤 Profile
+            <TabsList className="grid w-full grid-cols-4 mb-8 bg-slate-800/50 p-1 rounded-xl">
+              <TabsTrigger 
+                value="profile" 
+                className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+              >
+                <User className="w-4 h-4" />
+                Profile
               </TabsTrigger>
-              <TabsTrigger value="system" className="text-white data-[state=active]:bg-blue-500/20">
-                ⚙️ System
-              </TabsTrigger>
-              <TabsTrigger value="security" className="text-white data-[state=active]:bg-blue-500/20">
-                🔒 Security
-              </TabsTrigger>
-              <TabsTrigger value="about" className="text-white data-[state=active]:bg-blue-500/20">
-                ℹ️ About
-              </TabsTrigger>
-            </TabsList>
+              <TabsTrigger 
+                value="system" 
+                className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+              >
+                                 <SettingsIcon className="w-4 h-4" />
+                 System
+               </TabsTrigger>
+               <TabsTrigger 
+                 value="security" 
+                 className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+               >
+                 <Shield className="w-4 h-4" />
+                 Security
+               </TabsTrigger>
+               <TabsTrigger 
+                 value="about" 
+                 className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+               >
+                 <Info className="w-4 h-4" />
+                 About
+               </TabsTrigger>
+             </TabsList>
 
-            {/* Profile Settings */}
-            <TabsContent value="profile" className="space-y-6 mt-6">
-              <Card className="glass-card border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">Profile Information</CardTitle>
+             {/* Profile Settings */}
+             <TabsContent value="profile" className="space-y-6 mt-6">
+               <Card className="glass-card border-white/10">
+                 <CardHeader className="border-b border-white/10">
+                   <CardTitle className="text-white flex items-center gap-2">
+                     <User className="w-5 h-5" />
+                     Profile Information
+                   </CardTitle>
+                 </CardHeader>
+                 <CardContent className="p-6">
+                   <Form {...profileForm}>
+                     <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
+                       <div className="grid grid-cols-2 gap-4">
+                         <FormField
+                           control={profileForm.control}
+                           name="firstName"
+                           render={({ field }) => (
+                             <FormItem>
+                               <FormLabel className="text-white">First Name</FormLabel>
+                               <FormControl>
+                                 <Input {...field} value={field.value || ""} className="form-input" />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
+                           )}
+                         />
+                         <FormField
+                           control={profileForm.control}
+                           name="lastName"
+                           render={({ field }) => (
+                             <FormItem>
+                               <FormLabel className="text-white">Last Name</FormLabel>
+                               <FormControl>
+                                 <Input {...field} value={field.value || ""} className="form-input" />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
+                           )}
+                         />
+                       </div>
+
+                       <FormField
+                         control={profileForm.control}
+                         name="email"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel className="text-white">Email Address</FormLabel>
+                             <FormControl>
+                               <Input {...field} value={field.value || ""} type="email" className="form-input" />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+
+                       <Separator className="bg-white/10" />
+
+                       <div className="space-y-4">
+                         <h4 className="text-lg font-medium text-white">Change Password</h4>
+                         
+                         <FormField
+                           control={profileForm.control}
+                           name="currentPassword"
+                           render={({ field }) => (
+                             <FormItem>
+                               <FormLabel className="text-white">Current Password</FormLabel>
+                               <FormControl>
+                                 <Input {...field} value={field.value || ""} type="password" className="form-input" />
+                               </FormControl>
+                               <FormMessage />
+                             </FormItem>
+                           )}
+                         />
+
+                         <div className="grid grid-cols-2 gap-4">
+                           <FormField
+                             control={profileForm.control}
+                             name="newPassword"
+                             render={({ field }) => (
+                               <FormItem>
+                                 <FormLabel className="text-white">New Password</FormLabel>
+                                 <FormControl>
+                                   <Input {...field} value={field.value || ""} type="password" className="form-input" />
+                                 </FormControl>
+                                 <FormMessage />
+                               </FormItem>
+                             )}
+                           />
+                           <FormField
+                             control={profileForm.control}
+                             name="confirmPassword"
+                             render={({ field }) => (
+                               <FormItem>
+                                 <FormLabel className="text-white">Confirm Password</FormLabel>
+                                 <FormControl>
+                                   <Input {...field} value={field.value || ""} type="password" className="form-input" />
+                                 </FormControl>
+                                 <FormMessage />
+                               </FormItem>
+                             )}
+                           />
+                         </div>
+                       </div>
+
+                       <div className="flex justify-end">
+                         <Button 
+                           type="submit" 
+                           className="btn-primary"
+                           disabled={updateProfileMutation.isPending}
+                         >
+                           <Save className="w-4 h-4 mr-2" />
+                           {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
+                         </Button>
+                       </div>
+                     </form>
+                   </Form>
+                 </CardContent>
+               </Card>
+             </TabsContent>
+
+             {/* System Settings */}
+             <TabsContent value="system" className="space-y-6 mt-6">
+               <Card className="glass-card border-white/10">
+                 <CardHeader className="border-b border-white/10">
+                   <CardTitle className="text-white flex items-center gap-2">
+                     <SettingsIcon className="w-5 h-5" />
+                    System Preferences
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Form {...profileForm}>
-                    <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <FormField
-                          control={profileForm.control}
-                          name="firstName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">First Name</FormLabel>
-                              <FormControl>
-                                <Input {...field} value={field.value || ""} className="form-input" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={profileForm.control}
-                          name="lastName"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Last Name</FormLabel>
-                              <FormControl>
-                                <Input {...field} value={field.value || ""} className="form-input" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </div>
-
-                      <FormField
-                        control={profileForm.control}
-                        name="email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-white">Email Address</FormLabel>
-                            <FormControl>
-                              <Input {...field} value={field.value || ""} type="email" className="form-input" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <Separator className="bg-white/10" />
-
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Change Password</h4>
-                        
-                        <FormField
-                          control={profileForm.control}
-                          name="currentPassword"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Current Password</FormLabel>
-                              <FormControl>
-                                <Input {...field} value={field.value || ""} type="password" className="form-input" />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={profileForm.control}
-                            name="newPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">New Password</FormLabel>
-                                <FormControl>
-                                  <Input {...field} value={field.value || ""} type="password" className="form-input" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={profileForm.control}
-                            name="confirmPassword"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Confirm Password</FormLabel>
-                                <FormControl>
-                                  <Input {...field} value={field.value || ""} type="password" className="form-input" />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex justify-end">
-                        <Button 
-                          type="submit" 
-                          className="btn-gaming"
-                          disabled={updateProfileMutation.isPending}
-                        >
-                          {updateProfileMutation.isPending ? "Updating..." : "Update Profile"}
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* System Settings */}
-            <TabsContent value="system" className="space-y-6 mt-6">
-              <Card className="glass-card border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">System Preferences</CardTitle>
-                </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <Form {...systemForm}>
                     <form onSubmit={systemForm.handleSubmit(onSystemSubmit)} className="space-y-6">
                       {/* Appearance */}
@@ -498,19 +533,45 @@ export default function Settings() {
 
                       <Separator className="bg-white/10" />
 
-                      {/* Session */}
+                      {/* Notifications */}
                       <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Session Management</h4>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label className="text-white">Auto Logout</Label>
-                            <p className="text-sm text-slate-400">Automatically log out after inactivity</p>
-                          </div>
+                        <h4 className="text-lg font-medium text-white">Notifications</h4>
+                        <div className="space-y-4">
                           <FormField
                             control={systemForm.control}
-                            name="autoLogout"
+                            name="enableNotifications"
                             render={({ field }) => (
-                              <FormItem>
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base text-white">
+                                    Desktop Notifications
+                                  </FormLabel>
+                                                                     <FormDescription>
+                                     Receive desktop notifications for important events
+                                   </FormDescription>
+                                </div>
+                                <FormControl>
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={systemForm.control}
+                            name="enableEmailAlerts"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+                                <div className="space-y-0.5">
+                                  <FormLabel className="text-base text-white">
+                                    Email Alerts
+                                  </FormLabel>
+                                                                     <FormDescription>
+                                     Receive email notifications for system alerts
+                                   </FormDescription>
+                                </div>
                                 <FormControl>
                                   <Switch
                                     checked={field.value}
@@ -521,105 +582,15 @@ export default function Settings() {
                             )}
                           />
                         </div>
-                        
-                        {systemForm.watch("autoLogout") && (
-                          <FormField
-                            control={systemForm.control}
-                            name="logoutTime"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Logout Time (minutes)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="form-input w-32"
-                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        )}
-                      </div>
-
-                      <Separator className="bg-white/10" />
-
-                      {/* Notifications */}
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Notifications</h4>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label className="text-white">Push Notifications</Label>
-                              <p className="text-sm text-slate-400">Receive browser notifications</p>
-                            </div>
-                            <FormField
-                              control={systemForm.control}
-                              name="enableNotifications"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label className="text-white">Email Alerts</Label>
-                              <p className="text-sm text-slate-400">Receive email notifications</p>
-                            </div>
-                            <FormField
-                              control={systemForm.control}
-                              name="enableEmailAlerts"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label className="text-white">SMS Alerts</Label>
-                              <p className="text-sm text-slate-400">Receive SMS notifications</p>
-                            </div>
-                            <FormField
-                              control={systemForm.control}
-                              name="enableSmsAlerts"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
                       </div>
 
                       <div className="flex justify-end">
                         <Button 
                           type="submit" 
-                          className="btn-gaming"
+                          className="btn-primary"
                           disabled={updateSystemMutation.isPending}
                         >
+                          <Save className="w-4 h-4 mr-2" />
                           {updateSystemMutation.isPending ? "Updating..." : "Update Settings"}
                         </Button>
                       </div>
@@ -632,169 +603,69 @@ export default function Settings() {
             {/* Security Settings */}
             <TabsContent value="security" className="space-y-6 mt-6">
               <Card className="glass-card border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">Security Configuration</CardTitle>
+                <CardHeader className="border-b border-white/10">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    Security Configuration
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <Form {...securityForm}>
                     <form onSubmit={securityForm.handleSubmit(onSecuritySubmit)} className="space-y-6">
-                      {/* Authentication */}
                       <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Authentication</h4>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Label className="text-white">Two-Factor Authentication</Label>
-                            <p className="text-sm text-slate-400">Add an extra layer of security</p>
-                          </div>
-                          <FormField
-                            control={securityForm.control}
-                            name="twoFactorEnabled"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormControl>
-                                  <Switch
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                  />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      <Separator className="bg-white/10" />
-
-                      {/* Session Security */}
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Session Security</h4>
-                        <div className="grid grid-cols-2 gap-4">
-                          <FormField
-                            control={securityForm.control}
-                            name="sessionTimeout"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Session Timeout (minutes)</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="form-input"
-                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormDescription className="text-slate-400">
-                                  Automatic logout after inactivity
-                                </FormDescription>
-                              </FormItem>
-                            )}
-                          />
-                          <FormField
-                            control={securityForm.control}
-                            name="maxLoginAttempts"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-white">Max Login Attempts</FormLabel>
-                                <FormControl>
-                                  <Input 
-                                    {...field} 
-                                    type="number" 
-                                    className="form-input"
-                                    onChange={(e) => field.onChange(parseInt(e.target.value))}
-                                  />
-                                </FormControl>
-                                <FormDescription className="text-slate-400">
-                                  Lock account after failed attempts
-                                </FormDescription>
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      </div>
-
-                      <Separator className="bg-white/10" />
-
-                      {/* Password Policy */}
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Password Policy</h4>
                         <FormField
                           control={securityForm.control}
-                          name="passwordExpiry"
+                          name="twoFactorEnabled"
                           render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-white">Password Expiry (days)</FormLabel>
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-base text-white">
+                                  Two-Factor Authentication
+                                </FormLabel>
+                                                                 <FormDescription>
+                                   Add an extra layer of security to your account
+                                 </FormDescription>
+                              </div>
                               <FormControl>
-                                <Input 
-                                  {...field} 
-                                  type="number" 
-                                  className="form-input w-32"
-                                  onChange={(e) => field.onChange(parseInt(e.target.value))}
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
                                 />
                               </FormControl>
-                              <FormDescription className="text-slate-400">
-                                Force password change after specified days
-                              </FormDescription>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={securityForm.control}
+                          name="auditLogging"
+                          render={({ field }) => (
+                            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+                              <div className="space-y-0.5">
+                                <FormLabel className="text-base text-white">
+                                  Audit Logging
+                                </FormLabel>
+                                                                 <FormDescription>
+                                   Log all user actions for security auditing
+                                 </FormDescription>
+                              </div>
+                              <FormControl>
+                                <Switch
+                                  checked={field.value}
+                                  onCheckedChange={field.onChange}
+                                />
+                              </FormControl>
                             </FormItem>
                           )}
                         />
                       </div>
 
-                      <Separator className="bg-white/10" />
-
-                      {/* Access Control */}
-                      <div className="space-y-4">
-                        <h4 className="text-lg font-medium text-white">Access Control</h4>
-                        <div className="space-y-4">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label className="text-white">IP Whitelisting</Label>
-                              <p className="text-sm text-slate-400">Restrict access to specific IP addresses</p>
-                            </div>
-                            <FormField
-                              control={securityForm.control}
-                              name="ipWhitelisting"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                          
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <Label className="text-white">Audit Logging</Label>
-                              <p className="text-sm text-slate-400">Log all user activities</p>
-                            </div>
-                            <FormField
-                              control={securityForm.control}
-                              name="auditLogging"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormControl>
-                                    <Switch
-                                      checked={field.value}
-                                      onCheckedChange={field.onChange}
-                                    />
-                                  </FormControl>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      </div>
-
                       <div className="flex justify-end">
                         <Button 
                           type="submit" 
-                          className="btn-gaming"
+                          className="btn-primary"
                           disabled={updateSecurityMutation.isPending}
                         >
+                          <Save className="w-4 h-4 mr-2" />
                           {updateSecurityMutation.isPending ? "Updating..." : "Update Security"}
                         </Button>
                       </div>
@@ -807,117 +678,34 @@ export default function Settings() {
             {/* About */}
             <TabsContent value="about" className="space-y-6 mt-6">
               <Card className="glass-card border-white/10">
-                <CardHeader>
-                  <CardTitle className="text-white">About CASHPOT ERP</CardTitle>
+                <CardHeader className="border-b border-white/10">
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Info className="w-5 h-5" />
+                    System Information
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 gaming-gradient rounded-2xl flex items-center justify-center mx-auto">
-                      <span className="text-white text-2xl">🎲</span>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-white">CASHPOT ERP 2.0</h3>
-                      <p className="text-slate-400">Gaming Management System</p>
-                    </div>
-                  </div>
-
-                  <Separator className="bg-white/10" />
-
+                <CardContent className="p-6 space-y-6">
                   <div className="grid grid-cols-2 gap-6">
                     <div>
-                      <h4 className="font-semibold text-white mb-2">Version Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Version:</span>
-                          <span className="text-white">2.0.1</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Build:</span>
-                          <span className="text-white">20241225</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Environment:</span>
-                          <span className="text-white">Production</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">License:</span>
-                          <span className="text-white">Commercial</span>
-                        </div>
-                      </div>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">Application</h4>
+                      <p className="text-white font-semibold">CASHPOT ERP</p>
+                      <p className="text-slate-300 text-sm">Gaming Management System</p>
                     </div>
-
                     <div>
-                      <h4 className="font-semibold text-white mb-2">System Information</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Database:</span>
-                          <span className="text-white">PostgreSQL</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Backend:</span>
-                          <span className="text-white">Node.js + Express</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Frontend:</span>
-                          <span className="text-white">React + TypeScript</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">UI Library:</span>
-                          <span className="text-white">Shadcn/UI</span>
-                        </div>
-                      </div>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">Version</h4>
+                      <p className="text-white font-semibold">2.0.0</p>
+                      <p className="text-slate-300 text-sm">Build 2024.06.27</p>
                     </div>
-                  </div>
-
-                  <Separator className="bg-white/10" />
-
-                  <div>
-                    <h4 className="font-semibold text-white mb-2">Features</h4>
-                    <div className="grid grid-cols-2 gap-2 text-sm text-slate-300">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Companies Management</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Locations Tracking</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Equipment Inventory</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Financial Management</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>User Management</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>ONJN Compliance</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Legal Documentation</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-emerald-500">✓</span>
-                        <span>Real-time Dashboard</span>
-                      </div>
+                    <div>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">License</h4>
+                      <p className="text-white font-semibold">Commercial</p>
+                      <p className="text-slate-300 text-sm">Licensed to Organization</p>
                     </div>
-                  </div>
-
-                  <Separator className="bg-white/10" />
-
-                  <div className="text-center">
-                    <p className="text-sm text-slate-400">
-                      © 2024 CASHPOT ERP. All rights reserved.
-                    </p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Professional gaming management solution for the modern industry.
-                    </p>
+                    <div>
+                      <h4 className="text-sm font-medium text-slate-400 mb-2">Support</h4>
+                      <p className="text-white font-semibold">24/7 Available</p>
+                      <p className="text-slate-300 text-sm">Premium Support Plan</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

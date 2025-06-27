@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -293,7 +294,7 @@ export default function ONJN() {
                 New Notification
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/10 text-white max-w-3xl">
+            <DialogContent className="glass-dialog dialog-xl">
               <DialogHeader>
                 <DialogTitle className="text-white">Create ONJN Notification</DialogTitle>
               </DialogHeader>
@@ -319,7 +320,9 @@ export default function ONJN() {
                     </label>
                     <select className="form-input w-full">
                       <option value="">Select Type</option>
-                      {notificationTypes.map((type: string) => (
+                      {(notificationAuthority === "ONJN Local" ? ONJN_LOCAL_NOTIFICATION_TYPES : 
+                        notificationAuthority === "ONJN Central" ? ONJN_CENTRAL_NOTIFICATION_TYPES : [])
+                        .map((type: string) => (
                         <option key={type} value={type}>{type}</option>
                       ))}
                     </select>
@@ -435,7 +438,7 @@ export default function ONJN() {
                 Create License Commission
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Create License Commission</DialogTitle>
             </DialogHeader>
@@ -607,6 +610,7 @@ export default function ONJN() {
             </Form>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Search */}
@@ -756,7 +760,7 @@ export default function ONJN() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+        <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
             <DialogTitle className="text-white">Edit License Commission</DialogTitle>
           </DialogHeader>
@@ -928,112 +932,7 @@ export default function ONJN() {
           </Form>
         </DialogContent>
       </Dialog>
-      
-      {/* Main Content */}
-      <div className="space-y-6">
-        {/* Search */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <Input
-              placeholder="Search ONJN reports..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 glass-card border-white/10 text-white placeholder-gray-400"
-            />
-          </div>
-        </div>
 
-        {/* Table */}
-        {isLoading ? (
-          <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-          </div>
-        ) : error ? (
-          <div className="text-center py-8 text-red-400">
-            Error loading ONJN reports: {error.message}
-          </div>
-        ) : (
-          <div className="glass-card border-white/10 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-white/10 hover:bg-white/5">
-                  <TableHead className="text-white">Commission Date</TableHead>
-                  <TableHead className="text-white">Serial Numbers</TableHead>
-                  <TableHead className="text-white">Status</TableHead>
-                  <TableHead className="text-white">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data?.onjnReports?.map((report: any) => (
-                  <TableRow key={report.id} className="border-white/10 hover:bg-white/5">
-                    <TableCell className="text-white">
-                      {new Date(report.commissionDate).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="text-white">
-                      {report.serialNumbers || 'N/A'}
-                    </TableCell>
-                    <TableCell className="text-white">
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        report.status === 'approved' ? 'bg-green-600' :
-                        report.status === 'pending' ? 'bg-yellow-600' :
-                        'bg-gray-600'
-                      }`}>
-                        {report.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleEdit(report)}
-                          className="text-blue-400 hover:text-blue-300"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => deleteMutation.mutate(report.id)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        )}
-
-        {/* Pagination */}
-        {data?.total > limit && (
-          <div className="flex items-center justify-center gap-2">
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage === 1}
-              className="glass-card border-white/10 text-white"
-            >
-              Previous
-            </Button>
-            <span className="text-white">
-              Page {currentPage} of {Math.ceil(data.total / limit)}
-            </span>
-            <Button
-              variant="outline"
-              onClick={() => setCurrentPage(Math.min(Math.ceil(data.total / limit), currentPage + 1))}
-              disabled={currentPage >= Math.ceil(data.total / limit)}
-              className="glass-card border-white/10 text-white"
-            >
-              Next
-            </Button>
-          </div>
-        )}
-      </div>
     </div>
   );
 }

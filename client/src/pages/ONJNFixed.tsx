@@ -210,7 +210,7 @@ export default function ONJNFixed() {
                 New Notification
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/10 text-white max-w-3xl">
+            <DialogContent className="glass-dialog dialog-xl">
               <DialogHeader>
                 <DialogTitle className="text-white">Create ONJN Notification</DialogTitle>
               </DialogHeader>

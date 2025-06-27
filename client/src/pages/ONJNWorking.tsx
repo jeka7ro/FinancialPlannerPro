@@ -506,7 +506,7 @@ export default function ONJNWorking() {
                 New Notification
               </Button>
             </DialogTrigger>
-                    <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
             <DialogTitle className="text-slate-100">Create New ONJN Notification</DialogTitle>
             <DialogDescription className="text-slate-400">
@@ -942,7 +942,7 @@ export default function ONJNWorking() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
             <DialogTitle className="text-slate-100">Edit ONJN Report</DialogTitle>
             <DialogDescription className="text-slate-400">

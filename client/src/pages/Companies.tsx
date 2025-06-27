@@ -237,7 +237,7 @@ export default function Companies() {
               Add new
             </Button>
           </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Company</DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -414,7 +414,7 @@ export default function Companies() {
 
       {/* Enhanced Companies Table */}
       <div className="content-card">
-        <div className="flex items-center justify-between mb-6">
+        <div className="table-header">
           <div>
             <h2 className="text-2xl font-bold heading-gradient">Companies</h2>
             <p className="text-slate-400 mt-1">Manage gaming companies and organizations</p>
@@ -425,19 +425,19 @@ export default function Companies() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="loading-container">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="loading-shimmer h-20"></div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="error-state-container">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load companies</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
         ) : !data?.companies?.length ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="empty-state-container">
             <div className="text-6xl mb-4">🏢</div>
             <h3 className="text-xl font-semibold text-white mb-2">No companies found</h3>
             <p>Get started by creating your first company.</p>
@@ -533,7 +533,7 @@ export default function Companies() {
             </div>
 
             {/* Enhanced Pagination */}
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+            <div className="pagination-container">
               <div className="text-sm text-slate-400">
                 Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
               </div>
@@ -581,7 +581,7 @@ export default function Companies() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-dialog border-white/10 max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
             <DialogTitle className="text-white">Edit Company</DialogTitle>
             <DialogDescription className="text-slate-400">

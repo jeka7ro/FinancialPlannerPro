@@ -14,24 +14,22 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertInvoiceSchema, type InsertInvoice } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2, ChevronDown, Plus } from "lucide-react";
+import { Upload, Edit, Trash2, ChevronDown, Plus, Search, Euro, Calendar } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { Checkbox } from "@/components/ui/checkbox";
 
-
-
 // Utility function for property type colors
 const getPropertyTypeColor = (propertyType: string) => {
   switch (propertyType?.toLowerCase()) {
     case 'property':
-      return 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300';
+      return 'status-active';
     case 'rent':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+      return 'status-maintenance';
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+      return 'bg-gray-500/20 text-gray-400';
   }
 };
 
@@ -296,22 +294,6 @@ export default function Invoices() {
     });
   };
 
-  const handleExport = (format: 'pdf' | 'excel') => {
-    toast({
-      title: "Export",
-      description: `Exporting ${format.toUpperCase()} format...`,
-    });
-  };
-
-  const handleImport = (file: File) => {
-    toast({
-      title: "Import",
-      description: "Import functionality will be implemented soon",
-    });
-  };
-
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
@@ -327,27 +309,59 @@ export default function Invoices() {
     }
   };
 
+  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+
   return (
     <div className="space-y-6">
-      {/* Actions */}
+      {/* Enhanced Search Interface */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">🧾</span>
+              </div>
+              <div>
+                <h3 className="search-title">Invoices</h3>
+                <p className="search-subtitle">Financial documentation and billing management</p>
+              </div>
+            </div>
+          </div>
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" />
+            <Input
+              type="text"
+              placeholder="Search invoices by number, company, amount, or status..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions and Bulk Operations */}
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <ImportExportDialog module="invoices" moduleName="Invoices">
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+            <Button className="btn-secondary">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Button className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
-                Add new
+                Create Invoice
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-xl">
             <DialogHeader>
-              <DialogTitle className="text-white">Add New Invoice</DialogTitle>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <span className="text-xl">🧾</span>
+                Add New Invoice
+              </DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -390,7 +404,7 @@ export default function Invoices() {
                   />
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
                     name="companyId"
@@ -439,149 +453,6 @@ export default function Invoices() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="locationIds"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Locations</FormLabel>
-                        <FormControl>
-                          <div className="space-y-2">
-                            <div className="text-sm text-slate-400">Select multiple locations:</div>
-                            <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                              {locations?.locations?.map((location: any) => (
-                                <label key={location.id} className="flex items-center space-x-2 text-sm">
-                                  <input
-                                    type="checkbox"
-                                    checked={(field.value || []).includes(location.id)}
-                                    onChange={(e) => {
-                                      const currentValues = field.value || [];
-                                      if (e.target.checked) {
-                                        field.onChange([...currentValues, location.id]);
-                                      } else {
-                                        field.onChange(currentValues.filter((id: number) => id !== location.id));
-                                      }
-                                    }}
-                                    className="w-4 h-4 rounded border-white/20 bg-transparent"
-                                  />
-                                  <span className="text-white">{location.name}</span>
-                                </label>
-                              ))}
-                            </div>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="invoiceDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Invoice Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="dueDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Due Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="serialNumbers"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Serial Numbers</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value || ""} 
-                            className="form-input" 
-                            placeholder="Enter serial numbers separated by spaces"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="amortizationMonths"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Amortization (Months)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="number" 
-                            min="1"
-                            max="120"
-                            className="form-input" 
-                            placeholder="Number of months"
-                            value={field.value?.toString() || ""}
-                            onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="propertyType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Property Type</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select property type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="property">Property</SelectItem>
-                            <SelectItem value="rent">Rent</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
 
                 <div className="grid grid-cols-3 gap-4">
@@ -594,10 +465,12 @@ export default function Invoices() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
                             placeholder="0.00"
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -613,10 +486,12 @@ export default function Invoices() {
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
                             placeholder="0.00"
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -628,57 +503,23 @@ export default function Invoices() {
                     name="totalAmount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Total Amount</FormLabel>
+                        <FormLabel className="text-white">Total Amount (€)</FormLabel>
                         <FormControl>
                           <Input 
                             {...field} 
+                            value={field.value?.toString() || ""}
                             type="number" 
                             step="0.01"
                             className="form-input" 
                             placeholder="0.00"
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Currency</FormLabel>
-                        <Select value={field.value || "EUR"} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select currency" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="LEI">LEI (lei)</SelectItem>
-                            <SelectItem value="USD">USD ($)</SelectItem>
-                            <SelectItem value="EUR">EUR (€)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </div>
-
-                <FormField
-                  control={form.control}
-                  name="notes"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Notes</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Additional notes..." />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
 
                 <div className="flex justify-end space-x-4">
                   <Button 
@@ -691,7 +532,7 @@ export default function Invoices() {
                   </Button>
                   <Button 
                     type="submit" 
-                    className="btn-gaming"
+                    className="btn-primary"
                     disabled={createMutation.isPending}
                   >
                     {createMutation.isPending ? "Creating..." : "Create Invoice"}
@@ -701,550 +542,133 @@ export default function Invoices() {
             </Form>
           </DialogContent>
           </Dialog>
-
-          {/* Edit Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="glass-card border-white/10 text-white max-w-4xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle className="text-white">Edit Invoice</DialogTitle>
-              </DialogHeader>
-              <Form {...editForm}>
-                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="invoiceNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Invoice Number</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="INV-2024-001" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Status</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select status" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              <SelectItem value="pending">Pending</SelectItem>
-                              <SelectItem value="paid">Paid</SelectItem>
-                              <SelectItem value="overdue">Overdue</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="companyId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Company</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select company" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {companies?.companies?.map((company: any) => (
-                                <SelectItem key={company.id} value={company.id.toString()}>
-                                  {company.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="sellerCompanyId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Seller Company</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select seller company" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {companies?.companies?.map((company: any) => (
-                                <SelectItem key={company.id} value={company.id.toString()}>
-                                  {company.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="locationIds"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Locations</FormLabel>
-                          <FormControl>
-                            <div className="space-y-2">
-                              <div className="text-sm text-slate-400">Select multiple locations:</div>
-                              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
-                                {locations?.locations?.map((location: any) => (
-                                  <label key={location.id} className="flex items-center space-x-2 text-sm">
-                                    <input
-                                      type="checkbox"
-                                      checked={(field.value || []).includes(location.id)}
-                                      onChange={(e) => {
-                                        const currentValues = field.value || [];
-                                        if (e.target.checked) {
-                                          field.onChange([...currentValues, location.id]);
-                                        } else {
-                                          field.onChange(currentValues.filter((id: number) => id !== location.id));
-                                        }
-                                      }}
-                                      className="w-4 h-4 rounded border-white/20 bg-transparent"
-                                    />
-                                    <span className="text-white">{location.name}</span>
-                                  </label>
-                                ))}
-                              </div>
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="invoiceDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Invoice Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date"
-                              className="form-input" 
-                              value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : new Date())}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="dueDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Due Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date"
-                              className="form-input" 
-                              value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : new Date())}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="serialNumbers"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Serial Numbers</FormLabel>
-                          <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter serial numbers separated by spaces" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="amortizationMonths"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Amortization (Months)</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              type="number"
-                              min="1"
-                              max="120"
-                              className="form-input" 
-                              placeholder="Number of months"
-                              value={field.value?.toString() || ""}
-                              onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="propertyType"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Property Type</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select property type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              <SelectItem value="property">Property</SelectItem>
-                              <SelectItem value="rent">Rent</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-4">
-                    <FormField
-                      control={editForm.control}
-                      name="subtotal"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Subtotal</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="0.00"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="taxAmount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Tax Amount</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="0.00"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="totalAmount"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Total Amount</FormLabel>
-                          <FormControl>
-                            <Input 
-                              {...field} 
-                              value={field.value || ""}
-                              type="number" 
-                              step="0.01"
-                              className="form-input" 
-                              placeholder="0.00"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="currency"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">Currency</FormLabel>
-                          <Select value={field.value || "EUR"} onValueChange={field.onChange}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select currency" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              <SelectItem value="LEI">LEI (lei)</SelectItem>
-                              <SelectItem value="USD">USD ($)</SelectItem>
-                              <SelectItem value="EUR">EUR (€)</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={editForm.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Notes</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Additional notes..." />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex justify-end space-x-4">
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      onClick={() => setIsEditDialogOpen(false)}
-                      className="text-slate-400 hover:text-white"
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
-                      className="btn-gaming"
-                      disabled={updateMutation.isPending}
-                    >
-                      {updateMutation.isPending ? "Updating..." : "Update Invoice"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search invoices..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Invoices List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Invoices</CardTitle>
+      {/* Enhanced Table */}
+      <Card className="data-table">
+        <CardHeader className="data-table-header">
+          <CardTitle className="text-white flex items-center gap-2">
+            <span>🧾</span>
+            Invoices
+            {data?.total && <span className="count-badge">{data.total}</span>}
+          </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="data-table-content">
+          {selectedItems.size > 0 && (
+            <div className="mb-4">
+              <BulkOperations
+                selectedCount={selectedItems.size}
+                onBulkEdit={handleBulkEdit}
+                onBulkDelete={handleBulkDelete}
+              />
+            </div>
+          )}
+          
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+                <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
               ))}
             </div>
           ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load invoices
+            <div className="empty-state">
+              <span className="empty-state-icon">⚠️</span>
+              <p className="empty-state-title">Failed to load invoices</p>
+              <p className="empty-state-description">There was an error loading the invoices</p>
             </div>
           ) : !data?.invoices?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">💰</span>
-              No invoices found
+            <div className="empty-state">
+              <span className="empty-state-icon">🧾</span>
+              <p className="empty-state-title">No invoices found</p>
+              <p className="empty-state-description">Create your first invoice to get started</p>
             </div>
           ) : (
             <>
-              {/* Bulk Operations */}
-              {selectedItems.size > 0 && (
-                <div className="mb-4">
-                  <BulkOperations
-                    selectedCount={selectedItems.size}
-                    onBulkEdit={handleBulkEdit}
-                    onBulkDelete={handleBulkDelete}
-                  />
-                </div>
-              )}
-              
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
+              <div className="table-container">
+                <table className="enhanced-table">
                   <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400 w-16">
+                    <tr>
+                      <th className="w-12">
                         <Checkbox
                           checked={selectedItems.size === data?.invoices?.length && data?.invoices?.length > 0}
                           onCheckedChange={handleSelectAll}
+                          className="checkbox-custom"
                         />
                       </th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Seller</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Locations</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amortization</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property Type</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Currency</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amount</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Due Date</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
+                      <th>Invoice</th>
+                      <th>Company</th>
+                      <th>Amount</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {data.invoices.map((invoice: any, index: number) => (
-                      <tr key={invoice.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
+                    {data.invoices.map((invoice: any) => (
+                      <tr key={invoice.id} className="table-row">
+                        <td>
                           <Checkbox
                             checked={selectedItems.has(invoice.id)}
                             onCheckedChange={() => handleSelectItem(invoice.id)}
+                            className="checkbox-custom"
                           />
                         </td>
-                        <td className="py-4 px-4 text-sm font-medium text-white">
-                          {(currentPage - 1) * limit + index + 1}
-                        </td>
-                        <td className="py-4 px-4">
+                        <td>
                           <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-green-500 text-sm">💰</span>
+                            <div className="entity-avatar bg-green-500/20">
+                              <span className="text-green-400">🧾</span>
                             </div>
                             <div>
-                              <p className="text-sm font-medium text-white">{invoice.invoiceNumber}</p>
-                              <p className="text-xs text-slate-400">
-                                {new Date(invoice.invoiceDate).toLocaleDateString()}
-                              </p>
+                              <p className="entity-title">{invoice.invoiceNumber}</p>
+                              <p className="entity-subtitle">Invoice #{invoice.id}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.companyId ? 
-                            companies?.companies?.find((c: any) => c.id === invoice.companyId)?.name || `Company ${invoice.companyId}` : 
-                            'No company'
-                          }
+                        <td className="text-slate-300 text-sm">
+                          {companies?.companies?.find((c: any) => c.id === invoice.companyId)?.name || 'No company'}
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.sellerCompanyId ? 
-                            companies?.companies?.find((c: any) => c.id === invoice.sellerCompanyId)?.name || `Seller ${invoice.sellerCompanyId}` : 
-                            'No seller'
-                          }
+                        <td>
+                          <div className="flex items-center gap-1">
+                            <Euro className="w-4 h-4 text-emerald-400" />
+                            <span className="text-emerald-400 font-semibold">
+                              {Number(invoice.totalAmount).toLocaleString()}
+                            </span>
+                          </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.locationIds ? 
-                            (() => {
-                              const locationIdArray = typeof invoice.locationIds === 'string' 
-                                ? invoice.locationIds.split(',').map(Number) 
-                                : invoice.locationIds;
-                              const locationNames = locationIdArray
-                                .map((id: number) => locations?.locations?.find((l: any) => l.id === id)?.name)
-                                .filter(Boolean);
-                              return locationNames.length > 0 ? locationNames.join(', ') : 'No locations';
-                            })() :
-                            'No locations'
-                          }
+                        <td>
+                          <div className="flex items-center gap-1 text-slate-300 text-sm">
+                            <Calendar className="w-3 h-3" />
+                            <span>{new Date(invoice.invoiceDate).toLocaleDateString()}</span>
+                          </div>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          <GroupedSerialNumbers serialNumbers={invoice.serialNumbers || ''} />
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.amortizationMonths ? `${invoice.amortizationMonths} months` : 'No amortization'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getPropertyTypeColor(invoice.propertyType)} border`}>
-                            {invoice.propertyType || 'property'}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                            {(invoice as any).currency || 'EUR'}
-                          </span>
-                        </td>
-                        <td className="py-4 px-4 text-sm font-semibold text-white">
-                          {getCurrencySymbol((invoice as any).currency || 'EUR')}{Number(invoice.totalAmount).toLocaleString()}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {new Date(invoice.dueDate).toLocaleDateString()}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getStatusColor(invoice.status)} border`}>
+                        <td>
+                          <Badge className={getStatusColor(invoice.status)}>
                             {invoice.status}
                           </Badge>
                         </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.userId ? `User ${invoice.userId}` : 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button
-                              size="sm"
-                              variant="ghost"
+                        <td>
+                          <div className="action-buttons">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
                               onClick={() => handleEdit(invoice)}
-                              className="text-slate-400 hover:text-white hover:bg-white/10"
+                              className="action-button action-button-edit"
                             >
-                              <Edit className="h-4 w-4" />
+                              <Edit className="w-4 h-4" />
                             </Button>
-                            <AttachmentButton 
-                              entityType="invoice" 
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleDelete(invoice.id)}
+                              className="action-button action-button-delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <AttachmentButton
+                              entityType="invoices"
                               entityId={invoice.id}
                             />
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => handleDelete(invoice.id)}
-                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -1253,49 +677,48 @@ export default function Invoices() {
                 </table>
               </div>
 
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+              {/* Enhanced Pagination */}
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <div className="pagination-info">
+                    Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} invoices
+                  </div>
+                  <div className="pagination-controls">
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="pagination-button"
+                    >
+                      Previous
+                    </Button>
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = i + 1;
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? "pagination-button-active" : "pagination-button"}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="pagination-button"
+                    >
+                      Next
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
+              )}
             </>
           )}
         </CardContent>

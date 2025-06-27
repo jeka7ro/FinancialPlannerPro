@@ -236,6 +236,9 @@
   box-shadow: 
     0 20px 60px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 
 .enhanced-table {
@@ -243,6 +246,8 @@
   border-collapse: separate;
   border-spacing: 0;
   background: transparent;
+  min-height: 350px;
+  flex: 1;
 }
 
 .enhanced-table thead {
@@ -391,6 +396,7 @@
   gap: 1.5rem;
   max-width: 100%;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* Enhanced card layouts */
@@ -405,6 +411,9 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
 }
 
 .content-card::before {
@@ -885,6 +894,404 @@ main,
     0 30px 60px rgba(0, 0, 0, 0.3),
     0 15px 30px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  width: 95vw;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* ====================================== */
+/* DIALOG AND MODAL SIZING */
+/* ====================================== */
+
+/* Base dialog content sizing */
+[role="dialog"],
+.dialog-content,
+.modal-content {
+  width: 95vw;
+  max-width: 800px;
+  max-height: 90vh;
+  min-height: 300px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.5rem;
+  box-shadow: 
+    0 30px 60px rgba(0, 0, 0, 0.3),
+    0 15px 30px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Small dialogs (confirmations, alerts) */
+.dialog-sm {
+  max-width: 400px;
+  min-height: 200px;
+}
+
+/* Medium dialogs (forms, editing) */
+.dialog-md {
+  max-width: 600px;
+  min-height: 400px;
+}
+
+/* Large dialogs (complex forms, data views) */
+.dialog-lg {
+  max-width: 900px;
+  min-height: 500px;
+}
+
+/* Extra large dialogs (full forms, dashboards) */
+.dialog-xl {
+  max-width: 1200px;
+  min-height: 600px;
+}
+
+/* Full screen dialogs for mobile */
+.dialog-fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+/* Dialog header styling */
+.dialog-header {
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+/* Dialog body styling */
+.dialog-body {
+  padding: 1.5rem 2rem;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Dialog footer styling */
+.dialog-footer {
+  padding: 1rem 2rem 2rem 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* Form dialogs specific styling */
+.form-dialog {
+  max-width: 700px;
+  min-height: 500px;
+}
+
+.form-dialog .dialog-body {
+  padding: 2rem;
+}
+
+.form-dialog .form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-dialog .form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* Confirmation dialogs */
+.confirmation-dialog {
+  max-width: 450px;
+  min-height: 250px;
+  text-align: center;
+}
+
+.confirmation-dialog .dialog-body {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Responsive dialog sizing */
+@media (max-width: 1024px) {
+  [role="dialog"],
+  .dialog-content,
+  .modal-content {
+    width: 98vw;
+    max-width: 98vw;
+    margin: 1rem;
+  }
+  
+  .dialog-xl {
+    max-width: 98vw;
+  }
+  
+  .dialog-lg {
+    max-width: 90vw;
+  }
+}
+
+@media (max-width: 768px) {
+  [role="dialog"],
+  .dialog-content,
+  .modal-content {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    border-radius: 0;
+  }
+  
+  .dialog-sm,
+  .dialog-md,
+  .dialog-lg,
+  .dialog-xl {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .dialog-header {
+    padding: 1.5rem 1rem 1rem 1rem;
+  }
+  
+  .dialog-body {
+    padding: 1rem;
+  }
+  
+  .dialog-footer {
+    padding: 1rem;
+  }
+  
+  .form-dialog .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .dialog-header {
+    padding: 1rem 0.75rem 0.75rem 0.75rem;
+  }
+  
+  .dialog-body {
+    padding: 0.75rem;
+  }
+  
+  .dialog-footer {
+    padding: 0.75rem;
+    flex-direction: column;
+  }
+  
+  .dialog-footer button {
+    width: 100%;
+  }
+}
+
+/* Overlay and backdrop */
+.dialog-overlay {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* Animation for dialogs */
+.dialog-enter {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+}
+
+.dialog-enter-active {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dialog-exit {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.dialog-exit-active {
+  opacity: 0;
+  transform: scale(0.95) translateY(-10px);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ====================================== */
+/* CONSISTENT PAGE AND TABLE SIZING */
+/* ====================================== */
+
+/* Ensure all pages have consistent minimum sizing */
+.space-y-6 {
+  min-height: calc(100vh - 4rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Consistent sizing for search cards */
+.search-card {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+}
+
+/* Empty state containers maintain table size */
+.empty-state-container {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  flex: 1;
+}
+
+/* Loading state containers */
+.loading-container {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  flex: 1;
+}
+
+/* Error state containers */
+.error-state-container {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 2rem;
+  flex: 1;
+}
+
+/* Ensure table bodies maintain minimum height even when empty */
+.enhanced-table tbody {
+  min-height: 300px;
+  position: relative;
+}
+
+/* Pagination areas maintain consistent spacing */
+.pagination-container {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+/* Header sections maintain consistent height */
+.page-header {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+/* Content sections fill remaining space */
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Table header sections */
+.table-header {
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* Ensure consistent button heights */
+.btn-primary, .btn-secondary, .btn-gaming {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form sections maintain consistent spacing */
+.form-section {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Input fields maintain consistent height */
+.enhanced-input, .form-input {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+  .content-card {
+    min-height: 500px;
+    padding: 1.5rem;
+  }
+  
+  .enhanced-table-wrapper {
+    min-height: 350px;
+  }
+  
+  .enhanced-table {
+    min-height: 300px;
+  }
+  
+  .empty-state-container,
+  .error-state-container {
+    min-height: 350px;
+    padding: 2rem 1rem;
+  }
+  
+  .loading-container {
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 640px) {
+  .content-card {
+    min-height: 450px;
+    padding: 1rem;
+  }
+  
+  .enhanced-table-wrapper {
+    min-height: 300px;
+  }
+  
+  .enhanced-table {
+    min-height: 250px;
+  }
+  
+  .empty-state-container,
+  .error-state-container {
+    min-height: 300px;
+    padding: 1.5rem 0.75rem;
+  }
 }
 
 

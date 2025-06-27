@@ -18,6 +18,27 @@ import { AttachmentButton } from "@/components/ui/attachment-button";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { Checkbox } from "@/components/ui/checkbox";
 
+// Notification types for ONJN Central
+const ONJN_CENTRAL_NOTIFICATION_TYPES = [
+  "New Commission",
+  "Sales Notification",
+  "Buy Notification", 
+  "Jackpot List",
+  "Change Location",
+  "Software Update",
+  "Offline",
+  "Autoexcluded clients",
+  "Remove Authorization",
+  "Legal Notification"
+];
+
+// Notification types for ONJN Local
+const ONJN_LOCAL_NOTIFICATION_TYPES = [
+  "Obtaining Authorization",
+  "Change of Location", 
+  "Remove from Location"
+];
+
 export default function ONJNClean() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,6 +47,8 @@ export default function ONJNClean() {
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] = useState(false);
   const [editingReport, setEditingReport] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<Set<number>>(new Set());
+  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const [notificationAuthority, setNotificationAuthority] = useState<string>("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const limit = 10;
@@ -215,6 +238,18 @@ export default function ONJNClean() {
     },
   });
 
+  // Notification Form
+  const notificationForm = useForm<InsertOnjnReport>({
+    resolver: zodResolver(insertOnjnReportSchema),
+    defaultValues: {
+      type: "notification",
+      commissionType: "",
+      serialNumbers: "",
+      status: "draft",
+      notes: "",
+    },
+  });
+
   const handleEdit = (report: any) => {
     setEditingReport(report);
     editForm.reset({
@@ -240,6 +275,40 @@ export default function ONJNClean() {
     }
   };
 
+  // Notification Create Mutation
+  const notificationCreateMutation = useMutation({
+    mutationFn: async (data: InsertOnjnReport) => {
+      const notificationData = {
+        ...data,
+        type: "notification",
+        locationIds: selectedLocations.join(',')
+      };
+      return await apiRequest("POST", "/api/onjn-reports", notificationData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/onjn-reports'] });
+      setIsNotificationDialogOpen(false);
+      setSelectedLocations([]);
+      setNotificationAuthority("");
+      notificationForm.reset();
+      toast({
+        title: "Success",
+        description: "ONJN notification created successfully.",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: "Failed to create ONJN notification. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onNotificationSubmit = (data: InsertOnjnReport) => {
+    notificationCreateMutation.mutate(data);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -259,16 +328,241 @@ export default function ONJNClean() {
                 New Notification
               </Button>
             </DialogTrigger>
-            <DialogContent className="glass-card border-white/10 max-w-2xl">
+            <DialogContent className="glass-card border-white/10 max-w-4xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle className="text-white">Add ONJN Notification</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
-                <p className="text-slate-300">Notification functionality will be implemented here.</p>
-                <div className="flex justify-end">
-                  <Button onClick={() => setIsNotificationDialogOpen(false)}>Close</Button>
-                </div>
-              </div>
+              <Form {...notificationForm}>
+                <form onSubmit={notificationForm.handleSubmit(onNotificationSubmit)} className="space-y-6">
+                  {/* Authority Selection */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="commissionType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Authority</FormLabel>
+                        <Select value={field.value || ""} onValueChange={(value) => {
+                          field.onChange(value);
+                          setNotificationAuthority(value);
+                        }}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select Authority" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="central">ONJN Central</SelectItem>
+                            <SelectItem value="local">ONJN Local</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Notification Type */}
+                  {notificationAuthority && (
+                    <FormField
+                      control={notificationForm.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Notification Type</FormLabel>
+                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="glass-card border-white/20 text-white">
+                                <SelectValue placeholder="Select notification type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              {notificationAuthority === "central" ? 
+                                ONJN_CENTRAL_NOTIFICATION_TYPES.map((type) => (
+                                  <SelectItem key={type} value={type.toLowerCase().replace(/\s+/g, '_')}>
+                                    {type}
+                                  </SelectItem>
+                                )) :
+                                ONJN_LOCAL_NOTIFICATION_TYPES.map((type) => (
+                                  <SelectItem key={type} value={type.toLowerCase().replace(/\s+/g, '_')}>
+                                    {type}
+                                  </SelectItem>
+                                ))
+                              }
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+
+                  {/* Company Selection */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="companyId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Company</FormLabel>
+                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select company" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            {companies?.companies?.map((company: any) => (
+                              <SelectItem key={company.id} value={company.id.toString()}>
+                                {company.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Location Selection */}
+                  <div className="space-y-2">
+                    <FormLabel className="text-white">Locations</FormLabel>
+                    <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto glass-card border-white/10 p-3 rounded-md">
+                      {locations?.locations?.map((location: any) => (
+                        <label key={location.id} className="flex items-center space-x-2 text-sm text-white">
+                          <input
+                            type="checkbox"
+                            checked={selectedLocations.includes(location.id.toString())}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedLocations([...selectedLocations, location.id.toString()]);
+                              } else {
+                                setSelectedLocations(selectedLocations.filter(id => id !== location.id.toString()));
+                              }
+                            }}
+                            className="rounded border-white/20"
+                          />
+                          <span className="truncate">{location.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Commission Date */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="commissionDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Commission Date</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            className="glass-card border-white/20 text-white" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Submission Date */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="submissionDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Submission Date</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="date" 
+                            {...field} 
+                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
+                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            className="glass-card border-white/20 text-white" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Serial Numbers */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="serialNumbers"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Serial Numbers</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            value={field.value || ""} 
+                            className="glass-card border-white/20 text-white min-h-20" 
+                            placeholder="Enter serial numbers separated by spaces or commas" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Notes */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Notes</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            value={field.value || ""} 
+                            className="glass-card border-white/20 text-white min-h-20" 
+                            placeholder="Additional notes and comments" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  {/* Status */}
+                  <FormField
+                    control={notificationForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Status</FormLabel>
+                        <Select value={field.value || "draft"} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="draft">Draft</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="submitted">Submitted</SelectItem>
+                            <SelectItem value="approved">Approved</SelectItem>
+                            <SelectItem value="rejected">Rejected</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsNotificationDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button type="submit" disabled={notificationCreateMutation.isPending}>
+                      {notificationCreateMutation.isPending ? "Creating..." : "Create Notification"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
             </DialogContent>
           </Dialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>

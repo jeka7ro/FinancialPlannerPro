@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertGameMixSchema, type InsertGameMix, type GameMix } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2, Plus } from "lucide-react";
+import { Upload, Edit, Trash2, Plus, Search } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -196,43 +196,74 @@ export default function GameMixes() {
   const handleBulkDelete = () => {
     if (selectedGameMixes.length === 0) return;
     
-    toast({
-      title: "Bulk Delete",
-      description: `Deleting ${selectedGameMixes.length} game mixes`,
-      variant: "destructive",
-    });
+    if (window.confirm(`Are you sure you want to delete ${selectedGameMixes.length} game mixes?`)) {
+      selectedGameMixes.forEach(id => deleteMutation.mutate(id));
+      setSelectedGameMixes([]);
+    }
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
     <div className="space-y-6">
-      {/* Actions */}
+      {/* Enhanced Search Interface */}
+      <Card className="search-card">
+        <CardContent className="p-6">
+          <div className="search-header">
+            <div className="search-icon-section">
+              <div className="search-icon-wrapper">
+                <span className="search-icon">🍒</span>
+              </div>
+              <div>
+                <h3 className="search-title">Game Mixes</h3>
+                <p className="search-subtitle">Gaming content and mix configuration</p>
+              </div>
+            </div>
+          </div>
+          <div className="search-input-wrapper">
+            <Search className="search-input-icon" />
+            <Input
+              type="text"
+              placeholder="Search game mixes by name, provider, or game count..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="search-input"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Actions and Bulk Operations */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        {selectedGameMixes.length > 0 ? (
           <BulkOperations 
             selectedCount={selectedGameMixes.length}
             onBulkEdit={handleBulkEdit}
             onBulkDelete={handleBulkDelete}
           />
-        </div>
+        ) : (
+          <div></div>
+        )}
         <div className="flex items-center gap-2">
           <ImportExportDialog module="game-mixes" moduleName="Game Mixes">
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+            <Button className="btn-secondary">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Button className="btn-primary">
                 <Plus className="h-4 w-4 mr-2" />
-                Add new
+                Add Game Mix
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
-              <DialogTitle className="text-white">Create New Game Mix</DialogTitle>
+              <DialogTitle className="text-white flex items-center gap-2">
+                <span className="text-xl">🍒</span>
+                Create New Game Mix
+              </DialogTitle>
             </DialogHeader>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -321,7 +352,7 @@ export default function GameMixes() {
                   </Button>
                   <Button 
                     type="submit" 
-                    className="btn-gaming"
+                    className="btn-primary"
                     disabled={createMutation.isPending}
                   >
                     {createMutation.isPending ? "Creating..." : "Create Game Mix"}
@@ -334,188 +365,14 @@ export default function GameMixes() {
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search game mixes..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Game Mixes List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Game Mixes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load game mixes
-            </div>
-          ) : !data?.gameMixes?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">🍒</span>
-              No game mixes found
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto -mx-6">
-                <table className="w-full min-w-max">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-2 px-3 w-10">
-                        <Checkbox
-                          checked={selectedGameMixes.length === data?.gameMixes.length && data?.gameMixes.length > 0}
-                          onCheckedChange={handleSelectAll}
-                          className="border-white/20"
-                        />
-                      </th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Mix Name</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Provider</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Game Count</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Description</th>
-                      <th className="text-left py-2 px-3 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-right py-2 px-3 text-sm font-medium text-slate-400">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.gameMixes.map((gameMix: any) => (
-                      <tr key={gameMix.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-3 px-3">
-                          <Checkbox
-                            checked={selectedGameMixes.includes(gameMix.id)}
-                            onCheckedChange={() => handleSelectGameMix(gameMix.id)}
-                            className="border-white/20"
-                          />
-                        </td>
-                        <td className="py-3 px-3">
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-red-500 text-xs">🍒</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-white truncate">{gameMix.name}</p>
-                              <p className="text-xs text-slate-400">Mix #{gameMix.id}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-2">
-                            {gameMix.providerId && <ProviderLogo providerId={gameMix.providerId} size="sm" />}
-                            <span className="text-sm text-slate-300 truncate">
-                              {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300">
-                          {gameMix.gameCount} games
-                        </td>
-                        <td className="py-3 px-3 text-sm text-slate-300 max-w-xs truncate">
-                          {gameMix.description || 'No description'}
-                        </td>
-                        <td className="py-3 px-3">
-                          <Badge className={gameMix.isActive ? 'status-active' : 'status-inactive'}>
-                            {gameMix.isActive ? 'Active' : 'Inactive'}
-                          </Badge>
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          <div className="flex justify-end space-x-1">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => handleEdit(gameMix)}
-                              className="text-blue-500 hover:text-blue-400 h-8 w-8 p-0"
-                            >
-                              <Edit className="w-3 h-3" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => handleDelete(gameMix)}
-                              className="text-red-500 hover:text-red-400 h-8 w-8 p-0"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </Button>
-                            <AttachmentButton
-                              entityType="game-mixes"
-                              entityId={gameMix.id}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+        <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
-            <DialogTitle className="text-white">Edit Game Mix</DialogTitle>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <span className="text-xl">🍒</span>
+              Edit Game Mix
+            </DialogTitle>
           </DialogHeader>
           <Form {...editForm}>
             <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
@@ -526,7 +383,7 @@ export default function GameMixes() {
                   <FormItem>
                     <FormLabel className="text-white">Mix Name</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter game mix name" />
+                      <Input {...field} className="form-input" placeholder="Enter game mix name" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -554,13 +411,13 @@ export default function GameMixes() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Provider</FormLabel>
-                      <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select provider" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="glass-card border-white/20">
+                        <SelectContent className="glass-card border-white/10">
                           {providers?.providers?.map((provider: any) => (
                             <SelectItem key={provider.id} value={provider.id.toString()}>
                               {provider.name}
@@ -572,7 +429,6 @@ export default function GameMixes() {
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={editForm.control}
                   name="gameCount"
@@ -582,7 +438,6 @@ export default function GameMixes() {
                       <FormControl>
                         <Input 
                           {...field} 
-                          value={field.value || ""} 
                           type="number" 
                           className="form-input" 
                           placeholder="Number of games"
@@ -595,7 +450,7 @@ export default function GameMixes() {
                 />
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4">
+              <div className="flex justify-end space-x-4">
                 <Button 
                   type="button" 
                   variant="ghost" 
@@ -606,8 +461,8 @@ export default function GameMixes() {
                 </Button>
                 <Button 
                   type="submit" 
+                  className="btn-primary"
                   disabled={updateMutation.isPending}
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
                 >
                   {updateMutation.isPending ? "Updating..." : "Update Game Mix"}
                 </Button>
@@ -616,6 +471,172 @@ export default function GameMixes() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Enhanced Table */}
+      <Card className="data-table">
+        <CardHeader className="data-table-header">
+          <CardTitle className="text-white flex items-center gap-2">
+            <span>🍒</span>
+            Game Mixes
+            {data?.total && <span className="count-badge">{data.total}</span>}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="data-table-content">
+          {isLoading ? (
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="empty-state">
+              <span className="empty-state-icon">⚠️</span>
+              <p className="empty-state-title">Failed to load game mixes</p>
+              <p className="empty-state-description">There was an error loading the game mixes</p>
+            </div>
+          ) : !data?.gameMixes?.length ? (
+            <div className="empty-state">
+              <span className="empty-state-icon">🍒</span>
+              <p className="empty-state-title">No game mixes found</p>
+              <p className="empty-state-description">Add your first game mix to get started</p>
+            </div>
+          ) : (
+            <>
+              <div className="table-container">
+                <table className="enhanced-table">
+                  <thead>
+                    <tr>
+                      <th className="w-12">
+                        <Checkbox
+                          checked={selectedGameMixes.length === data?.gameMixes.length && data?.gameMixes.length > 0}
+                          onCheckedChange={handleSelectAll}
+                          className="checkbox-custom"
+                        />
+                      </th>
+                      <th>Mix Name</th>
+                      <th>Provider</th>
+                      <th>Game Count</th>
+                      <th>Description</th>
+                      <th>Status</th>
+                      <th className="text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.gameMixes.map((gameMix: any) => (
+                      <tr key={gameMix.id} className="table-row">
+                        <td>
+                          <Checkbox
+                            checked={selectedGameMixes.includes(gameMix.id)}
+                            onCheckedChange={() => handleSelectGameMix(gameMix.id)}
+                            className="checkbox-custom"
+                          />
+                        </td>
+                        <td>
+                          <div className="flex items-center space-x-3">
+                            <div className="entity-avatar bg-red-500/20">
+                              <span className="text-red-400">🍒</span>
+                            </div>
+                            <div>
+                              <p className="entity-title">{gameMix.name}</p>
+                              <p className="entity-subtitle">Mix #{gameMix.id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            {gameMix.providerId && <ProviderLogo providerId={gameMix.providerId} size="sm" />}
+                            <span className="text-slate-300 text-sm">
+                              {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="text-slate-300 text-sm">
+                          {gameMix.gameCount} games
+                        </td>
+                        <td className="text-slate-300 text-sm max-w-xs truncate">
+                          {gameMix.description || 'No description'}
+                        </td>
+                        <td>
+                          <Badge className={gameMix.isActive ? 'status-active' : 'status-inactive'}>
+                            {gameMix.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </td>
+                        <td>
+                          <div className="action-buttons">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleEdit(gameMix)}
+                              className="action-button action-button-edit"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => handleDelete(gameMix)}
+                              className="action-button action-button-delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                            <AttachmentButton
+                              entityType="game-mixes"
+                              entityId={gameMix.id}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Enhanced Pagination */}
+              {totalPages > 1 && (
+                <div className="pagination">
+                  <div className="pagination-info">
+                    Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} game mixes
+                  </div>
+                  <div className="pagination-controls">
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                      className="pagination-button"
+                    >
+                      Previous
+                    </Button>
+                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                      const page = i + 1;
+                      return (
+                        <Button
+                          key={page}
+                          variant={currentPage === page ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setCurrentPage(page)}
+                          className={currentPage === page ? "pagination-button-active" : "pagination-button"}
+                        >
+                          {page}
+                        </Button>
+                      );
+                    })}
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                      className="pagination-button"
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

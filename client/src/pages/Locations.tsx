@@ -253,13 +253,13 @@ export default function Locations() {
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-                <Plus className="h-4 w-4 mr-2" />
-                Add new
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+                      <DialogTrigger asChild>
+            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Add new
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="glass-dialog dialog-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Create New Location</DialogTitle>
               <DialogDescription className="text-slate-400">
@@ -438,9 +438,9 @@ export default function Locations() {
           </DialogContent>
           </Dialog>
 
-          {/* Edit Dialog */}
-          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-            <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+                {/* Edit Dialog */}
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="glass-dialog dialog-lg">
               <DialogHeader>
                 <DialogTitle className="text-white">Edit Location</DialogTitle>
                 <DialogDescription className="text-slate-400">
@@ -639,7 +639,7 @@ export default function Locations() {
 
       {/* Enhanced Locations Table */}
       <div className="content-card">
-        <div className="flex items-center justify-between mb-6">
+        <div className="table-header">
           <div>
             <h2 className="text-2xl font-bold heading-gradient">Locations</h2>
             <p className="text-slate-400 mt-1">Gaming venues and facilities management</p>
@@ -650,19 +650,19 @@ export default function Locations() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="loading-container">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="loading-shimmer h-20"></div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="error-state-container">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load locations</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
         ) : !data?.locations?.length ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="empty-state-container">
             <div className="text-6xl mb-4">📍</div>
             <h3 className="text-xl font-semibold text-white mb-2">No locations found</h3>
             <p>Get started by creating your first gaming location.</p>
@@ -766,7 +766,7 @@ export default function Locations() {
             </div>
 
             {/* Enhanced Pagination */}
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+            <div className="pagination-container">
               <div className="text-sm text-slate-400">
                 Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
               </div>

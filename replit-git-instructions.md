@@ -4,7 +4,7 @@ Since you've connected Replit to your GitHub account, here's how to push your CA
 
 ## Method 1: Using Replit's Git Integration
 
-**Step 1: Create GitHub Repository**
+**Step 1: Create GitHub Repository (REQUIRED FIRST)**
 1. Go to https://github.com/jeka7ro
 2. Click "New repository" (green button)
 3. Repository name: `cashpot-gaming-system`
@@ -12,6 +12,8 @@ Since you've connected Replit to your GitHub account, here's how to push your CA
 5. Leave as Public or set to Private (your choice)
 6. **DO NOT** check "Initialize with README" (we have all files ready)
 7. Click "Create repository"
+
+**IMPORTANT**: You must create this repository first on GitHub before we can push from Replit!
 
 **Step 2: In Replit - Look for Git Panel**
 1. Look for a "Version Control" or "Git" tab/panel in Replit sidebar
