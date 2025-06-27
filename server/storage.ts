@@ -678,17 +678,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createInvoice(insertInvoice: InsertInvoice): Promise<Invoice> {
+    // Convert locationIds array to comma-separated string if provided
+    const invoiceData = {
+      ...insertInvoice,
+      locationIds: insertInvoice.locationIds ? insertInvoice.locationIds.join(',') : null
+    };
+    
     const [invoice] = await db
       .insert(invoices)
-      .values(insertInvoice)
+      .values(invoiceData)
       .returning();
     return invoice;
   }
 
   async updateInvoice(id: number, updateInvoice: Partial<InsertInvoice>): Promise<Invoice> {
+    // Convert locationIds array to comma-separated string if provided
+    const updateData = {
+      ...updateInvoice,
+      locationIds: updateInvoice.locationIds ? updateInvoice.locationIds.join(',') : updateInvoice.locationIds,
+      updatedAt: new Date()
+    };
+    
     const [invoice] = await db
       .update(invoices)
-      .set({ ...updateInvoice, updatedAt: new Date() })
+      .set(updateData)
       .where(eq(invoices.id, id))
       .returning();
     return invoice;

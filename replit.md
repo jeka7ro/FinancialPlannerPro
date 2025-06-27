@@ -119,6 +119,12 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 27, 2025: Implemented multiple location selection for invoice creation and editing with checkbox interface allowing selection of multiple locations per invoice
+- June 27, 2025: Removed license date field from Invoice module completely - field no longer appears in create/edit forms or table display
+- June 27, 2025: Updated database schema to replace single locationId with locationIds text field storing comma-separated location IDs
+- June 27, 2025: Enhanced invoice table display to show multiple location names as comma-separated list instead of single location
+- June 27, 2025: Updated server storage layer to convert location ID arrays to comma-separated strings for database storage and retrieval
+- June 27, 2025: Modified invoice form validation schema to support array of location IDs with proper TypeScript types
 - June 27, 2025: Implemented GroupedSerialNumbers component for efficient display of long serial number strings with automatic year-based grouping and range detection (e.g., "2016: 12-3227, 3430-3450")
 - June 27, 2025: Replaced existing serial number displays in ONJN and Invoices modules with new GroupedSerialNumbers component for consistent grouped display
 - June 27, 2025: Added smart serial number parsing that groups by year prefix and creates ranges for consecutive numbers (e.g., "1001-1005" instead of "1001, 1002, 1003, 1004, 1005")
@@ -128,6 +134,8 @@ This is a comprehensive gaming management system built for managing slot machine
 - June 27, 2025: Added Export button to ONJN module header for consistency with other modules
 - June 27, 2025: Fixed currency display in Invoice module - removed LEI currency symbol completely for cleaner presentation
 - June 27, 2025: Added missing Seller Company field to invoice edit form for complete invoice management
+- June 27, 2025: Enhanced ONJN module with complete table structure including ID, Created, Created By, and Attachments columns
+- June 27, 2025: Implemented sortable ID columns across all modules with click-to-sort functionality
 - June 26, 2025: Successfully implemented actual provider logo display in Cabinets table using attachment system
 - June 26, 2025: Provider logos now load from attachment system and display properly with white background for visibility
 - June 26, 2025: Redesigned Slots table layout with user-requested column order: Slot ID (auto-increment), Provider, Cabinet, Game Mix, Location, etc.

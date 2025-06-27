@@ -139,7 +139,7 @@ export const invoices = pgTable("invoices", {
   invoiceNumber: varchar("invoice_number", { length: 100 }).notNull().unique(),
   companyId: integer("company_id").references(() => companies.id),
   sellerCompanyId: integer("seller_company_id").references(() => companies.id),
-  locationId: integer("location_id").references(() => locations.id),
+  locationIds: text("location_ids"), // Multiple location IDs separated by commas
   invoiceDate: timestamp("invoice_date").notNull(),
   dueDate: timestamp("due_date").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
@@ -148,7 +148,6 @@ export const invoices = pgTable("invoices", {
   status: varchar("status", { length: 50 }).notNull().default("pending"),
   paidDate: timestamp("paid_date"),
   serialNumbers: text("serial_numbers"), // Space-separated serial numbers
-  licenseDate: timestamp("license_date"), // Date for ONJN license connection
   amortizationMonths: integer("amortization_months"), // Number of months for amortization
   propertyType: varchar("property_type", { length: 50 }).default("property"), // property or rent
   currency: varchar("currency", { length: 3 }).default("EUR"), // LEI, USD, EUR
@@ -319,9 +318,9 @@ export const invoicesRelations = relations(invoices, ({ one, many }) => ({
     fields: [invoices.companyId],
     references: [companies.id],
   }),
-  location: one(locations, {
-    fields: [invoices.locationId],
-    references: [locations.id],
+  sellerCompany: one(companies, {
+    fields: [invoices.sellerCompanyId],
+    references: [companies.id],
   }),
   slots: many(slots),
 }));
@@ -411,8 +410,8 @@ export const insertInvoiceSchema = createInsertSchema(invoices).omit({
 }).extend({
   invoiceDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
   dueDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
-  licenseDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
   paidDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
+  locationIds: z.array(z.number()).optional(),
 });
 
 export const insertRentAgreementSchema = createInsertSchema(rentAgreements).omit({

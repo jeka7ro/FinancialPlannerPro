@@ -216,7 +216,8 @@ export default function Invoices() {
     editForm.reset({
       invoiceNumber: invoice.invoiceNumber || "",
       companyId: invoice.companyId,
-      locationId: invoice.locationId,
+      sellerCompanyId: invoice.sellerCompanyId,
+      locationIds: invoice.locationIds ? (typeof invoice.locationIds === 'string' ? invoice.locationIds.split(',').map(Number) : invoice.locationIds) : [],
       invoiceDate: invoice.invoiceDate ? new Date(invoice.invoiceDate) : new Date(),
       dueDate: invoice.dueDate ? new Date(invoice.dueDate) : new Date(),
       subtotal: invoice.subtotal || "0",
@@ -224,6 +225,10 @@ export default function Invoices() {
       totalAmount: invoice.totalAmount || "0",
       notes: invoice.notes || "",
       status: invoice.status || "pending",
+      serialNumbers: invoice.serialNumbers || "",
+      amortizationMonths: invoice.amortizationMonths,
+      propertyType: invoice.propertyType || "property",
+      currency: invoice.currency || "EUR",
     });
     setIsEditDialogOpen(true);
   };
@@ -364,24 +369,35 @@ export default function Invoices() {
                   />
                   <FormField
                     control={form.control}
-                    name="locationId"
+                    name="locationIds"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select location" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {locations?.locations?.map((location: any) => (
-                              <SelectItem key={location.id} value={location.id.toString()}>
-                                {location.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <FormLabel className="text-white">Locations</FormLabel>
+                        <FormControl>
+                          <div className="space-y-2">
+                            <div className="text-sm text-slate-400">Select multiple locations:</div>
+                            <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                              {locations?.locations?.map((location: any) => (
+                                <label key={location.id} className="flex items-center space-x-2 text-sm">
+                                  <input
+                                    type="checkbox"
+                                    checked={(field.value || []).includes(location.id)}
+                                    onChange={(e) => {
+                                      const currentValues = field.value || [];
+                                      if (e.target.checked) {
+                                        field.onChange([...currentValues, location.id]);
+                                      } else {
+                                        field.onChange(currentValues.filter((id: number) => id !== location.id));
+                                      }
+                                    }}
+                                    className="w-4 h-4 rounded border-white/20 bg-transparent"
+                                  />
+                                  <span className="text-white">{location.name}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -429,7 +445,7 @@ export default function Invoices() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-4">
                   <FormField
                     control={form.control}
                     name="serialNumbers"
@@ -442,25 +458,6 @@ export default function Invoices() {
                             value={field.value || ""} 
                             className="form-input" 
                             placeholder="Enter serial numbers separated by spaces"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="licenseDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">License Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? (field.value instanceof Date && !isNaN(field.value.getTime()) ? field.value.toISOString().split('T')[0] : '') : ''}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
                           />
                         </FormControl>
                         <FormMessage />
@@ -733,24 +730,35 @@ export default function Invoices() {
                   <div className="grid grid-cols-1 gap-4">
                     <FormField
                       control={editForm.control}
-                      name="locationId"
+                      name="locationIds"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-white">Location</FormLabel>
-                          <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                            <FormControl>
-                              <SelectTrigger className="form-input">
-                                <SelectValue placeholder="Select location" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className="glass-card border-white/10">
-                              {locations?.locations?.map((location: any) => (
-                                <SelectItem key={location.id} value={location.id.toString()}>
-                                  {location.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <FormLabel className="text-white">Locations</FormLabel>
+                          <FormControl>
+                            <div className="space-y-2">
+                              <div className="text-sm text-slate-400">Select multiple locations:</div>
+                              <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                                {locations?.locations?.map((location: any) => (
+                                  <label key={location.id} className="flex items-center space-x-2 text-sm">
+                                    <input
+                                      type="checkbox"
+                                      checked={(field.value || []).includes(location.id)}
+                                      onChange={(e) => {
+                                        const currentValues = field.value || [];
+                                        if (e.target.checked) {
+                                          field.onChange([...currentValues, location.id]);
+                                        } else {
+                                          field.onChange(currentValues.filter((id: number) => id !== location.id));
+                                        }
+                                      }}
+                                      className="w-4 h-4 rounded border-white/20 bg-transparent"
+                                    />
+                                    <span className="text-white">{location.name}</span>
+                                  </label>
+                                ))}
+                              </div>
+                            </div>
+                          </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
@@ -796,7 +804,7 @@ export default function Invoices() {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     <FormField
                       control={editForm.control}
                       name="serialNumbers"
@@ -804,25 +812,7 @@ export default function Invoices() {
                         <FormItem>
                           <FormLabel className="text-white">Serial Numbers</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="S001, S002, S003" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={editForm.control}
-                      name="licenseDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-white">License Date</FormLabel>
-                          <FormControl>
-                            <Input 
-                              type="date"
-                              className="form-input" 
-                              value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                              onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : null)}
-                            />
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter serial numbers separated by spaces" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -1047,9 +1037,8 @@ export default function Invoices() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Seller</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Location</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Locations</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Serial Numbers</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">License Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amortization</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Property Type</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Currency</th>
@@ -1093,16 +1082,21 @@ export default function Invoices() {
                           }
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.locationId ? 
-                            locations?.locations?.find((l: any) => l.id === invoice.locationId)?.name || `Location ${invoice.locationId}` : 
-                            'No location'
+                          {invoice.locationIds ? 
+                            (() => {
+                              const locationIdArray = typeof invoice.locationIds === 'string' 
+                                ? invoice.locationIds.split(',').map(Number) 
+                                : invoice.locationIds;
+                              const locationNames = locationIdArray
+                                .map((id: number) => locations?.locations?.find((l: any) => l.id === id)?.name)
+                                .filter(Boolean);
+                              return locationNames.length > 0 ? locationNames.join(', ') : 'No locations';
+                            })() :
+                            'No locations'
                           }
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           <GroupedSerialNumbers serialNumbers={invoice.serialNumbers || ''} />
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {invoice.licenseDate ? new Date(invoice.licenseDate).toLocaleDateString() : 'No license date'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {invoice.amortizationMonths ? `${invoice.amortizationMonths} months` : 'No amortization'}

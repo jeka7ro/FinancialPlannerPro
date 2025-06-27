@@ -206,7 +206,7 @@ export default function ONJNFixed() {
           <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
             <DialogTrigger asChild>
               <Button className="floating-action text-white bg-blue-600 hover:bg-blue-700">
-                <span className="mr-2">🔔</span>
+                <Bell className="mr-2 h-4 w-4" />
                 New Notification
               </Button>
             </DialogTrigger>
@@ -684,6 +684,121 @@ export default function ONJNFixed() {
           </Form>
         </DialogContent>
       </Dialog>
+
+      {/* Main Table */}
+      <div className="glass-card rounded-lg overflow-hidden border border-white/10">
+        <div className="overflow-x-auto" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px' }}>
+          <Table className="w-full border-collapse">
+            <TableHeader>
+              <TableRow className="border-b border-white/10 hover:bg-white/5">
+                <TableHead 
+                  className="text-left py-4 px-6 text-slate-300 font-semibold cursor-pointer hover:text-white transition-colors"
+                  onClick={() => {/* Add sorting logic */}}
+                >
+                  ID
+                </TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Type</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Date</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Serial Numbers</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Status</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Created</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Created By</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Attachments</TableHead>
+                <TableHead className="text-left py-4 px-6 text-slate-300 font-semibold">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-slate-400">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : data?.onjnReports?.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={9} className="text-center py-8 text-slate-400">
+                    No ONJN reports found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                data?.onjnReports?.map((report: any) => (
+                  <TableRow key={report.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                    <TableCell className="py-4 px-6 text-slate-300 font-medium">
+                      {report.id}
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-300">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        report.type === 'license_commission' 
+                          ? 'bg-blue-500/20 text-blue-300' 
+                          : 'bg-green-500/20 text-green-300'
+                      }`}>
+                        {report.type === 'license_commission' ? 'License Commission' : 'Notification'}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-300">
+                      {report.commissionDate 
+                        ? new Date(report.commissionDate).toLocaleDateString()
+                        : report.notificationDate 
+                        ? new Date(report.notificationDate).toLocaleDateString()
+                        : '-'
+                      }
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-300">
+                      {report.serialNumbers ? (
+                        <GroupedSerialNumbers serialNumbers={report.serialNumbers} />
+                      ) : (
+                        <span className="text-slate-500">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        report.status === 'approved' ? 'bg-green-500/20 text-green-300' :
+                        report.status === 'pending' ? 'bg-yellow-500/20 text-yellow-300' :
+                        report.status === 'rejected' ? 'bg-red-500/20 text-red-300' :
+                        'bg-gray-500/20 text-gray-300'
+                      }`}>
+                        {report.status}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-300">
+                      {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : '-'}
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-300">
+                      {report.createdBy || 'System'}
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <AttachmentButton 
+                        entityType="onjn_report" 
+                        entityId={report.id}
+                      />
+                    </TableCell>
+                    <TableCell className="py-4 px-6">
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(report)}
+                          className="text-slate-400 hover:text-white hover:bg-white/10"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => deleteMutation.mutate(report.id)}
+                          className="text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   );
 }
