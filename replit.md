@@ -119,6 +119,11 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 27, 2025: Completed comprehensive bulk operations implementation across Invoices, ONJN, and Legal modules with checkbox selection and bulk delete functionality
+- June 27, 2025: Added server-side bulk delete routes (/api/invoices/bulk-delete, /api/onjn-reports/bulk-delete, /api/legal-documents/bulk-delete) with proper error handling
+- June 27, 2025: Enhanced search functionality to filter across all columns in multiple modules with comprehensive OR conditions
+- June 27, 2025: Created BulkOperations component for consistent UI patterns with select all, bulk edit, and bulk delete capabilities
+- June 27, 2025: Fixed TypeScript errors and syntax issues in bulk operations implementation across all modules
 - June 27, 2025: Implemented multiple location selection for invoice creation and editing with checkbox interface allowing selection of multiple locations per invoice
 - June 27, 2025: Removed license date field from Invoice module completely - field no longer appears in create/edit forms or table display
 - June 27, 2025: Updated database schema to replace single locationId with locationIds text field storing comma-separated location IDs

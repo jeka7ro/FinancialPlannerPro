@@ -683,7 +683,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               commissionDate: new Date(),
               serialNumbers: serialNumber,
               companyId: invoiceData.companyId,
-              locationIds: invoiceData.locationIds || '',
+              locationIds: Array.isArray(invoiceData.locationIds) ? invoiceData.locationIds.join(',') : (invoiceData.locationIds || ''),
               status: 'pending'
             });
           } catch (onjnError) {
