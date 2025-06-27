@@ -30,7 +30,6 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       if (!response.ok) throw new Error('Failed to fetch attachments');
       return response.json();
     },
-    enabled: isOpen,
   });
 
   const uploadMutation = useMutation({
