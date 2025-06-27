@@ -37,7 +37,7 @@ const getPropertyTypeColor = (propertyType: string) => {
 const getCurrencySymbol = (currency: string) => {
   switch (currency?.toUpperCase()) {
     case 'LEI':
-      return 'lei';
+      return 'L';
     case 'USD':
       return '$';
     case 'EUR':
@@ -1016,6 +1016,7 @@ export default function Invoices() {
                 <table className="w-full min-w-max">
                   <thead>
                     <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Invoice</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Seller</th>
@@ -1028,12 +1029,17 @@ export default function Invoices() {
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Amount</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Due Date</th>
                       <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
                       <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.invoices.map((invoice: any) => (
                       <tr key={invoice.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                        <td className="py-4 px-4 text-sm font-medium text-white">
+                          {invoice.id}
+                        </td>
                         <td className="py-4 px-4">
                           <div className="flex items-center space-x-3">
                             <div className="w-8 h-8 bg-green-500/20 rounded-lg flex items-center justify-center">
@@ -1094,6 +1100,12 @@ export default function Invoices() {
                           <Badge className={`${getStatusColor(invoice.status)} border`}>
                             {invoice.status}
                           </Badge>
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.createdAt ? new Date(invoice.createdAt).toLocaleDateString() : 'N/A'}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-slate-300">
+                          {invoice.userId ? `User ${invoice.userId}` : 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-right">
                           <div className="flex justify-end space-x-2">

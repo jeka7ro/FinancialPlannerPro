@@ -194,6 +194,14 @@ export default function ONJNFixed() {
         </div>
         
         <div className="flex items-center gap-2">
+          {/* Export Button */}
+          <Button 
+            variant="outline" 
+            className="border-white/20 text-slate-300 hover:bg-white/10"
+          >
+            Export
+          </Button>
+          
           {/* New Notification Button */}
           <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
             <DialogTrigger asChild>
@@ -487,15 +495,21 @@ export default function ONJNFixed() {
           <Table>
             <TableHeader>
               <TableRow className="border-white/10 hover:bg-white/5">
+                <TableHead className="text-white">ID</TableHead>
                 <TableHead className="text-white">Commission Date</TableHead>
                 <TableHead className="text-white">Serial Numbers</TableHead>
                 <TableHead className="text-white">Status</TableHead>
+                <TableHead className="text-white">Created</TableHead>
+                <TableHead className="text-white">Created By</TableHead>
                 <TableHead className="text-white">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {data?.onjnReports?.map((report: any) => (
                 <TableRow key={report.id} className="border-white/10 hover:bg-white/5">
+                  <TableCell className="text-white font-medium">
+                    {report.id}
+                  </TableCell>
                   <TableCell className="text-white">
                     {new Date(report.commissionDate).toLocaleDateString()}
                   </TableCell>
@@ -510,6 +524,12 @@ export default function ONJNFixed() {
                     }`}>
                       {report.status}
                     </span>
+                  </TableCell>
+                  <TableCell className="text-white">
+                    {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'N/A'}
+                  </TableCell>
+                  <TableCell className="text-white">
+                    {report.userId ? `User ${report.userId}` : 'N/A'}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">

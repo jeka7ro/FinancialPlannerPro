@@ -644,6 +644,7 @@ export default function LegalEnhanced() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-white/10">
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">ID</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Document</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Type</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Company</th>
@@ -651,6 +652,8 @@ export default function LegalEnhanced() {
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Issue Date</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Expiry Date</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created</th>
+                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Created By</th>
                   <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Attachments</th>
                   <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
                 </tr>
@@ -658,6 +661,9 @@ export default function LegalEnhanced() {
               <tbody>
                 {data?.legalDocuments?.map((document: any) => (
                   <tr key={document.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
+                    <td className="py-4 px-4 text-sm font-medium text-white">
+                      {document.id}
+                    </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         <FileText className="h-4 w-4 text-blue-400" />
@@ -708,6 +714,12 @@ export default function LegalEnhanced() {
                       <Badge className={getStatusColor(document.status)}>
                         {document.status}
                       </Badge>
+                    </td>
+                    <td className="py-4 px-4 text-sm text-slate-300">
+                      {document.createdAt ? new Date(document.createdAt).toLocaleDateString() : 'N/A'}
+                    </td>
+                    <td className="py-4 px-4 text-sm text-slate-300">
+                      {document.userId ? `User ${document.userId}` : 'N/A'}
                     </td>
                     <td className="py-4 px-4">
                       <AttachmentButton
