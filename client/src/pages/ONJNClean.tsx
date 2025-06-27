@@ -249,19 +249,19 @@ export default function ONJNClean() {
           <p className="text-slate-400">Romanian gambling authority compliance</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" className="border-white/20 text-slate-300">
+          <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
             Export
           </Button>
           <Dialog open={isNotificationDialogOpen} onOpenChange={setIsNotificationDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
                 <Bell className="mr-2 h-4 w-4" />
                 New Notification
               </Button>
             </DialogTrigger>
             <DialogContent className="glass-card border-white/10 max-w-2xl">
               <DialogHeader>
-                <DialogTitle className="text-white">Create ONJN Notification</DialogTitle>
+                <DialogTitle className="text-white">Add ONJN Notification</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <p className="text-slate-300">Notification functionality will be implemented here.</p>
@@ -273,9 +273,9 @@ export default function ONJNClean() {
           </Dialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-green-600 hover:bg-green-700 text-white">
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
                 <Plus className="mr-2 h-4 w-4" />
-                Create License Commission
+                Add new
               </Button>
             </DialogTrigger>
             <DialogContent className="glass-card border-white/10 max-w-2xl">

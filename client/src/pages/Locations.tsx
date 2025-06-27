@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertLocationSchema, type InsertLocation } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2 } from "lucide-react";
+import { Upload, Edit, Trash2, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -245,16 +245,16 @@ export default function Locations() {
         />
         <div className="flex items-center gap-2">
           <ImportExportDialog module="locations" moduleName="Locations">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="floating-action text-white">
-                <span className="mr-2">➕</span>
-                Add Location
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+                <Plus className="h-4 w-4 mr-2" />
+                Add new
               </Button>
             </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">

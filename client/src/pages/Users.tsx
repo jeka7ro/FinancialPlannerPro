@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { Upload, Download, Edit, Trash2 } from "lucide-react";
+import { Upload, Download, Edit, Trash2, Plus } from "lucide-react";
 
 export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -220,16 +220,16 @@ export default function Users() {
       <div className="flex items-center justify-end">
         <div className="flex items-center gap-2">
           <ImportExportDialog module="users" moduleName="Users">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
               <Upload className="h-4 w-4 mr-2" />
               Import/Export
             </Button>
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="floating-action text-white">
-              <span className="mr-2">➕</span>
-              Add User
+            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+              <Plus className="h-4 w-4 mr-2" />
+              Add new
             </Button>
           </DialogTrigger>
           <DialogContent className="glass-card border-white/10 text-white max-w-2xl">

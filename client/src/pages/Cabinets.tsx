@@ -13,7 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCabinetSchema, type InsertCabinet, type Cabinet } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Edit, Trash2 } from "lucide-react";
+import { Upload, Edit, Trash2, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -270,9 +270,9 @@ export default function Cabinets() {
           </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="btn-gaming">
-                <Upload className="h-4 w-4 mr-2" />
-                Add Cabinet
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+                <Plus className="h-4 w-4 mr-2" />
+                Add new
               </Button>
             </DialogTrigger>
             <DialogContent className="glass-card border-white/10 max-w-2xl">

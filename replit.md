@@ -119,6 +119,7 @@ This is a comprehensive gaming management system built for managing slot machine
 
 ## Recent Changes
 
+- June 27, 2025: Completed comprehensive button standardization across all modules with consistent gradient styling (bg-gradient-to-r from-blue-500 to-teal-400) and "Add new" text replacing "Create" buttons
 - June 27, 2025: Updated ID columns across all modules to display row numbers (1, 2, 3...) instead of database IDs for consistent user-friendly table numbering
 - June 27, 2025: Fixed attachment count display issue - attachment counts now load immediately and persist after restart in Companies and Invoices modules
 - June 27, 2025: Completed comprehensive bulk operations implementation across Invoices, ONJN, and Legal modules with checkbox selection and bulk delete functionality
