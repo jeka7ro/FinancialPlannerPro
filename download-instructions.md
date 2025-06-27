@@ -2,12 +2,24 @@
 
 ## Method 1: Download as ZIP from Replit (Easiest)
 
-1. **In Replit, click the three dots menu** (⋯) next to your project name
-2. **Select "Download as ZIP"**
-3. **Save the ZIP file** to your `downloads\dev\` folder
-4. **Extract the ZIP file** in that location
-5. **Open terminal/command prompt** in the extracted folder
-6. **Run the GitHub commands** from `github-push-commands.md`
+**Updated Instructions for Current Replit Interface:**
+
+1. **Look for the hamburger menu** (three horizontal lines ☰) in the top-left corner of Replit
+2. **OR look for "Tools" menu** in the top menu bar
+3. **OR try right-clicking** on your project name in the file explorer
+4. **Look for "Download" or "Export" option**
+
+**Alternative method if above doesn't work:**
+1. **Click on your profile/avatar** in top-right corner
+2. **Go to "My Repls"**
+3. **Find your project** in the list
+4. **Click the three dots** next to the project name
+5. **Select "Download"**
+
+**If download option is not available:**
+- Replit may have changed the interface
+- Use Method 2 (Clone from GitHub after push) instead
+- Or use Method 3 (Manual file copy)
 
 ## Method 2: Clone from GitHub (After Push)
 
