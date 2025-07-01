@@ -15,7 +15,9 @@ import { Badge } from "@/components/ui/badge";
 import { ImportExportDialog } from "@/components/ui/import-export-dialog";
 import { AttachmentButton } from "@/components/ui/attachment-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { Upload, Download, Edit, Trash2, Plus } from "lucide-react";
+import { BulkOperations } from "@/components/ui/bulk-operations";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Upload, Download, Edit, Trash2, Plus, Search, Mail, Phone } from "lucide-react";
 
 export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,6 +27,7 @@ export default function Users() {
   const [editingUser, setEditingUser] = useState<any>(null);
   const [selectedLocations, setSelectedLocations] = useState<number[]>([]);
   const [editSelectedLocations, setEditSelectedLocations] = useState<number[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
@@ -197,6 +200,39 @@ export default function Users() {
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedUsers.length === data?.users.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(data?.users.map((u: any) => u.id) || []);
+    }
+  };
+
+  const handleSelectUser = (userId: number) => {
+    setSelectedUsers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedUsers.length} users`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedUsers.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedUsers.length} users`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   const getRoleColor = (role: string) => {
@@ -215,234 +251,82 @@ export default function Users() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 -mt-12">
       {/* Actions */}
-      <div className="flex items-center justify-end">
-        <div className="flex items-center gap-2">
-          <ImportExportDialog module="users" moduleName="Users">
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-              <Plus className="h-4 w-4 mr-2" />
-              Add new
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="glass-dialog dialog-lg">
-            <DialogHeader>
-              <DialogTitle className="text-white">Create New User</DialogTitle>
-              <DialogDescription className="text-slate-400">
-                Create a new system user with role permissions and location access.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Username</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter username" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="email" className="form-input" placeholder="user@email.com" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="telephone"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Telephone</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Password</FormLabel>
-                      <FormControl>
-                        <Input {...field} type="password" className="form-input" placeholder="Enter password" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="firstName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">First Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="First name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="lastName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Last Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="role"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Role</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger className="form-input">
-                            <SelectValue placeholder="Select role" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="glass-card border-white/10">
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="manager">Manager</SelectItem>
-                          <SelectItem value="operator">Operator</SelectItem>
-                          <SelectItem value="viewer">Viewer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="space-y-2">
-                  <label className="text-white text-sm font-medium">Assigned Locations *</label>
-                  <div className="space-y-2">
-                    {locations?.locations?.map((location: any) => (
-                      <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedLocations.includes(location.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setSelectedLocations([...selectedLocations, location.id]);
-                            } else {
-                              setSelectedLocations(selectedLocations.filter(id => id !== location.id));
-                            }
-                          }}
-                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-slate-300">{location.name}</span>
-                      </label>
-                    ))}
-                  </div>
-                  {selectedLocations.length === 0 && (
-                    <p className="text-xs text-red-400">Please select at least one location</p>
-                  )}
-                </div>
-
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-gaming"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create User"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-          </Dialog>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <BulkOperations 
+            selectedCount={selectedUsers.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        </div>
+        <div className="text-sm text-slate-400">
+          {selectedUsers.length > 0 && (
+            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+              {selectedUsers.length} selected
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Enhanced Search */}
+      {/* Title and Total - SUS */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold heading-gradient">System Users</h2>
+          <p className="text-slate-400 mt-1">User accounts and access management</p>
+        </div>
+        <div className="text-sm text-slate-400">
+          {data?.total || 0} total users
+        </div>
+      </div>
+
+      {/* Search Bar and Actions - SUS */}
       <div className="search-card">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="Search users by name, email, or role..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="enhanced-input pl-12 pr-4 py-4 text-base"
-          />
-          <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 text-lg">👥</span>
+        <div className="flex items-center justify-between w-full">
+          <div className="relative" style={{ width: '10cm' }}>
+            <Input
+              type="text"
+              placeholder="Search users by name, email, or role..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="enhanced-input pl-12 pr-4 py-2 text-base text-right"
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add User
+            </Button>
+            <ImportExportDialog module="users" moduleName="Users">
+              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+                Import/Export
+              </Button>
+            </ImportExportDialog>
+          </div>
         </div>
       </div>
 
       {/* Enhanced Users Table */}
-      <div className="content-card">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold heading-gradient">System Users</h2>
-            <p className="text-slate-400 mt-1">User accounts and access management</p>
-          </div>
-          <div className="text-sm text-slate-400">
-            {data?.total || 0} total users
-          </div>
-        </div>
-
+      <div className="search-card">
         {isLoading ? (
-          <div className="space-y-4">
+          <div className="loading-container">
             {[...Array(5)].map((_, i) => (
               <div key={i} className="loading-shimmer h-20"></div>
             ))}
           </div>
         ) : error ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="error-state-container">
             <div className="text-6xl mb-4">⚠️</div>
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load users</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
         ) : !data?.users?.length ? (
-          <div className="text-center py-12 text-slate-400">
+          <div className="empty-state-container">
             <div className="text-6xl mb-4">👥</div>
             <h3 className="text-xl font-semibold text-white mb-2">No users found</h3>
             <p>Get started by creating your first system user.</p>
@@ -450,66 +334,96 @@ export default function Users() {
         ) : (
           <>
             <div className="enhanced-table-wrapper">
-              <table className="enhanced-table">
+              <table className="enhanced-table w-full">
                 <thead>
-                  <tr>
-                    <th>User</th>
-                    <th>Email</th>
-                    <th>Telephone</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created</th>
-                    <th className="text-right">Actions</th>
+                  <tr className="border-b border-white/10">
+                    <th className="w-12 px-4 py-3 text-left">
+                      <Checkbox
+                        checked={selectedUsers.length === data?.users.length && data?.users.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="border-white/30"
+                      />
+                    </th>
+                    <th className="w-16 px-4 py-3 text-left font-semibold text-white">#</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">User</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Email</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Telephone</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Role</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Status</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Created</th>
+                    <th className="px-4 py-3 text-left font-semibold text-white">Attachments</th>
+                    <th className="px-4 py-3 text-right font-semibold text-white">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {data.users.map((user: any) => (
-                    <tr key={user.id}>
-                      <td>
-                        <div className="flex items-center space-x-3">
+                  {data.users.map((user: any, index: number) => (
+                    <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-4">
+                        <Checkbox
+                          checked={selectedUsers.includes(user.id)}
+                          onCheckedChange={() => handleSelectUser(user.id)}
+                          className="border-white/30"
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="table-cell-primary font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
                           <UserAvatar 
                             user={user} 
-                            size="sm"
+                            size="lg"
+                            className="avatar-lg"
                           />
-                          <div>
-                            <div className="table-cell-primary">
+                          <div className="min-w-0 flex-1">
+                            <div className="table-cell-primary font-medium truncate">
                               {user.firstName && user.lastName ? 
                                 `${user.firstName} ${user.lastName}` : 
                                 user.username
                               }
                             </div>
-                            <div className="table-cell-secondary">@{user.username}</div>
+                            <div className="table-cell-secondary text-sm truncate">@{user.username}</div>
                           </div>
                         </div>
                       </td>
-                      <td>
-                        <div className="table-cell-primary">{user.email}</div>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-blue-400" />
+                          <span className="table-cell-primary">{user.email}</span>
+                        </div>
                       </td>
-                      <td>
-                        <div className="table-cell-primary">{user.telephone || '-'}</div>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-green-400" />
+                          <span className="table-cell-primary">{user.telephone || '-'}</span>
+                        </div>
                       </td>
-                      <td>
+                      <td className="px-4 py-4">
                         <span className={`status-badge ${getRoleColor(user.role)}`}>
                           {user.role}
                         </span>
                       </td>
-                      <td>
+                      <td className="px-4 py-4">
                         <span className={`status-badge ${user.isActive ? 'status-active' : 'status-inactive'}`}>
                           {user.isActive ? 'Active' : 'Inactive'}
                         </span>
                       </td>
-                      <td>
+                      <td className="px-4 py-4">
                         <div className="table-cell-secondary">
                           {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                         </div>
                       </td>
-                      <td>
-                        <div className="action-button-group justify-end">
-                          <AttachmentButton 
-                            entityType="users" 
-                            entityId={user.id} 
-                            entityName={`${user.firstName || ''} ${user.lastName || ''} (${user.username})`} 
-                          />
+                      <td className="px-4 py-4">
+                        <AttachmentButton 
+                          entityType="users" 
+                          entityId={user.id} 
+                          entityName={`${user.firstName || ''} ${user.lastName || ''} (${user.username})`} 
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center justify-end gap-2">
                           <button 
                             className="action-button text-amber-500 hover:text-amber-400"
                             onClick={() => handleEdit(user)}
@@ -530,53 +444,219 @@ export default function Users() {
                 </tbody>
               </table>
             </div>
-
-            {/* Enhanced Pagination */}
-            <div className="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
-              <div className="text-sm text-slate-400">
-                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-              </div>
-              <div className="flex space-x-2">
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  className="action-button text-slate-400 hover:text-white"
-                >
-                  Previous
-                </Button>
-                {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={currentPage === page 
-                        ? "bg-blue-500 text-white px-3 py-1 rounded-lg" 
-                        : "action-button text-slate-400 hover:text-white"
-                      }
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  className="action-button text-slate-400 hover:text-white"
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
           </>
         )}
       </div>
+
+      {/* Pagination and entries info - SUB tabel */}
+      {data?.users?.length > 0 && (
+        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+          <span>
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Previous
+            </Button>
+            <button
+              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+              disabled
+            >
+              {currentPage}
+            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === Math.ceil((data.total || 0) / limit)}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Create User Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="glass-dialog dialog-lg">
+          <DialogHeader>
+            <DialogTitle className="text-white">Create New User</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Add a new user account with role permissions and location assignments.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Username *</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter username" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-blue-400" />
+                        Email *
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="user@email.com" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Password *</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter password" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="telephone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-green-400" />
+                      Telephone
+                    </FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">First Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="First name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Last Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Role *</FormLabel>
+                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="form-input">
+                          <SelectValue placeholder="Select role" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="manager">Manager</SelectItem>
+                        <SelectItem value="operator">Operator</SelectItem>
+                        <SelectItem value="viewer">Viewer</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-2">
+                <label className="text-white text-sm font-medium">Assigned Locations *</label>
+                <div className="space-y-2">
+                  {locations?.locations?.map((location: any) => (
+                    <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedLocations.includes(location.id)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedLocations([...selectedLocations, location.id]);
+                          } else {
+                            setSelectedLocations(selectedLocations.filter(id => id !== location.id));
+                          }
+                        }}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                      />
+                      <span className="text-sm text-slate-300">{location.name}</span>
+                    </label>
+                  ))}
+                </div>
+                {selectedLocations.length === 0 && (
+                  <p className="text-xs text-red-400">Please select at least one location</p>
+                )}
+              </div>
+
+              <div className="flex justify-end space-x-4">
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={() => setIsCreateDialogOpen(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="btn-gaming"
+                  disabled={createMutation.isPending}
+                >
+                  {createMutation.isPending ? "Creating..." : "Create User"}
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -608,7 +688,10 @@ export default function Users() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Email</FormLabel>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-blue-400" />
+                        Email
+                      </FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="user@email.com" />
                       </FormControl>
@@ -623,7 +706,10 @@ export default function Users() {
                 name="telephone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white">Telephone</FormLabel>
+                    <FormLabel className="text-white flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-green-400" />
+                      Telephone
+                    </FormLabel>
                     <FormControl>
                       <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
                     </FormControl>

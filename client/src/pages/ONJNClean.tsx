@@ -526,6 +526,25 @@ export default function ONJNClean() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={notificationForm.control}
+                    name="filePath"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">File Path</FormLabel>
+                        <FormControl>
+                          <Input 
+                            className="glass-card border-white/20 text-white"
+                            placeholder="Enter file path or upload document"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   {/* Status */}
                   <FormField
@@ -597,6 +616,32 @@ export default function ONJNClean() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="commissionType"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Commission Type</FormLabel>
+                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <FormControl>
+                            <SelectTrigger className="glass-card border-white/20 text-white">
+                              <SelectValue placeholder="Select commission type" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className="glass-card border-white/10">
+                            <SelectItem value="new_license">New License</SelectItem>
+                            <SelectItem value="renewal">Renewal</SelectItem>
+                            <SelectItem value="modification">Modification</SelectItem>
+                            <SelectItem value="transfer">Transfer</SelectItem>
+                            <SelectItem value="cancellation">Cancellation</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   
                   <FormField
                     control={form.control}
@@ -605,7 +650,50 @@ export default function ONJNClean() {
                       <FormItem>
                         <FormLabel className="text-white">Serial Numbers</FormLabel>
                         <FormControl>
-                          <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter serial numbers separated by spaces" />
+                          <Textarea 
+                            {...field} 
+                            value={field.value || ""} 
+                            className="glass-card border-white/20 text-white min-h-20" 
+                            placeholder="Enter serial numbers separated by spaces or commas" 
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="filePath"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">File Path</FormLabel>
+                        <FormControl>
+                          <Input 
+                            className="glass-card border-white/20 text-white"
+                            placeholder="Enter file path or upload document"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="notes"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-white">Notes</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            {...field} 
+                            value={field.value || ""} 
+                            className="glass-card border-white/20 text-white min-h-20" 
+                            placeholder="Additional notes and comments" 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -656,20 +744,6 @@ export default function ONJNClean() {
                             <SelectItem value="rejected">Rejected</SelectItem>
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="notes"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Notes</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter any additional notes" />
-                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -861,6 +935,32 @@ export default function ONJNClean() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={editForm.control}
+                name="commissionType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Commission Type</FormLabel>
+                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger className="glass-card border-white/20 text-white">
+                          <SelectValue placeholder="Select commission type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="glass-card border-white/10">
+                        <SelectItem value="new_license">New License</SelectItem>
+                        <SelectItem value="renewal">Renewal</SelectItem>
+                        <SelectItem value="modification">Modification</SelectItem>
+                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="cancellation">Cancellation</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               
               <FormField
                 control={editForm.control}
@@ -869,7 +969,31 @@ export default function ONJNClean() {
                   <FormItem>
                     <FormLabel className="text-white">Serial Numbers</FormLabel>
                     <FormControl>
-                      <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter serial numbers separated by spaces" />
+                      <Textarea 
+                        {...field} 
+                        value={field.value || ""} 
+                        className="glass-card border-white/20 text-white min-h-20" 
+                        placeholder="Enter serial numbers separated by spaces or commas" 
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="filePath"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">File Path</FormLabel>
+                    <FormControl>
+                      <Input 
+                        className="glass-card border-white/20 text-white"
+                        placeholder="Enter file path or upload document"
+                        {...field}
+                        value={field.value || ""}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -907,7 +1031,12 @@ export default function ONJNClean() {
                   <FormItem>
                     <FormLabel className="text-white">Notes</FormLabel>
                     <FormControl>
-                      <Textarea {...field} value={field.value || ""} className="glass-card border-white/20 text-white" placeholder="Enter any additional notes" />
+                      <Textarea 
+                        {...field} 
+                        value={field.value || ""} 
+                        className="glass-card border-white/20 text-white min-h-20" 
+                        placeholder="Additional notes and comments" 
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

@@ -554,7 +554,7 @@ export default function LegalEnhanced() {
                           type="date"
                           className="glass-card border-white/20 text-slate-300"
                           {...field}
-                          value={field.value || ""}
+                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -573,7 +573,7 @@ export default function LegalEnhanced() {
                           type="date"
                           className="glass-card border-white/20 text-slate-300"
                           {...field}
-                          value={field.value || ""}
+                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -600,6 +600,25 @@ export default function LegalEnhanced() {
                           <SelectItem value="cancelled">Cancelled</SelectItem>
                         </SelectContent>
                       </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="filePath"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">File Path</FormLabel>
+                      <FormControl>
+                        <Input 
+                          className="glass-card border-white/20 text-slate-300"
+                          placeholder="Enter file path or upload document"
+                          {...field}
+                          value={field.value || ""}
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -888,7 +907,7 @@ export default function LegalEnhanced() {
                         type="date"
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value || ""}
+                        value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -907,7 +926,7 @@ export default function LegalEnhanced() {
                         type="date"
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value || ""}
+                        value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -934,6 +953,25 @@ export default function LegalEnhanced() {
                         <SelectItem value="cancelled">Cancelled</SelectItem>
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="filePath"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-300">File Path</FormLabel>
+                    <FormControl>
+                      <Input 
+                        className="glass-card border-white/20 text-slate-300"
+                        placeholder="Enter file path or upload document"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

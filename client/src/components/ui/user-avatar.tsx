@@ -1,82 +1,127 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { User } from "@shared/schema";
+import { useState, useEffect } from "react";
 
 interface UserAvatarProps {
-  user: User | null;
-  size?: "sm" | "md" | "lg";
+  user: {
+    id: number;
+    firstName?: string | null;
+    lastName?: string | null;
+    username: string;
+    [key: string]: any;
+  } | null;
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
 export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProps) {
-  const [imageError, setImageError] = useState(false);
-
-  // Get user photo from attachments
-  const { data: attachments } = useQuery({
-    queryKey: [`/api/users/${user?.id}/attachments`],
-    enabled: !!user?.id,
-    refetchOnMount: true,
-    staleTime: 0,
-  });
-
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
+  
   const sizeClasses = {
-    sm: "w-12 h-12 text-sm",
-    md: "w-14 h-14 text-base",
-    lg: "w-16 h-16 text-lg"
+    sm: "avatar-sm",
+    md: "avatar-md", 
+    lg: "avatar-lg",
+    xl: "avatar-xl"
   };
 
-  const getInitials = (user: User) => {
+  const getInitials = () => {
+    if (!user) return "??";
     if (user.firstName && user.lastName) {
-      return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
     }
-    return user.username.charAt(0).toUpperCase();
+    return user.username[0].toUpperCase();
   };
 
-  const getDisplayName = (user: User) => {
-    if (user.firstName && user.lastName) {
-      return `${user.firstName} ${user.lastName}`;
-    }
-    return user.username;
-  };
+  useEffect(() => {
+    if (!user) return;
+    
+    console.log(`[UserAvatar] Loading avatar for user ${user.id}`);
+    
+    const loadImage = async () => {
+      try {
+        // First try to get attachments
+        const response = await fetch(`/api/users/${user.id}/attachments`);
+        console.log(`[UserAvatar] Attachments response status: ${response.status}`);
+        
+        if (response.ok) {
+          const attachments = await response.json();
+          console.log(`[UserAvatar] Found ${attachments.length} attachments:`, attachments);
+          
+          const imageAttachment = attachments.find((att: any) => 
+            att.mimeType && att.mimeType.startsWith('image/')
+          );
+          
+          if (imageAttachment) {
+            const imageUrl = `/api/attachments/${imageAttachment.id}/download`;
+            console.log(`[UserAvatar] Setting image URL: ${imageUrl}`);
+            setImageUrl(imageUrl);
+            return;
+          } else {
+            console.log(`[UserAvatar] No image attachments found`);
+          }
+        }
+        
+        // If no attachment found, show initials
+        console.log(`[UserAvatar] Using initials fallback for user ${user.id}`);
+        setHasError(true);
+      } catch (error) {
+        console.error(`[UserAvatar] Error loading avatar for user ${user.id}:`, error);
+        setHasError(true);
+      }
+    };
+    
+    loadImage();
+  }, [user]);
 
   if (!user) {
     return (
-      <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center ${className}`}>
-        <span className="text-gray-400">👤</span>
+      <div className={`${sizeClasses[size]} rounded-full bg-gray-300 flex items-center justify-center text-xs ${className}`}>
+        <span className="text-gray-500">??</span>
       </div>
     );
   }
 
-  // Find the first image attachment as user photo
-  const photoAttachment = Array.isArray(attachments) ? attachments.find((att: any) => {
-    const fileName = att.filename; // Use 'filename' property from server response
-    return fileName && fileName.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/i);
-  }) : null;
-
-  return (
-    <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center overflow-hidden ${className}`}>
-      {photoAttachment && !imageError ? (
+  if (imageUrl && !hasError) {
+    return (
+      <div className={`${sizeClasses[size]} rounded-full overflow-hidden border-2 border-gray-200 ${className}`}>
         <img 
-          src={`/api/attachments/${photoAttachment.id}/download`}
-          alt={`${getDisplayName(user)} avatar`}
-          className="w-full h-full object-cover rounded-full"
-          onError={() => setImageError(true)}
+          src={`${imageUrl}?t=${Date.now()}`}
+          alt={`${user.firstName || user.username} avatar`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.log(`[UserAvatar] Image failed to load for user ${user?.id}:`, e);
+            setHasError(true);
+          }}
+          onLoad={() => {
+            console.log(`[UserAvatar] Image loaded successfully for user ${user?.id}`);
+          }}
         />
-      ) : (
-        <div className="w-full h-full bg-blue-500/20 rounded-full flex items-center justify-center">
-          <span className="text-blue-400 font-medium">
-            {getInitials(user)}
-          </span>
-        </div>
-      )}
+      </div>
+    );
+  }
+
+  // Fallback to initials
+  return (
+    <div 
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${className}`}
+    >
+      {getInitials()}
     </div>
   );
 }
 
 interface UserAvatarWithInfoProps {
-  user: User | null;
+  user: {
+    id: number;
+    firstName?: string | null;
+    lastName?: string | null;
+    username: string;
+    email?: string | null;
+    telephone?: string | null;
+    [key: string]: any;
+  } | null;
   showEmail?: boolean;
   showTelephone?: boolean;
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
 }
 
@@ -84,21 +129,21 @@ export function UserAvatarWithInfo({
   user, 
   showEmail = false, 
   showTelephone = false, 
+  size = "md", 
   className = "" 
 }: UserAvatarWithInfoProps) {
   if (!user) {
     return (
       <div className={`flex items-center space-x-3 ${className}`}>
-        <UserAvatar user={null} />
+        <UserAvatar user={null} size={size} />
         <div>
-          <p className="text-sm font-medium text-white">Guest User</p>
-          <p className="text-xs text-slate-400">Not logged in</p>
+          <p className="text-sm text-gray-500">No user data</p>
         </div>
       </div>
     );
   }
 
-  const getDisplayName = (user: User) => {
+  const getDisplayName = (user: { firstName?: string | null; lastName?: string | null; username: string }) => {
     if (user.firstName && user.lastName) {
       return `${user.firstName} ${user.lastName}`;
     }
@@ -107,17 +152,16 @@ export function UserAvatarWithInfo({
 
   return (
     <div className={`flex items-center space-x-3 ${className}`}>
-      <UserAvatar user={user} />
-      <div>
-        <p className="text-sm font-medium text-white">
+      <UserAvatar user={user} size={size} />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-gray-900 truncate">
           {getDisplayName(user)}
         </p>
-        <p className="text-xs text-slate-400">@{user.username}</p>
         {showEmail && user.email && (
-          <p className="text-xs text-slate-400">{user.email}</p>
+          <p className="text-sm text-gray-500 truncate">{user.email}</p>
         )}
         {showTelephone && user.telephone && (
-          <p className="text-xs text-slate-400">{user.telephone}</p>
+          <p className="text-sm text-gray-500 truncate">{user.telephone}</p>
         )}
       </div>
     </div>

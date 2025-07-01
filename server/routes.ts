@@ -22,6 +22,7 @@ import {
   insertOnjnReportSchema
 } from "@shared/schema";
 import { ZodError } from "zod";
+import { geocodeAddress } from './services/geocodeService';
 
 // Session configuration optimized for deployment
 const sessionConfig = {
@@ -96,6 +97,11 @@ const requireAdmin = (req: any, res: any, next: any) => {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Session middleware
   app.use(session(sessionConfig));
+
+  // Health check endpoint
+  app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
+  });
 
   // Authentication routes
   app.post("/api/auth/login", async (req, res) => {
@@ -224,7 +230,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/companies/:id", requireAuth, async (req, res) => {
+  app.get("/api/companies/:id(\\d+)", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const company = await storage.getCompany(id);
@@ -264,6 +270,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/companies/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid IDs provided" });
+      }
+      await storage.bulkDeleteCompanies(ids);
+      res.json({ message: `${ids.length} companies deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete companies error:", error);
+      res.status(500).json({ message: "Failed to delete companies" });
+    }
+  });
+
   // Location routes
   app.get("/api/locations", requireAuth, async (req, res) => {
     try {
@@ -282,7 +302,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/locations", requireAuth, async (req, res) => {
     try {
       const locationData = insertLocationSchema.parse(req.body);
-      const location = await storage.createLocation(locationData);
+      let { latitude, longitude, address, city } = locationData;
+      if ((latitude == null || longitude == null) && (address || city)) {
+        const geoResult = await geocodeAddress((address || city || ''));
+        if (geoResult) {
+          latitude = String(geoResult.lat);
+          longitude = String(geoResult.lon);
+        }
+      }
+      const location = await storage.createLocation({ ...locationData, latitude, longitude });
       res.status(201).json(location);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -293,7 +321,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/locations/:id", requireAuth, async (req, res) => {
+  app.get("/api/locations/:id(\\d+)", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const location = await storage.getLocation(id);
@@ -311,7 +339,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const locationData = insertLocationSchema.partial().parse(req.body);
-      const location = await storage.updateLocation(id, locationData);
+      let { latitude, longitude, address, city } = locationData;
+      if ((latitude == null || longitude == null) && (address || city)) {
+        const geoResult = await geocodeAddress((address || city || ''));
+        if (geoResult) {
+          latitude = String(geoResult.lat);
+          longitude = String(geoResult.lon);
+        }
+      }
+      const location = await storage.updateLocation(id, { ...locationData, latitude, longitude });
       res.json(location);
     } catch (error) {
       if (error instanceof ZodError) {
@@ -362,7 +398,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/providers/:id", requireAuth, async (req, res) => {
+  app.get("/api/providers/:id(\\d+)", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const provider = await storage.getProvider(id);
@@ -402,14 +438,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/providers/bulk-delete", requireAuth, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids) || ids.length === 0) {
+        return res.status(400).json({ message: "Invalid IDs provided" });
+      }
+      
+      for (const id of ids) {
+        await storage.deleteProvider(parseInt(id));
+      }
+      
+      res.json({ message: `${ids.length} providers deleted successfully` });
+    } catch (error) {
+      console.error("Bulk delete providers error:", error);
+      res.status(500).json({ message: "Failed to delete providers" });
+    }
+  });
+
   // Cabinet routes
   app.get("/api/cabinets", requireAuth, async (req, res) => {
     try {
       const page = parseInt(req.query.page as string) || 1;
       const limit = parseInt(req.query.limit as string) || 10;
       const search = req.query.search as string || "";
+      const providers = req.query.providers as string || "";
+      const models = req.query.models as string || "";
       
-      const result = await storage.getCabinets(page, limit, search);
+      const result = await storage.getCabinets(page, limit, search, providers, models);
       res.json(result);
     } catch (error) {
       console.error("Get cabinets error:", error);
@@ -431,7 +487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/cabinets/:id", requireAuth, async (req, res) => {
+  app.get("/api/cabinets/:id(\\d+)", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const cabinet = await storage.getCabinet(id);
@@ -668,9 +724,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/invoices", requireAuth, async (req, res) => {
     try {
-
-      const invoiceData = insertInvoiceSchema.parse(req.body);
-      const invoice = await storage.createInvoice(invoiceData);
+      console.log("Invoice creation request body:", JSON.stringify(req.body, null, 2));
+      
+      // Preprocess data to handle frontend-backend data type mismatches
+      const preprocessedData = { ...req.body };
+      
+      // Handle locationIds: convert string to array
+      if (typeof preprocessedData.locationIds === 'string') {
+        if (preprocessedData.locationIds === '' || preprocessedData.locationIds === null || preprocessedData.locationIds === undefined) {
+          preprocessedData.locationIds = [];
+        } else {
+          // Split by comma or convert single string to array
+          preprocessedData.locationIds = preprocessedData.locationIds.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+        }
+      }
+      
+      // Handle numeric fields that might be strings
+      if (typeof preprocessedData.amortizationMonths === 'string') {
+        preprocessedData.amortizationMonths = preprocessedData.amortizationMonths === '' ? 12 : parseInt(preprocessedData.amortizationMonths);
+      }
+      
+      // Ensure companyId and sellerCompanyId are numbers
+      if (typeof preprocessedData.companyId === 'string') {
+        preprocessedData.companyId = parseInt(preprocessedData.companyId);
+      }
+      if (typeof preprocessedData.sellerCompanyId === 'string') {
+        preprocessedData.sellerCompanyId = parseInt(preprocessedData.sellerCompanyId);
+      }
+      
+      console.log("Preprocessed invoice data:", JSON.stringify(preprocessedData, null, 2));
+      
+      const invoiceData = insertInvoiceSchema.parse(preprocessedData);
+      
+      // Add the current user ID to createdBy field
+      const invoiceWithCreatedBy = {
+        ...invoiceData,
+        createdBy: (req.session as any).userId,
+      };
+      
+      const invoice = await storage.createInvoice(invoiceWithCreatedBy);
       
       // If invoice has serial numbers, create ONJN report
       if (invoiceData.serialNumbers) {
@@ -695,7 +787,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(invoice);
     } catch (error) {
       if (error instanceof ZodError) {
-
+        console.error("Invoice validation errors:", JSON.stringify(error.errors, null, 2));
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Create invoice error:", error);
@@ -720,7 +812,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/invoices/:id", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const invoiceData = insertInvoiceSchema.partial().parse(req.body);
+      
+      // Preprocess data to handle frontend-backend data type mismatches
+      const preprocessedData = { ...req.body };
+      
+      // Handle locationIds: convert string to array
+      if (typeof preprocessedData.locationIds === 'string') {
+        if (preprocessedData.locationIds === '' || preprocessedData.locationIds === null || preprocessedData.locationIds === undefined) {
+          preprocessedData.locationIds = [];
+        } else {
+          preprocessedData.locationIds = preprocessedData.locationIds.split(',').map((id: string) => parseInt(id.trim())).filter((id: number) => !isNaN(id));
+        }
+      }
+      
+      // Handle numeric fields that might be strings
+      if (typeof preprocessedData.amortizationMonths === 'string') {
+        preprocessedData.amortizationMonths = preprocessedData.amortizationMonths === '' ? undefined : parseInt(preprocessedData.amortizationMonths);
+      }
+      
+      // Ensure companyId and sellerCompanyId are numbers
+      if (typeof preprocessedData.companyId === 'string') {
+        preprocessedData.companyId = parseInt(preprocessedData.companyId);
+      }
+      if (typeof preprocessedData.sellerCompanyId === 'string') {
+        preprocessedData.sellerCompanyId = parseInt(preprocessedData.sellerCompanyId);
+      }
+      
+      const invoiceData = insertInvoiceSchema.partial().parse(preprocessedData);
       const invoice = await storage.updateInvoice(id, invoiceData);
       res.json(invoice);
     } catch (error) {
@@ -872,7 +990,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/users/:id", requireAdmin, async (req, res) => {
+  app.get("/api/users/:id(\\d+)", requireAuth, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const user = await storage.getUser(id);
@@ -1190,11 +1308,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 1. Template and export routes FIRST (move these to the very top)
+  app.get("/api/:module/template", requireAuth, async (req: any, res: any) => {
+    try {
+      const module = req.params.module;
+      const buffer = exportTemplateService.getTemplate(module);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-template.xlsx`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Template export error:", error);
+      res.status(500).json({ message: "Template export failed", error: error.message });
+    }
+  });
+
   app.get("/api/:module/export/excel", requireAuth, async (req, res) => {
     try {
       const module = req.params.module;
       const buffer = await importExportService.exportToExcel(module);
-      
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', `attachment; filename=${module}-export.xlsx`);
       res.send(buffer);
@@ -1208,7 +1339,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const module = req.params.module;
       const buffer = await importExportService.exportToPDF(module);
-      
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=${module}-report.pdf`);
       res.send(buffer);
@@ -1305,21 +1435,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/uploads/logos/:filename", (req: any, res: any) => {
     const filename = req.params.filename;
     res.sendFile(path.join(process.cwd(), 'uploads', 'logos', filename));
-  });
-
-  // Export template routes
-  app.get("/api/:module/template", requireAuth, async (req: any, res: any) => {
-    try {
-      const module = req.params.module;
-      const buffer = exportTemplateService.getTemplate(module);
-      
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename=${module}-template.xlsx`);
-      res.send(buffer);
-    } catch (error: any) {
-      console.error("Template export error:", error);
-      res.status(500).json({ message: "Template export failed", error: error.message });
-    }
   });
 
   app.get("/api/import-tutorial", requireAuth, async (req: any, res: any) => {

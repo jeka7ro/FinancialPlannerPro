@@ -14,19 +14,58 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertLegalDocumentSchema, type InsertLegalDocument } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload } from "lucide-react";
+import { Upload, Edit, Trash2, Plus, Search } from "lucide-react";
+import { AttachmentButton } from "@/components/ui/attachment-button";
+import { BulkOperations } from "@/components/ui/bulk-operations";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const getDocumentTypeColor = (documentType: string) => {
+  switch (documentType?.toLowerCase()) {
+    case 'contract':
+      return 'status-active';
+    case 'license':
+      return 'status-maintenance';
+    case 'permit':
+      return 'bg-blue-500/20 text-blue-400';
+    case 'agreement':
+      return 'bg-purple-500/20 text-purple-400';
+    case 'other':
+      return 'bg-gray-500/20 text-gray-400';
+    default:
+      return 'bg-gray-500/20 text-gray-400';
+  }
+};
+
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'active':
+      return 'status-active';
+    case 'pending':
+      return 'status-maintenance';
+    case 'expired':
+      return 'status-inactive';
+    case 'cancelled':
+      return 'bg-gray-500/20 text-gray-400';
+    default:
+      return 'bg-gray-500/20 text-gray-400';
+  }
+};
 
 export default function Legal() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingDocument, setEditingDocument] = useState<any>(null);
+  const [selectedDocuments, setSelectedDocuments] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/legal-documents', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/legal-documents?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/legal-documents?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch legal documents');
@@ -41,17 +80,6 @@ export default function Legal() {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch companies');
-      return response.json();
-    },
-  });
-
-  const { data: locations } = useQuery({
-    queryKey: ['/api/locations', 1, 100],
-    queryFn: async () => {
-      const response = await fetch('/api/locations?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
       return response.json();
     },
   });
@@ -73,6 +101,27 @@ export default function Legal() {
       toast({
         title: "Error",
         description: "Failed to create legal document. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: number; data: InsertLegalDocument }) =>
+      apiRequest("PUT", `/api/legal-documents/${id}`, data),
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Legal document updated successfully",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/legal-documents"] });
+      setIsEditDialogOpen(false);
+      setEditingDocument(null);
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -100,9 +149,16 @@ export default function Legal() {
     resolver: zodResolver(insertLegalDocumentSchema),
     defaultValues: {
       title: "",
-      documentType: "",
-      issuingAuthority: "",
-      documentNumber: "",
+      documentType: "contract",
+      status: "active",
+    },
+  });
+
+  const editForm = useForm<InsertLegalDocument>({
+    resolver: zodResolver(insertLegalDocumentSchema),
+    defaultValues: {
+      title: "",
+      documentType: "contract",
       status: "active",
     },
   });
@@ -111,9 +167,10 @@ export default function Legal() {
     createMutation.mutate(data);
   };
 
-  const handleEdit = (legalDocument: any) => {
-    // TODO: Implement edit functionality
-    console.log('Edit legal document:', legalDocument);
+  const onEditSubmit = (data: InsertLegalDocument) => {
+    if (editingDocument) {
+      updateMutation.mutate({ id: editingDocument.id, data });
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -122,73 +179,88 @@ export default function Legal() {
     }
   };
 
+  const handleEdit = (document: any) => {
+    setEditingDocument(document);
+    editForm.reset({
+      title: document.title || "",
+      documentType: document.documentType || "contract",
+      companyId: document.companyId,
+      issueDate: document.issueDate ? new Date(document.issueDate) : new Date(),
+      expiryDate: document.expiryDate ? new Date(document.expiryDate) : new Date(),
+      status: document.status || "active",
+      description: document.description || "",
+    });
+    setIsEditDialogOpen(true);
+  };
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
 
+  const handleSelectAll = () => {
+    if (selectedDocuments.length === data?.legalDocuments?.length) {
+      setSelectedDocuments([]);
+    } else {
+      setSelectedDocuments(data?.legalDocuments?.map((item: any) => item.id) || []);
+    }
+  };
+
+  const handleSelectDocument = (id: number) => {
+    setSelectedDocuments(prev => 
+      prev.includes(id) 
+        ? prev.filter(docId => docId !== id)
+        : [...prev, id]
+    );
+  };
+
+  const handleBulkEdit = () => {
+    toast({
+      title: "Bulk Edit",
+      description: `Editing ${selectedDocuments.length} legal documents`,
+    });
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedDocuments.length === 0) return;
+    
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedDocuments.length} legal documents`,
+      variant: "destructive",
+    });
+  };
+
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'expired':
-        return 'status-maintenance';
-      case 'pending':
-        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'revoked':
-        return 'status-inactive';
-      default:
-        return 'bg-gray-500/20 text-gray-400';
-    }
-  };
-
-  const getDocumentTypeIcon = (type: string) => {
-    switch (type.toLowerCase()) {
-      case 'license':
-        return '📜';
-      case 'permit':
-        return '📋';
-      case 'certificate':
-        return '🏆';
-      case 'contract':
-        return '📄';
-      case 'agreement':
-        return '🤝';
-      default:
-        return '📄';
-    }
-  };
 
   return (
     <div className="space-y-6">
       {/* Actions */}
-      <div className="flex items-center justify-end">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <BulkOperations 
+            selectedCount={selectedDocuments.length}
+            onBulkEdit={handleBulkEdit}
+            onBulkDelete={handleBulkDelete}
+          />
+        </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog module="legal-documents" moduleName="Legal Documents">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="floating-action text-white">
-                <span className="mr-2">➕</span>
-                Add Document
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+                <Plus className="h-4 w-4 mr-2" />
+                Add new
               </Button>
             </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-white">Create New Legal Document</DialogTitle>
-              <DialogDescription className="text-slate-400">
-                Add a new legal document for compliance tracking and regulatory management.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+            <DialogContent className="glass-dialog dialog-lg">
+              <DialogHeader>
+                <DialogTitle className="text-white">Create New Legal Document</DialogTitle>
+                <DialogDescription className="text-slate-400">
+                  Add a new legal document for compliance and regulatory purposes.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="title"
@@ -202,355 +274,335 @@ export default function Legal() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="documentType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Document Type</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="license">License</SelectItem>
-                            <SelectItem value="permit">Permit</SelectItem>
-                            <SelectItem value="certificate">Certificate</SelectItem>
-                            <SelectItem value="contract">Contract</SelectItem>
-                            <SelectItem value="agreement">Agreement</SelectItem>
-                            <SelectItem value="regulation">Regulation</SelectItem>
-                            <SelectItem value="policy">Policy</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="companyId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Company</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="documentType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Document Type</FormLabel>
                           <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select company" />
-                            </SelectTrigger>
+                            <Input {...field} className="form-input" placeholder="License, Certificate, etc." />
                           </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {companies?.companies?.map((company: any) => (
-                              <SelectItem key={company.id} value={company.id.toString()}>
-                                {company.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select location" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {locations?.locations?.map((location: any) => (
-                              <SelectItem key={location.id} value={location.id.toString()}>
-                                {location.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Status</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="expired">Expired</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-white/20 text-white hover:bg-white/10">
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="floating-action text-white" disabled={createMutation.isPending}>
+                      {createMutation.isPending ? "Creating..." : "Create Document"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Edit Document Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="glass-dialog dialog-lg">
+              <DialogHeader>
+                <DialogTitle className="text-white">Edit Legal Document</DialogTitle>
+                <DialogDescription className="text-slate-400">
+                  Update legal document information and details.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...editForm}>
+                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
                   <FormField
-                    control={form.control}
-                    name="documentNumber"
-                    render={({ field: { value, ...field } }) => (
+                    control={editForm.control}
+                    name="title"
+                    render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-white">Document Number</FormLabel>
+                        <FormLabel className="text-white">Document Title</FormLabel>
                         <FormControl>
-                          <Input {...field} value={value || ""} className="form-input" placeholder="Document number" />
+                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter document title" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="issuingAuthority"
-                    render={({ field: { value, ...field } }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Issuing Authority</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={value || ""} className="form-input" placeholder="Authority name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="issueDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Issue Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="expiryDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Expiry Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="documentType"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Document Type</FormLabel>
                           <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
+                            <Input {...field} value={field.value || ""} className="form-input" placeholder="License, Certificate, etc." />
                           </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="expired">Expired</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="revoked">Revoked</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Status</FormLabel>
+                          <Select onValueChange={field.onChange} value={field.value || ""}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="expired">Expired</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-gaming"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Document"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} className="border-white/20 text-white hover:bg-white/10">
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="floating-action text-white" disabled={updateMutation.isPending}>
+                      {updateMutation.isPending ? "Updating..." : "Update Document"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Search */}
-      <Card className="glass-card border-white/10">
-        <CardContent className="p-6">
-          <div className="relative">
-            <Input
-              type="text"
-              placeholder="Search legal documents..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="form-input pl-10"
-            />
-            <span className="absolute left-3 top-3 text-slate-400">🔍</span>
+      {/* Enhanced Search */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <div className="search-card">
+          <div className="flex items-center gap-4">
+            <div className="relative" style={{ flex: '3', minWidth: '500px' }}>
+              <Input
+                type="text"
+                placeholder="Search documents by title, type, or status..."
+                value={searchTerm}
+                onChange={handleSearch}
+                className="enhanced-input pl-12 pr-4 py-4 text-base text-right"
+              />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+            </div>
+
+            <DialogTrigger asChild>
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+                <Plus className="h-4 w-4 mr-2" />
+                Add new
+              </Button>
+            </DialogTrigger>
+
+            <ImportExportDialog module="legal-documents" moduleName="Legal Documents">
+              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+                <Upload className="h-4 w-4 mr-2" />
+                Import/Export
+              </Button>
+            </ImportExportDialog>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Dialog>
 
-      {/* Legal Documents List */}
-      <Card className="glass-card border-white/10">
-        <CardHeader>
-          <CardTitle className="text-white">Legal Documents</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚠️</span>
-              Failed to load legal documents
-            </div>
-          ) : !data?.legalDocuments?.length ? (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">⚖️</span>
-              No legal documents found
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Document</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Type</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Authority</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Issue Date</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Expiry Date</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-slate-400">Status</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-slate-400">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.legalDocuments.map((document: any) => (
-                      <tr key={document.id} className="table-row border-b border-white/5 hover:bg-blue-500/10">
-                        <td className="py-4 px-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-red-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-red-500 text-sm">{getDocumentTypeIcon(document.documentType)}</span>
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-white">{document.title}</p>
-                              <p className="text-xs text-slate-400">{document.documentNumber || 'No number'}</p>
-                            </div>
+      {/* Enhanced Legal Documents Table */}
+      <div className="search-card">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold heading-gradient">Legal Documents</h2>
+            <p className="text-slate-400 mt-1">Legal compliance and documentation management</p>
+          </div>
+          <div className="text-sm text-slate-400">
+            {data?.total || 0} total documents
+          </div>
+        </div>
+
+        {isLoading ? (
+          <div className="loading-container">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="loading-shimmer h-20"></div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="error-state-container">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">Failed to load legal documents</h3>
+            <p>Please try refreshing the page or check your connection.</p>
+          </div>
+        ) : !data?.legalDocuments?.length ? (
+          <div className="empty-state-container">
+            <div className="text-6xl mb-4">⚖️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">No legal documents found</h3>
+            <p>Get started by creating your first legal document.</p>
+          </div>
+        ) : (
+          <>
+            <div className="enhanced-table-wrapper">
+              <table className="enhanced-table">
+                <thead>
+                  <tr>
+                    <th className="w-12">
+                      <Checkbox
+                        checked={selectedDocuments.length === data?.legalDocuments.length && data?.legalDocuments.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="border-white/30"
+                      />
+                    </th>
+                    <th className="w-16">#</th>
+                    <th>Document</th>
+                    <th>Company</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Issue Date</th>
+                    <th>Attachments</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.legalDocuments.map((document: any, index: number) => (
+                    <tr key={document.id}>
+                      <td>
+                        <Checkbox
+                          checked={selectedDocuments.includes(document.id)}
+                          onCheckedChange={() => handleSelectDocument(document.id)}
+                          className="border-white/30"
+                        />
+                      </td>
+                      <td>
+                        <div className="table-cell-primary font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                            <span className="text-purple-400 text-lg">⚖️</span>
                           </div>
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300 capitalize">
+                          <div>
+                            <div className="table-cell-primary">{document.title}</div>
+                            <div className="table-cell-secondary">Doc #{document.id}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
+                          {companies?.companies?.find((c: any) => c.id === document.companyId)?.name || 'No company'}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${getDocumentTypeColor(document.documentType)}`}>
                           {document.documentType}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {document.issuingAuthority || 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {document.issueDate ? new Date(document.issueDate).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="py-4 px-4 text-sm text-slate-300">
-                          {document.expiryDate ? new Date(document.expiryDate).toLocaleDateString() : 'N/A'}
-                        </td>
-                        <td className="py-4 px-4">
-                          <Badge className={`${getStatusColor(document.status)} border`}>
-                            {document.status}
-                          </Badge>
-                        </td>
-                        <td className="py-4 px-4 text-right">
-                          <div className="flex justify-end space-x-2">
-                            <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
-                              👁️
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                              ✏️
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-emerald-500 hover:text-emerald-400">
-                              📄
-                            </Button>
-                            <Button variant="ghost" size="sm" className="text-slate-400 hover:text-white">
-                              ⋯
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${getStatusColor(document.status)}`}>
+                          {document.status}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
+                          {document.issueDate ? new Date(document.issueDate).toLocaleDateString() : 'No date'}
+                        </div>
+                      </td>
+                      <td>
+                        <AttachmentButton 
+                          entityType="legal-documents" 
+                          entityId={document.id}
+                        />
+                      </td>
+                      <td>
+                        <div className="action-button-group justify-end">
+                          <button 
+                            className="action-button text-amber-500 hover:text-amber-400"
+                            onClick={() => handleEdit(document)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            className="action-button text-red-500 hover:text-red-400"
+                            onClick={() => handleDelete(document.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
 
-              {/* Pagination */}
-              <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-                <div className="text-sm text-slate-400">
-                  Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage(currentPage - 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Previous
-                  </Button>
-                  {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                    const page = i + 1;
-                    return (
-                      <Button
-                        key={page}
-                        variant={currentPage === page ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setCurrentPage(page)}
-                        className={currentPage === page 
-                          ? "bg-blue-500 text-white" 
-                          : "text-slate-400 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {page}
-                      </Button>
-                    );
-                  })}
-                  <Button 
-                    variant="ghost"
-                    size="sm"
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage(currentPage + 1)}
-                    className="text-slate-400 hover:text-white hover:bg-white/10"
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+      {/* Pagination and entries info - SUB tabel */}
+      {data?.legalDocuments?.length > 0 && (
+        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+          <span>
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Previous
+            </Button>
+            <button
+              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+              disabled
+            >
+              {currentPage}
+            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

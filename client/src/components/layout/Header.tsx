@@ -1,11 +1,13 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
+import { ThemeSelector } from "@/components/ui/theme-selector";
 import { useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
+import { Power } from "lucide-react";
+import { useTheme } from "next-themes";
+import clsx from "clsx";
 
 interface HeaderProps {
   title: string;
@@ -14,8 +16,8 @@ interface HeaderProps {
 }
 
 export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
-  const [searchQuery, setSearchQuery] = useState("");
   const { toast } = useToast();
+  const theme = useTheme();
   
   const { data: currentUser } = useQuery<User>({
     queryKey: ["/api/auth/user"],
@@ -40,7 +42,14 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   };
 
   return (
-    <header className="glass-morphism h-16 flex items-center justify-between px-6 border-b border-white/10">
+    <header
+      className={clsx(
+        'header',
+        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : '',
+        'glass-morphism h-28 flex items-center justify-between px-6 border-b border-white/10 min-h-[7rem]'
+      )}
+      style={theme.theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
+    >
       <div className="flex items-center space-x-4">
         <Button
           variant="ghost"
@@ -50,27 +59,21 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         >
           <span className="text-lg">☰</span>
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold text-white">{title}</h1>
+        
+        {/* Page Title and Subtitle */}
+        <div className="flex flex-col">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+            {title}
+          </h1>
           {subtitle && (
-            <p className="text-sm text-slate-400">{subtitle}</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
       
       <div className="flex items-center space-x-4">
-        {/* Search */}
-        <div className="relative hidden md:block">
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="form-input w-64 pl-10"
-          />
-          <span className="absolute left-3 top-3 text-slate-400 text-sm">🔍</span>
-        </div>
-        
         {/* Notifications */}
         <Button
           variant="ghost"
@@ -83,35 +86,35 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
           </span>
         </Button>
         
+        {/* Theme Selector */}
+        <ThemeSelector />
+        
         {/* User Profile */}
         <div className="flex items-center space-x-3">
-          {currentUser && (
-            <div className="text-right hidden sm:block">
-              <div className="text-sm font-medium text-white">
-                {currentUser.firstName && currentUser.lastName 
-                  ? `${currentUser.firstName} ${currentUser.lastName}` 
-                  : currentUser.username}
-              </div>
-              <div className="text-xs text-slate-400 capitalize">{currentUser.role}</div>
-            </div>
-          )}
           <UserAvatarWithInfo 
             user={currentUser || null} 
             className="flex sm:hidden"
           />
           <UserAvatar 
             user={currentUser || null} 
-            size="md"
+            size="lg"
             className="hidden sm:flex ring-2 ring-white/20"
           />
+          {currentUser && (
+            <span className="hidden sm:inline text-base font-semibold text-slate-900 dark:text-white truncate max-w-xs">
+              {currentUser.firstName && currentUser.lastName
+                ? `${currentUser.firstName} ${currentUser.lastName}`
+                : currentUser.username}
+            </span>
+          )}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="text-slate-300 hover:text-white hover:bg-white/10"
+            className="text-red-500 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
             title="Logout"
           >
-            <span className="text-lg">🚪</span>
+            <Power className="h-5 w-5" />
           </Button>
         </div>
       </div>

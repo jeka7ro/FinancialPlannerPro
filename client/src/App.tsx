@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider, useTheme } from "next-themes";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import NotFound from "@/pages/not-found";
@@ -20,6 +20,7 @@ import Users from "@/pages/Users";
 import Legal from "@/pages/LegalEnhanced";
 import ONJNClean from "@/pages/ONJNClean";
 import Settings from "@/pages/Settings";
+import IconDemo from "@/pages/IconDemo";
 
 import MainLayout from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -127,7 +128,7 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="dark min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Card className="glass-card border-white/10">
           <CardHeader className="text-center">
@@ -220,6 +221,7 @@ function AuthenticatedApp() {
         <Route path="/legal" component={Legal} />
         <Route path="/onjn" component={ONJNClean} />
         <Route path="/settings" component={Settings} />
+        <Route path="/icon-demo" component={IconDemo} />
         <Route component={NotFound} />
       </Switch>
     </MainLayout>
@@ -249,10 +251,61 @@ function Router() {
   return <AuthenticatedApp />;
 }
 
+// Component pentru gestionarea temei
+function ThemeManager() {
+  const theme = useTheme();
+
+  useEffect(() => {
+    // Listează toate temele posibile
+    const themeClasses = [
+      "windows11",
+      "monterey", 
+      "icloud",
+      "dark",
+      "light"
+    ];
+    
+    // Elimină toate clasele de temă de pe body
+    themeClasses.forEach(cls => document.body.classList.remove(cls));
+    
+    // Adaugă doar clasa temei curente dacă există
+    if (theme.theme && themeClasses.includes(theme.theme)) {
+      document.body.classList.add(theme.theme);
+    }
+  }, [theme.theme]);
+
+  return null; // Acest component nu renderizează nimic
+}
+
 function App() {
+  const { isAuthenticated, isLoading, user, setIsAuthenticated, setUser } = useAuth();
+
+  const handleLogin = (userData: any) => {
+    setUser(userData);
+    setIsAuthenticated(true);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <div className="loading-shimmer w-32 h-32 rounded-xl"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <LoginPage onLogin={handleLogin} />;
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <ThemeProvider 
+        attribute="class" 
+        defaultTheme="light" 
+        themes={['system', 'light', 'dark', 'monterey', 'icloud', 'windows11']}
+        enableSystem={true}
+      >
+        <ThemeManager />
         <TooltipProvider>
           <Toaster />
           <Router />

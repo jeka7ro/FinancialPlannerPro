@@ -148,7 +148,50 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
     if (mimeType?.includes('pdf')) return '📄';
     if (mimeType?.includes('word') || mimeType?.includes('document')) return '📝';
     if (mimeType?.includes('excel') || mimeType?.includes('spreadsheet')) return '📊';
+    if (mimeType?.includes('video/')) return '🎬';
+    if (mimeType?.includes('audio/')) return '🎵';
+    if (mimeType?.includes('zip') || mimeType?.includes('rar') || mimeType?.includes('compressed')) return '📦';
     return '📎';
+  };
+
+  const getEntityLogo = () => {
+    switch (entityType) {
+      case 'company':
+      case 'companies':
+        return '🏢';
+      case 'location':
+      case 'locations':
+        return '📍';
+      case 'provider':
+      case 'providers':
+        return '🎮';
+      case 'cabinet':
+      case 'cabinets':
+        return '🎰';
+      case 'game-mix':
+      case 'game-mixes':
+        return '🎯';
+      case 'slot':
+      case 'slots':
+        return '🎲';
+      case 'user':
+      case 'users':
+        return '👤';
+      case 'invoice':
+      case 'invoices':
+        return '📋';
+      case 'rent-agreement':
+      case 'rent-agreements':
+        return '📝';
+      case 'legal-document':
+      case 'legal-documents':
+        return '⚖️';
+      case 'onjn-report':
+      case 'onjn-reports':
+        return '📊';
+      default:
+        return '📎';
+    }
   };
 
   const formatFileSize = (bytes: number) => {
@@ -173,9 +216,10 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
           </Badge>
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+      <DialogContent className="glass-dialog dialog-lg">
         <DialogHeader>
-          <DialogTitle className="text-white">
+          <DialogTitle className="text-white flex items-center gap-3">
+            <span className="text-2xl">{getEntityLogo()}</span>
             Attachments - {entityName || `${entityType} #${entityId}`}
           </DialogTitle>
         </DialogHeader>
@@ -183,14 +227,25 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
         <div className="space-y-6">
           {/* Upload Section */}
           <div className="space-y-4">
-            <Label className="text-white">Upload New File</Label>
+            <Label className="text-white flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Upload New File
+            </Label>
             <div className="flex flex-col gap-3">
-              <Input
-                type="file"
-                onChange={handleFileSelect}
-                className="form-input"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.csv"
-              />
+              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
+                <Input
+                  type="file"
+                  onChange={handleFileSelect}
+                  className="form-input"
+                  accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt,.csv,.zip,.rar"
+                />
+                <p className="text-sm text-slate-400 mt-2">
+                  Drag and drop or click to select files
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Supported: PDF, DOC, XLS, Images, Archives
+                </p>
+              </div>
               
               {selectedFile && (
                 <div className="space-y-3">

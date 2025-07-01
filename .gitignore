@@ -123,6 +123,9 @@ uploads/*
 *.backup
 *.bak
 
+# Backups directory
+backups/
+
 # Docker
 docker-compose.override.yml
 

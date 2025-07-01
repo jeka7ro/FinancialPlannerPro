@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 interface ProviderLogoProps {
   providerId: number;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   providerName?: string;
 }
@@ -43,9 +43,10 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
   }, [attachments]);
 
   const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-6 h-6", 
-    lg: "w-8 h-8"
+    sm: "w-6 h-6",
+    md: "w-8 h-8", 
+    lg: "w-10 h-10",
+    xl: "w-12 h-12"
   };
 
   // Get provider initials from name
@@ -70,7 +71,7 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
   // Fallback to provider initials
   return (
     <div className={`${sizeClasses[size]} rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${className}`}>
-      <span className={`font-semibold text-white ${size === 'sm' ? 'text-xs' : size === 'md' ? 'text-xs' : 'text-sm'}`}>
+      <span className={`font-semibold text-white ${size === 'sm' ? 'text-xs' : size === 'md' ? 'text-xs' : size === 'lg' ? 'text-sm' : 'text-base'}`}>
         {getInitials(providerName)}
       </span>
     </div>

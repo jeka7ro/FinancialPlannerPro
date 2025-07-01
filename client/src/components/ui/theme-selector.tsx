@@ -1,15 +1,16 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Palette, Monitor, Sun, Moon, Laptop } from "lucide-react";
+import { Palette, Sun, Moon, Laptop, Cloud, Zap, Monitor, Square } from "lucide-react";
 import { useTheme } from "next-themes";
 
 const themes = [
   { id: 'system', name: 'System', icon: Monitor, description: 'Follow system preference' },
-  { id: 'light', name: 'Light', icon: Sun, description: 'Light theme' },
-  { id: 'dark', name: 'Dark', icon: Moon, description: 'Dark theme' },
-  { id: 'monterey', name: 'macOS Monterey', icon: Laptop, description: 'macOS glass effects' },
-  { id: 'icloud', name: 'iCloud', icon: Palette, description: 'iCloud blue theme' },
+  { id: 'light', name: 'Light', icon: Sun, description: 'Clean and minimal light theme' },
+  { id: 'dark', name: 'Dark', icon: Moon, description: 'Professional dark theme' },
+  { id: 'monterey', name: 'Monterey', icon: Laptop, description: 'Dark theme with deep purple tones' },
+  { id: 'icloud', name: 'iCloud', icon: Cloud, description: 'Dark blue background theme' },
+  { id: 'windows11', name: 'Windows 11', icon: Square, description: 'Modern Fluent Design theme' },
 ];
 
 export function ThemeSelector() {
@@ -30,15 +31,15 @@ export function ThemeSelector() {
           {currentTheme.name}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="glass-card border-white/10 text-white min-w-48">
+      <DropdownMenuContent align="end" className="theme-selector-dropdown border-white/10 text-white min-w-48">
         {themes.map((themeOption) => {
           const ThemeIcon = themeOption.icon;
           return (
             <DropdownMenuItem
               key={themeOption.id}
               onClick={() => setTheme(themeOption.id)}
-              className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-white/10 ${
-                theme === themeOption.id ? 'bg-white/5' : ''
+              className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-white/15 ${
+                theme === themeOption.id ? 'bg-white/10' : ''
               }`}
             >
               <ThemeIcon className="h-4 w-4" />

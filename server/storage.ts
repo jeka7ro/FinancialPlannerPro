@@ -43,7 +43,7 @@ import {
   type InsertAttachment,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, like, count, or, asc, sql } from "drizzle-orm";
+import { eq, desc, and, like, count, or, asc, sql, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
 export interface IStorage {
@@ -63,6 +63,7 @@ export interface IStorage {
   createCompany(company: InsertCompany): Promise<Company>;
   updateCompany(id: number, company: Partial<InsertCompany>): Promise<Company>;
   deleteCompany(id: number): Promise<void>;
+  bulkDeleteCompanies(ids: number[]): Promise<void>;
 
   // Location operations
   getLocation(id: number): Promise<Location | undefined>;
@@ -80,7 +81,7 @@ export interface IStorage {
 
   // Cabinet operations
   getCabinet(id: number): Promise<Cabinet | undefined>;
-  getCabinets(page?: number, limit?: number, search?: string): Promise<{ cabinets: Cabinet[]; total: number }>;
+  getCabinets(page?: number, limit?: number, search?: string, providers?: string, models?: string): Promise<{ cabinets: Cabinet[]; total: number }>;
   createCabinet(cabinet: InsertCabinet): Promise<Cabinet>;
   updateCabinet(id: number, cabinet: Partial<InsertCabinet>): Promise<Cabinet>;
   deleteCabinet(id: number): Promise<void>;
@@ -210,11 +211,17 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(users.username, `%${search}%`),
-          like(users.email, `%${search}%`),
-          like(users.firstName, `%${search}%`),
-          like(users.lastName, `%${search}%`),
-          like(users.role, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${users.username} ILIKE ${'%' + search + '%'}`,
+          sql`${users.email} ILIKE ${'%' + search + '%'}`,
+          sql`${users.firstName} ILIKE ${'%' + search + '%'}`,
+          sql`${users.lastName} ILIKE ${'%' + search + '%'}`,
+          sql`${users.role} ILIKE ${'%' + search + '%'}`,
+          sql`${users.telephone} ILIKE ${'%' + search + '%'}`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${users.id} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -247,14 +254,20 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(companies.name, `%${search}%`),
-          like(companies.taxId, `%${search}%`),
-          like(companies.address, `%${search}%`),
-          like(companies.city, `%${search}%`),
-          like(companies.country, `%${search}%`),
-          like(companies.phone, `%${search}%`),
-          like(companies.email, `%${search}%`),
-          like(companies.website, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${companies.name} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.registrationNumber} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.taxId} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.address} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.city} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.country} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.phone} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.email} ILIKE ${'%' + search + '%'}`,
+          sql`${companies.website} ILIKE ${'%' + search + '%'}`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${companies.id} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -298,6 +311,10 @@ export class DatabaseStorage implements IStorage {
     await db.delete(companies).where(eq(companies.id, id));
   }
 
+  async bulkDeleteCompanies(ids: number[]): Promise<void> {
+    await db.delete(companies).where(inArray(companies.id, ids));
+  }
+
   // Location operations
   async getLocation(id: number): Promise<Location | undefined> {
     const [location] = await db.select().from(locations).where(eq(locations.id, id));
@@ -308,12 +325,36 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(locations.name, `%${search}%`),
-          like(locations.address, `%${search}%`),
-          like(locations.city, `%${search}%`),
-          like(locations.country, `%${search}%`),
-          like(locations.phone, `%${search}%`),
-          like(locations.email, `%${search}%`)
+          // Location fields - Use ILIKE for case-insensitive search
+          sql`${locations.name} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.address} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.city} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.county} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.country} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.phone} ILIKE ${'%' + search + '%'}`,
+          sql`${locations.email} ILIKE ${'%' + search + '%'}`,
+          // Company name search (join with companies)
+          sql`EXISTS (
+            SELECT 1 FROM ${companies} c 
+            WHERE c.id = ${locations.companyId} 
+            AND c.name ILIKE ${'%' + search + '%'}
+          )`,
+          // Manager name search (join with users)
+          sql`EXISTS (
+            SELECT 1 FROM ${users} u 
+            WHERE u.id = ${locations.managerId} 
+            AND (
+              u.username ILIKE ${'%' + search + '%'} OR 
+              u.first_name ILIKE ${'%' + search + '%'} OR
+              u.last_name ILIKE ${'%' + search + '%'}
+            )
+          )`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${locations.id} = ${Number(search)}`,
+            sql`${locations.companyId} = ${Number(search)}`,
+            sql`${locations.managerId} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -404,15 +445,20 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(providers.name, `%${search}%`),
-          like(providers.companyName, `%${search}%`),
-          like(providers.contactPerson, `%${search}%`),
-          like(providers.email, `%${search}%`),
-          like(providers.phone, `%${search}%`),
-          like(providers.address, `%${search}%`),
-          like(providers.city, `%${search}%`),
-          like(providers.country, `%${search}%`),
-          like(providers.website, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${providers.name} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.companyName} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.contactPerson} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.email} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.phone} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.address} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.city} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.country} ILIKE ${'%' + search + '%'}`,
+          sql`${providers.website} ILIKE ${'%' + search + '%'}`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${providers.id} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -462,16 +508,58 @@ export class DatabaseStorage implements IStorage {
     return cabinet || undefined;
   }
 
-  async getCabinets(page = 1, limit = 10, search = ""): Promise<{ cabinets: Cabinet[]; total: number }> {
+  async getCabinets(page = 1, limit = 10, search = "", providers = "", models = ""): Promise<{ cabinets: Cabinet[]; total: number }> {
     const offset = (page - 1) * limit;
-    const whereClause = search 
-      ? or(
-          like(cabinets.serialNumber, `%${search}%`),
-          like(cabinets.model, `%${search}%`),
-          like(cabinets.manufacturer, `%${search}%`),
-          like(cabinets.status, `%${search}%`)
-        )
-      : undefined;
+    
+    // Parse provider IDs from comma-separated string
+    const providerIds = providers ? providers.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id)) : [];
+    
+    // Parse model names from comma-separated string
+    const modelNames = models ? models.split(',').map(name => name.trim()).filter(name => name.length > 0) : [];
+    
+    // Create comprehensive search condition for all relevant fields
+    const searchConditions = search ? [
+      // Cabinet fields - Use ILIKE for case-insensitive search
+      sql`${cabinets.serialNumber} ILIKE ${'%' + search + '%'}`,
+      sql`${cabinets.model} ILIKE ${'%' + search + '%'}`,
+      sql`${cabinets.manufacturer} ILIKE ${'%' + search + '%'}`,
+      sql`${cabinets.status} ILIKE ${'%' + search + '%'}`,
+      // Provider name search (join with providers)
+      sql`EXISTS (
+        SELECT 1 FROM ${providers} p 
+        WHERE p.id = ${cabinets.providerId} 
+        AND p.name ILIKE ${'%' + search + '%'}
+      )`,
+      // Numeric fields (if search is a number)
+      ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+        sql`${cabinets.id} = ${Number(search)}`,
+        sql`${cabinets.providerId} = ${Number(search)}`,
+        sql`${cabinets.locationId} = ${Number(search)}`
+      ] : [])
+    ] : [];
+    
+    // Add provider filter condition
+    const providerConditions = providerIds.length > 0 ? [
+      sql`${cabinets.providerId} IN (${sql.join(providerIds.map(id => sql`${id}`), sql`, `)})`
+    ] : [];
+    
+    // Add model filter condition
+    const modelConditions = modelNames.length > 0 ? [
+      sql`${cabinets.model} IN (${sql.join(modelNames.map(name => sql`${name}`), sql`, `)})`
+    ] : [];
+    
+    // Build where clause with proper logic
+    let whereClause: any = undefined;
+    
+    const allConditions = [
+      ...(searchConditions.length > 0 ? [or(...searchConditions)] : []),
+      ...(providerConditions.length > 0 ? providerConditions : []),
+      ...(modelConditions.length > 0 ? modelConditions : [])
+    ];
+    
+    if (allConditions.length > 0) {
+      whereClause = and(...allConditions);
+    }
 
     const [totalResult] = await db
       .select({ count: count() })
@@ -523,8 +611,13 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(gameMixes.name, `%${search}%`),
-          like(gameMixes.description, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${gameMixes.name} ILIKE ${'%' + search + '%'}`,
+          sql`${gameMixes.description} ILIKE ${'%' + search + '%'}`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${gameMixes.id} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -577,39 +670,47 @@ export class DatabaseStorage implements IStorage {
   async getSlots(page = 1, limit = 10, search = "", sortField = "id", sortDirection = "asc"): Promise<{ slots: Slot[]; total: number }> {
     const offset = (page - 1) * limit;
     
-    let whereClause;
-    if (search) {
-      // Create individual conditions for text and numeric fields
-      const conditions = [
-        like(slots.serialNr, `%${search}%`),
-        like(slots.exciterType, `%${search}%`),
-        like(slots.propertyType, `%${search}%`)
-      ];
-      
-      // Add numeric field searches using SQL template literals
-      if (!isNaN(Number(search))) {
-        conditions.push(
-          sql`${slots.year} = ${Number(search)}`,
-          sql`${slots.gamingPlaces} = ${Number(search)}`
-        );
-      }
-      
-      whereClause = or(...conditions);
-    }
+    // Create comprehensive search condition for all relevant fields
+    const whereClause = search ? or(
+      // Slot fields - Use ILIKE for case-insensitive search
+      sql`${slots.serialNumber} ILIKE ${'%' + search + '%'}`,
+      sql`${slots.model} ILIKE ${'%' + search + '%'}`,
+      sql`${slots.manufacturer} ILIKE ${'%' + search + '%'}`,
+      sql`${slots.status} ILIKE ${'%' + search + '%'}`,
+      // Cabinet model search (join with cabinets)
+      sql`EXISTS (
+        SELECT 1 FROM ${cabinets} c 
+        WHERE c.id = ${slots.cabinetId} 
+        AND c.model ILIKE ${'%' + search + '%'}
+      )`,
+      // Game Mix name search (join with gameMixes)
+      sql`EXISTS (
+        SELECT 1 FROM ${gameMixes} g 
+        WHERE g.id = ${slots.gameMixId} 
+        AND g.name ILIKE ${'%' + search + '%'}
+      )`,
+      // Numeric fields (if search is a number)
+      ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+        sql`${slots.id} = ${Number(search)}`,
+        sql`${slots.cabinetId} = ${Number(search)}`,
+        sql`${slots.gameMixId} = ${Number(search)}`
+      ] : [])
+    ) : undefined;
+
+    // Dynamic sorting
+    const sortColumn = slots[sortField as keyof typeof slots] || slots.id;
+    const sortOrder = sortDirection === 'desc' ? desc(sortColumn) : asc(sortColumn);
 
     const [totalResult] = await db
       .select({ count: count() })
       .from(slots)
       .where(whereClause);
 
-    // Default to ordering by id
-    const orderByClause = sortDirection === 'desc' ? desc(slots.id) : asc(slots.id);
-
     const slotsList = await db
       .select()
       .from(slots)
       .where(whereClause)
-      .orderBy(orderByClause)
+      .orderBy(sortOrder)
       .limit(limit)
       .offset(offset);
 
@@ -650,11 +751,30 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(invoices.invoiceNumber, `%${search}%`),
-          like(invoices.status, `%${search}%`),
-          like(invoices.serialNumbers, `%${search}%`),
-          like(invoices.propertyType, `%${search}%`),
-          like(invoices.notes, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${invoices.invoiceNumber} ILIKE ${'%' + search + '%'}`,
+          sql`${invoices.status} ILIKE ${'%' + search + '%'}`,
+          sql`${invoices.propertyType} ILIKE ${'%' + search + '%'}`,
+          sql`${invoices.currency} ILIKE ${'%' + search + '%'}`,
+          sql`${invoices.serialNumbers} ILIKE ${'%' + search + '%'}`,
+          // Company name search (join with companies)
+          sql`EXISTS (
+            SELECT 1 FROM ${companies} c 
+            WHERE c.id = ${invoices.companyId} 
+            AND c.name ILIKE ${'%' + search + '%'}
+          )`,
+          sql`EXISTS (
+            SELECT 1 FROM ${companies} c 
+            WHERE c.id = ${invoices.sellerCompanyId} 
+            AND c.name ILIKE ${'%' + search + '%'}
+          )`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${invoices.id} = ${Number(search)}`,
+            sql`${invoices.companyId} = ${Number(search)}`,
+            sql`${invoices.sellerCompanyId} = ${Number(search)}`,
+            sql`${invoices.createdBy} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -678,42 +798,23 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createInvoice(insertInvoice: InsertInvoice): Promise<Invoice> {
-    // Convert locationIds array to comma-separated string if provided
-    const invoiceData = {
-      ...insertInvoice,
-      locationIds: insertInvoice.locationIds ? insertInvoice.locationIds.join(',') : null
-    };
-    
     const [invoice] = await db
       .insert(invoices)
-      .values(invoiceData)
+      .values(insertInvoice)
       .returning();
     return invoice;
   }
 
   async updateInvoice(id: number, updateInvoice: Partial<InsertInvoice>): Promise<Invoice> {
-    // Convert locationIds array to comma-separated string if provided
-    const updateData = {
-      ...updateInvoice,
-      locationIds: updateInvoice.locationIds ? updateInvoice.locationIds.join(',') : updateInvoice.locationIds,
-      updatedAt: new Date()
-    };
-    
     const [invoice] = await db
       .update(invoices)
-      .set(updateData)
+      .set({ ...updateInvoice, updatedAt: new Date() })
       .where(eq(invoices.id, id))
       .returning();
     return invoice;
   }
 
   async deleteInvoice(id: number): Promise<void> {
-    // First remove any references from slots table
-    await db.update(slots)
-      .set({ invoiceId: null })
-      .where(eq(slots.invoiceId, id));
-    
-    // Then delete the invoice
     await db.delete(invoices).where(eq(invoices.id, id));
   }
 
@@ -727,8 +828,23 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(rentAgreements.agreementNumber, `%${search}%`),
-          like(rentAgreements.status, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${rentAgreements.agreementNumber} ILIKE ${'%' + search + '%'}`,
+          sql`${rentAgreements.status} ILIKE ${'%' + search + '%'}`,
+          sql`${rentAgreements.propertyType} ILIKE ${'%' + search + '%'}`,
+          sql`${rentAgreements.currency} ILIKE ${'%' + search + '%'}`,
+          // Company name search (join with companies)
+          sql`EXISTS (
+            SELECT 1 FROM ${companies} c 
+            WHERE c.id = ${rentAgreements.companyId} 
+            AND c.name ILIKE ${'%' + search + '%'}
+          )`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${rentAgreements.id} = ${Number(search)}`,
+            sql`${rentAgreements.companyId} = ${Number(search)}`,
+            sql`${rentAgreements.createdBy} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -782,9 +898,16 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(legalDocuments.title, `%${search}%`),
-          like(legalDocuments.documentType, `%${search}%`),
-          like(legalDocuments.status, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${legalDocuments.title} ILIKE ${'%' + search + '%'}`,
+          sql`${legalDocuments.description} ILIKE ${'%' + search + '%'}`,
+          sql`${legalDocuments.documentType} ILIKE ${'%' + search + '%'}`,
+          sql`${legalDocuments.status} ILIKE ${'%' + search + '%'}`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${legalDocuments.id} = ${Number(search)}`,
+            sql`${legalDocuments.createdBy} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -838,8 +961,23 @@ export class DatabaseStorage implements IStorage {
     const offset = (page - 1) * limit;
     const whereClause = search 
       ? or(
-          like(onjnReports.serialNumbers, `%${search}%`),
-          like(onjnReports.notes, `%${search}%`)
+          // Use ILIKE for case-insensitive search
+          sql`${onjnReports.reportNumber} ILIKE ${'%' + search + '%'}`,
+          sql`${onjnReports.reportType} ILIKE ${'%' + search + '%'}`,
+          sql`${onjnReports.status} ILIKE ${'%' + search + '%'}`,
+          sql`${onjnReports.description} ILIKE ${'%' + search + '%'}`,
+          // Company name search (join with companies)
+          sql`EXISTS (
+            SELECT 1 FROM ${companies} c 
+            WHERE c.id = ${onjnReports.companyId} 
+            AND c.name ILIKE ${'%' + search + '%'}
+          )`,
+          // Numeric fields (if search is a number)
+          ...((!isNaN(Number(search)) && search.trim() !== '') ? [
+            sql`${onjnReports.id} = ${Number(search)}`,
+            sql`${onjnReports.companyId} = ${Number(search)}`,
+            sql`${onjnReports.createdBy} = ${Number(search)}`
+          ] : [])
         )
       : undefined;
 
@@ -880,13 +1018,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteOnjnReport(id: number): Promise<void> {
-    // First, remove the ONJN report reference from any slots that reference it
-    await db
-      .update(slots)
-      .set({ onjnReportId: null })
-      .where(eq(slots.onjnReportId, id));
-    
-    // Then delete the ONJN report
     await db.delete(onjnReports).where(eq(onjnReports.id, id));
   }
 

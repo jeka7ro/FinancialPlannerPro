@@ -14,7 +14,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
-import { Settings as SettingsIcon, User, Shield, Info, Search, Save } from "lucide-react";
+import { Settings as SettingsIcon, User, Shield, Info, Search, Save, Mail } from "lucide-react";
 
 // Settings schemas
 const profileSettingsSchema = z.object({
@@ -224,7 +224,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 -mt-12">
       {/* Enhanced Header */}
       <Card className="search-card">
         <CardContent className="p-6">
@@ -323,7 +323,10 @@ export default function Settings() {
                          name="email"
                          render={({ field }) => (
                            <FormItem>
-                             <FormLabel className="text-white">Email Address</FormLabel>
+                             <FormLabel className="text-white flex items-center gap-2">
+                               <Mail className="h-4 w-4 text-blue-400" />
+                               Email Address
+                             </FormLabel>
                              <FormControl>
                                <Input {...field} value={field.value || ""} type="email" className="form-input" />
                              </FormControl>

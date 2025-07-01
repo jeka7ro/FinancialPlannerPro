@@ -42,10 +42,13 @@ export const locations = pgTable("locations", {
   name: varchar("name", { length: 255 }).notNull(),
   address: text("address").notNull(),
   city: varchar("city", { length: 100 }).notNull(),
+  county: varchar("county", { length: 100 }),
   country: varchar("country", { length: 100 }).notNull(),
   phone: varchar("phone", { length: 50 }),
   email: varchar("email", { length: 255 }),
   managerId: integer("manager_id").references(() => users.id),
+  latitude: decimal("latitude", { precision: 10, scale: 8 }),
+  longitude: decimal("longitude", { precision: 11, scale: 8 }),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -85,10 +88,12 @@ export const cabinets = pgTable("cabinets", {
   providerId: integer("provider_id").references(() => providers.id),
   locationId: integer("location_id").references(() => locations.id),
   status: varchar("status", { length: 50 }).notNull().default("active"),
+  webLink: varchar("web_link", { length: 500 }),
   lastMaintenanceDate: timestamp("last_maintenance_date"),
   nextMaintenanceDate: timestamp("next_maintenance_date"),
   dailyRevenue: decimal("daily_revenue", { precision: 10, scale: 2 }),
   specifications: jsonb("specifications"),
+  technicalInfo: text("technical_info"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -100,7 +105,9 @@ export const gameMixes = pgTable("game_mixes", {
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   providerId: integer("provider_id").references(() => providers.id),
+  games: text("games"), // Space-separated list of games in this mix
   gameCount: integer("game_count").notNull().default(0),
+  webLink: varchar("web_link", { length: 500 }), // URL for the game mix
   configuration: jsonb("configuration"),
   isActive: boolean("is_active").notNull().default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -113,6 +120,7 @@ export const slots = pgTable("slots", {
   cabinetId: integer("cabinet_id").references(() => cabinets.id),
   gameMixId: integer("game_mix_id").references(() => gameMixes.id),
   providerId: integer("provider_id").references(() => providers.id),
+  locationId: integer("location_id").references(() => locations.id),
   exciterType: varchar("exciter_type", { length: 100 }),
   denomination: decimal("denomination", { precision: 8, scale: 2 }),
   maxBet: decimal("max_bet", { precision: 8, scale: 2 }),
@@ -150,6 +158,7 @@ export const invoices = pgTable("invoices", {
   propertyType: varchar("property_type", { length: 50 }).default("property"), // property or rent
   currency: varchar("currency", { length: 3 }).default("EUR"), // LEI, USD, EUR
   notes: text("notes"),
+  createdBy: integer("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -301,6 +310,10 @@ export const slotsRelations = relations(slots, ({ one }) => ({
     fields: [slots.providerId],
     references: [providers.id],
   }),
+  location: one(locations, {
+    fields: [slots.locationId],
+    references: [locations.id],
+  }),
   invoice: one(invoices, {
     fields: [slots.invoiceId],
     references: [invoices.id],
@@ -319,6 +332,10 @@ export const invoicesRelations = relations(invoices, ({ one, many }) => ({
   sellerCompany: one(companies, {
     fields: [invoices.sellerCompanyId],
     references: [companies.id],
+  }),
+  createdByUser: one(users, {
+    fields: [invoices.createdBy],
+    references: [users.id],
   }),
   slots: many(slots),
 }));
@@ -387,18 +404,24 @@ export const insertCabinetSchema = createInsertSchema(cabinets).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  webLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 export const insertGameMixSchema = createInsertSchema(gameMixes).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  webLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 export const insertSlotSchema = createInsertSchema(slots).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  invoiceId: z.number().optional(),
 });
 
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({

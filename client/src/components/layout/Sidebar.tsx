@@ -1,18 +1,19 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { ThemeSelector } from "@/components/ui/theme-selector";
+import { useTheme } from "next-themes";
+import clsx from "clsx";
 // Import logo using public path
 const cashpotLogo = "/cashpot-logo.png";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
-  { name: "Companies", href: "/companies", icon: "🏢" },
-  { name: "Locations", href: "/locations", icon: "📍" },
-  { name: "Providers", href: "/providers", icon: "🚚" },
-  { name: "Cabinets", href: "/cabinets", icon: "🖥️" },
+  { name: "Companies", href: "/companies", icon: "🖤" },
+  { name: "Locations", href: "/locations", icon: "♦️" },
+  { name: "Providers", href: "/providers", icon: "♣️" },
+  { name: "Cabinets", href: "/cabinets", icon: "❤️" },
   { name: "Game Mixes", href: "/game-mixes", icon: "🍒" },
   { name: "Slots", href: "/slots", icon: "🎰" },
-  { name: "Invoices", href: "/invoices", icon: "💰" },
+  { name: "Invoices", href: "/invoices", icon: "🎲" },
   { name: "Rent Management", href: "/rent-management", icon: "🏠" },
   { name: "Users", href: "/users", icon: "👥" },
   { name: "Legal", href: "/legal", icon: "⚖️" },
@@ -26,10 +27,18 @@ interface SidebarProps {
 
 export default function Sidebar({ className }: SidebarProps) {
   const [location] = useLocation();
+  const theme = useTheme();
 
   return (
-    <div className={cn("sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0", className)}>
-      <div className="flex items-center justify-center h-20 px-6 border-b border-white/10">
+    <div
+      className={clsx(
+        'sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
+        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : '',
+        className
+      )}
+      style={theme.theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
+    >
+      <div className="flex items-center justify-center h-28 px-6 border-b border-white/10 min-h-[7rem]">
         <div className="flex items-center justify-center w-full">
           <img 
             src={cashpotLogo} 

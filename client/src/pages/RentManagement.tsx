@@ -14,9 +14,25 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { insertRentAgreementSchema, type InsertRentAgreement } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
-import { Upload, Search, Plus, Home, Edit, Trash2, Euro, Calendar } from "lucide-react";
+import { Upload, Edit, Trash2, Plus, Search } from "lucide-react";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { Checkbox } from "@/components/ui/checkbox";
+
+const getStatusColor = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'active':
+      return 'status-active';
+    case 'pending':
+      return 'status-maintenance';
+    case 'terminated':
+      return 'status-inactive';
+    case 'expired':
+      return 'bg-gray-500/20 text-gray-400';
+    default:
+      return 'bg-gray-500/20 text-gray-400';
+  }
+};
 
 export default function RentManagement() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -31,7 +47,8 @@ export default function RentManagement() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/rent-agreements', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/rent-agreements?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
+      const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
+      const response = await fetch(`/api/rent-agreements?page=${currentPage}&limit=${limit}${searchParam}`, {
         credentials: 'include'
       });
       if (!response.ok) throw new Error('Failed to fetch rent agreements');
@@ -84,23 +101,21 @@ export default function RentManagement() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertRentAgreement> }) => {
-      return await apiRequest("PUT", `/api/rent-agreements/${id}`, data);
-    },
+    mutationFn: ({ id, data }: { id: number; data: InsertRentAgreement }) =>
+      apiRequest("PUT", `/api/rent-agreements/${id}`, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/rent-agreements'] });
-      setIsEditDialogOpen(false);
-      setEditingAgreement(null);
-      editForm.reset();
       toast({
         title: "Success",
-        description: "Rent agreement updated successfully.",
+        description: "Rent agreement updated successfully",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/rent-agreements"] });
+      setIsEditDialogOpen(false);
+      setEditingAgreement(null);
     },
     onError: (error) => {
       toast({
         title: "Error",
-        description: "Failed to update rent agreement. Please try again.",
+        description: error.message,
         variant: "destructive",
       });
     },
@@ -128,11 +143,9 @@ export default function RentManagement() {
     resolver: zodResolver(insertRentAgreementSchema),
     defaultValues: {
       agreementNumber: "",
-      startDate: new Date(),
-      endDate: new Date(),
+      status: "pending",
       monthlyRent: "0",
       securityDeposit: "0",
-      status: "active",
     },
   });
 
@@ -140,44 +153,52 @@ export default function RentManagement() {
     resolver: zodResolver(insertRentAgreementSchema),
     defaultValues: {
       agreementNumber: "",
-      startDate: new Date(),
-      endDate: new Date(),
+      status: "pending",
       monthlyRent: "0",
       securityDeposit: "0",
-      status: "active",
     },
   });
 
   const onSubmit = (data: InsertRentAgreement) => {
-    createMutation.mutate(data);
+    const transformedData = {
+      ...data,
+      monthlyRent: data.monthlyRent?.toString() || "0",
+      securityDeposit: data.securityDeposit?.toString() || "0",
+    };
+    createMutation.mutate(transformedData);
   };
 
   const onEditSubmit = (data: InsertRentAgreement) => {
     if (editingAgreement) {
-      updateMutation.mutate({ id: editingAgreement.id, data });
+      const transformedData = {
+        ...data,
+        monthlyRent: data.monthlyRent?.toString() || "0",
+        securityDeposit: data.securityDeposit?.toString() || "0",
+      };
+      updateMutation.mutate({ id: editingAgreement.id, data: transformedData });
     }
-  };
-
-  const handleEdit = (rentAgreement: any) => {
-    setEditingAgreement(rentAgreement);
-    editForm.reset({
-      agreementNumber: rentAgreement.agreementNumber || "",
-      companyId: rentAgreement.companyId,
-      locationId: rentAgreement.locationId,
-      startDate: rentAgreement.startDate ? new Date(rentAgreement.startDate) : new Date(),
-      endDate: rentAgreement.endDate ? new Date(rentAgreement.endDate) : new Date(),
-      monthlyRent: rentAgreement.monthlyRent || "0",
-      securityDeposit: rentAgreement.securityDeposit || "0",
-      status: rentAgreement.status || "active",
-      terms: rentAgreement.terms || "",
-    });
-    setIsEditDialogOpen(true);
   };
 
   const handleDelete = (id: number) => {
     if (window.confirm("Are you sure you want to delete this rent agreement?")) {
       deleteMutation.mutate(id);
     }
+  };
+
+  const handleEdit = (agreement: any) => {
+    setEditingAgreement(agreement);
+    editForm.reset({
+      agreementNumber: agreement.agreementNumber || "",
+      companyId: agreement.companyId,
+      locationId: agreement.locationId,
+      startDate: agreement.startDate ? new Date(agreement.startDate) : new Date(),
+      endDate: agreement.endDate ? new Date(agreement.endDate) : new Date(),
+      monthlyRent: agreement.monthlyRent || "0",
+      securityDeposit: agreement.securityDeposit || "0",
+      status: agreement.status || "pending",
+      terms: agreement.terms || "",
+    });
+    setIsEditDialogOpen(true);
   };
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -189,343 +210,203 @@ export default function RentManagement() {
     if (selectedAgreements.length === data?.rentAgreements?.length) {
       setSelectedAgreements([]);
     } else {
-      setSelectedAgreements(data?.rentAgreements?.map((a: any) => a.id) || []);
+      setSelectedAgreements(data?.rentAgreements?.map((item: any) => item.id) || []);
     }
   };
 
-  const handleSelectAgreement = (agreementId: number) => {
+  const handleSelectAgreement = (id: number) => {
     setSelectedAgreements(prev => 
-      prev.includes(agreementId) 
-        ? prev.filter(id => id !== agreementId)
-        : [...prev, agreementId]
+      prev.includes(id) 
+        ? prev.filter(agreementId => agreementId !== id)
+        : [...prev, id]
     );
   };
 
   const handleBulkEdit = () => {
     toast({
       title: "Bulk Edit",
-      description: `Editing ${selectedAgreements.length} agreements`,
+      description: `Editing ${selectedAgreements.length} rent agreements`,
     });
   };
 
   const handleBulkDelete = () => {
     if (selectedAgreements.length === 0) return;
     
-    if (window.confirm(`Are you sure you want to delete ${selectedAgreements.length} agreements?`)) {
-      selectedAgreements.forEach(id => deleteMutation.mutate(id));
-      setSelectedAgreements([]);
-    }
+    toast({
+      title: "Bulk Delete",
+      description: `Deleting ${selectedAgreements.length} rent agreements`,
+      variant: "destructive",
+    });
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'status-active';
-      case 'expired':
-        return 'status-maintenance';
-      case 'terminated':
-        return 'status-inactive';
-      default:
-        return 'bg-gray-500/20 text-gray-400';
-    }
-  };
-
   return (
     <div className="space-y-6">
-      {/* Enhanced Search Interface */}
-      <Card className="search-card">
-        <CardContent className="p-6">
-          <div className="search-header">
-            <div className="search-icon-section">
-              <div className="search-icon-wrapper">
-                <span className="search-icon">🏠</span>
-              </div>
-              <div>
-                <h3 className="search-title">Rent Management</h3>
-                <p className="search-subtitle">Rental agreements and property leasing</p>
-              </div>
-            </div>
-          </div>
-          <div className="search-input-wrapper">
-            <Search className="search-input-icon" />
-            <Input
-              type="text"
-              placeholder="Search agreements by number, company, location, or status..."
-              value={searchTerm}
-              onChange={handleSearch}
-              className="search-input"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Actions and Bulk Operations */}
+      {/* Actions */}
       <div className="flex items-center justify-between">
-        {selectedAgreements.length > 0 ? (
+        <div className="flex items-center gap-4">
           <BulkOperations 
             selectedCount={selectedAgreements.length}
             onBulkEdit={handleBulkEdit}
             onBulkDelete={handleBulkDelete}
           />
-        ) : (
-          <div></div>
-        )}
+        </div>
         <div className="flex items-center gap-2">
-          <ImportExportDialog module="rent-agreements" moduleName="Rent Agreements">
-            <Button className="btn-secondary">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="btn-primary">
-                <Plus className="h-4 w-4 mr-2" />
-                Create Agreement
-              </Button>
-            </DialogTrigger>
-          <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-white flex items-center gap-2">
-                <span className="text-xl">🏠</span>
-                Create New Rent Agreement
-              </DialogTitle>
-              <DialogDescription className="text-slate-400">
-                Create a new rental agreement for a location with specified terms and conditions.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="agreementNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Agreement Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="form-input" placeholder="RENT-2024-001" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="status"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="expired">Expired</SelectItem>
-                            <SelectItem value="terminated">Terminated</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="companyId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Company</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select company" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {companies?.companies?.map((company: any) => (
-                              <SelectItem key={company.id} value={company.id.toString()}>
-                                {company.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="locationId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(parseInt(value))}>
-                          <FormControl>
-                            <SelectTrigger className="form-input">
-                              <SelectValue placeholder="Select location" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className="glass-card border-white/10">
-                            {locations?.locations?.map((location: any) => (
-                              <SelectItem key={location.id} value={location.id.toString()}>
-                                {location.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="startDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Start Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="endDate"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">End Date</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            type="date" 
-                            className="form-input"
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="monthlyRent"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Monthly Rent (€)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value?.toString() || ""}
-                            type="number" 
-                            step="0.01"
-                            className="form-input" 
-                            placeholder="0.00"
-                            onChange={(e) => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="securityDeposit"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Security Deposit (€)</FormLabel>
-                        <FormControl>
-                          <Input 
-                            {...field} 
-                            value={field.value?.toString() || ""}
-                            type="number" 
-                            step="0.01"
-                            className="form-input" 
-                            placeholder="0.00"
-                            onChange={(e) => field.onChange(e.target.value)}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="terms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Terms & Conditions</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Agreement terms and conditions..." />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+          {/* Table Header - Search & Actions */}
+          <div className="search-card mb-4">
+            <div className="flex items-center justify-between w-full">
+              <div className="relative" style={{ width: '10cm' }}>
+                <Input
+                  type="text"
+                  placeholder="Search agreements by number, status, or company..."
+                  value={searchTerm}
+                  onChange={handleSearch}
+                  className="enhanced-input pl-12 pr-4 py-2 text-base text-right"
                 />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+              </div>
+              <div className="flex items-center gap-4">
+                <Button
+                  className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+                  onClick={() => setIsCreateDialogOpen(true)}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Agreement
+                </Button>
+                <ImportExportDialog module="rent-agreements" moduleName="Rent Agreements">
+                  <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+                    Import/Export
+                  </Button>
+                </ImportExportDialog>
+              </div>
+            </div>
+          </div>
 
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-primary"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Agreement"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
+          {/* Edit Agreement Dialog */}
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent className="glass-dialog dialog-lg">
+              <DialogHeader>
+                <DialogTitle className="text-white">Edit Rent Agreement</DialogTitle>
+                <DialogDescription className="text-slate-400">
+                  Update the rent agreement information and details.
+                </DialogDescription>
+              </DialogHeader>
+              <Form {...editForm}>
+                <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="agreementNumber"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Agreement Number</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="form-input" placeholder="RENT-2024-001" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="status"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Status</FormLabel>
+                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                            <FormControl>
+                              <SelectTrigger className="form-input">
+                                <SelectValue placeholder="Select status" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent className="glass-card border-white/10">
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="active">Active</SelectItem>
+                              <SelectItem value="terminated">Terminated</SelectItem>
+                              <SelectItem value="expired">Expired</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={editForm.control}
+                      name="monthlyRent"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Monthly Rent (€)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              value={field.value?.toString() || ""}
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="0.00"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={editForm.control}
+                      name="securityDeposit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-white">Security Deposit (€)</FormLabel>
+                          <FormControl>
+                            <Input 
+                              {...field} 
+                              value={field.value?.toString() || ""}
+                              type="number" 
+                              step="0.01"
+                              className="form-input" 
+                              placeholder="0.00"
+                              onChange={(e) => field.onChange(e.target.value)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="flex justify-end space-x-2 pt-4">
+                    <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)} className="border-white/20 text-white hover:bg-white/10">
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="floating-action text-white" disabled={updateMutation.isPending}>
+                      {updateMutation.isPending ? "Updating..." : "Update Agreement"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </DialogContent>
           </Dialog>
         </div>
       </div>
 
-      {/* Edit Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="glass-card border-white/10 text-white max-w-2xl">
+      {/* Create Dialog */}
+      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <DialogContent className="glass-dialog dialog-lg">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <span className="text-xl">🏠</span>
-              Edit Rent Agreement
-            </DialogTitle>
+            <DialogTitle className="text-white">Create New Rent Agreement</DialogTitle>
+            <DialogDescription className="text-slate-400">
+              Generate a new rental agreement for gaming equipment and services.
+            </DialogDescription>
           </DialogHeader>
-          <Form {...editForm}>
-            <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
-              {/* Same form structure as create */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <FormField
-                  control={editForm.control}
+                  control={form.control}
                   name="agreementNumber"
                   render={({ field }) => (
                     <FormItem>
@@ -538,18 +419,19 @@ export default function RentManagement() {
                   )}
                 />
                 <FormField
-                  control={editForm.control}
+                  control={form.control}
                   name="status"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />
                           </SelectTrigger>
                         </FormControl>
-                        <SelectContent className="glass-card border-white/10">
+                        <SelectContent>
+                          <SelectItem value="draft">Draft</SelectItem>
                           <SelectItem value="active">Active</SelectItem>
                           <SelectItem value="expired">Expired</SelectItem>
                           <SelectItem value="terminated">Terminated</SelectItem>
@@ -561,21 +443,12 @@ export default function RentManagement() {
                 />
               </div>
 
-              <div className="flex justify-end space-x-4">
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  onClick={() => setIsEditDialogOpen(false)}
-                  className="text-slate-400 hover:text-white"
-                >
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-white/20 text-white hover:bg-white/10">
                   Cancel
                 </Button>
-                <Button 
-                  type="submit" 
-                  className="btn-primary"
-                  disabled={updateMutation.isPending}
-                >
-                  {updateMutation.isPending ? "Updating..." : "Update Agreement"}
+                <Button type="submit" className="floating-action text-white" disabled={createMutation.isPending}>
+                  {createMutation.isPending ? "Creating..." : "Create Agreement"}
                 </Button>
               </div>
             </form>
@@ -583,177 +456,173 @@ export default function RentManagement() {
         </DialogContent>
       </Dialog>
 
-      {/* Enhanced Table */}
-      <Card className="data-table">
-        <CardHeader className="data-table-header">
-          <CardTitle className="text-white flex items-center gap-2">
-            <span>🏠</span>
-            Rent Agreements
-            {data?.total && <span className="count-badge">{data.total}</span>}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="data-table-content">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="empty-state">
-              <span className="empty-state-icon">⚠️</span>
-              <p className="empty-state-title">Failed to load rent agreements</p>
-              <p className="empty-state-description">There was an error loading the rent agreements</p>
-            </div>
-          ) : !data?.rentAgreements?.length ? (
-            <div className="empty-state">
-              <span className="empty-state-icon">🏠</span>
-              <p className="empty-state-title">No rent agreements found</p>
-              <p className="empty-state-description">Create your first rental agreement to get started</p>
-            </div>
-          ) : (
-            <>
-              <div className="table-container">
-                <table className="enhanced-table">
-                  <thead>
-                    <tr>
-                      <th className="w-12">
-                        <Checkbox
-                          checked={selectedAgreements.length === data?.rentAgreements?.length && data?.rentAgreements?.length > 0}
-                          onCheckedChange={handleSelectAll}
-                          className="checkbox-custom"
-                        />
-                      </th>
-                      <th>Agreement</th>
-                      <th>Company</th>
-                      <th>Location</th>
-                      <th>Monthly Rent</th>
-                      <th>Period</th>
-                      <th>Status</th>
-                      <th className="text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.rentAgreements.map((agreement: any) => (
-                      <tr key={agreement.id} className="table-row">
-                        <td>
-                          <Checkbox
-                            checked={selectedAgreements.includes(agreement.id)}
-                            onCheckedChange={() => handleSelectAgreement(agreement.id)}
-                            className="checkbox-custom"
-                          />
-                        </td>
-                        <td>
-                          <div className="flex items-center space-x-3">
-                            <div className="entity-avatar bg-orange-500/20">
-                              <span className="text-orange-400">🏠</span>
-                            </div>
-                            <div>
-                              <p className="entity-title">{agreement.agreementNumber}</p>
-                              <p className="entity-subtitle">Agreement #{agreement.id}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="text-slate-300 text-sm">
-                          {companies?.companies?.find((c: any) => c.id === agreement.companyId)?.name || 'No company'}
-                        </td>
-                        <td className="text-slate-300 text-sm">
-                          {locations?.locations?.find((l: any) => l.id === agreement.locationId)?.name || 'No location'}
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-1">
-                            <Euro className="w-4 h-4 text-emerald-400" />
-                            <span className="text-emerald-400 font-semibold">
-                              {Number(agreement.monthlyRent).toLocaleString()}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          <div className="flex items-center gap-1 text-slate-300 text-sm">
-                            <Calendar className="w-3 h-3" />
-                            <div>
-                              <p>{new Date(agreement.startDate).toLocaleDateString()}</p>
-                              <p className="text-xs text-slate-400">to {new Date(agreement.endDate).toLocaleDateString()}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <Badge className={getStatusColor(agreement.status)}>
-                            {agreement.status}
-                          </Badge>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => handleEdit(agreement)}
-                              className="action-button action-button-edit"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              onClick={() => handleDelete(agreement.id)}
-                              className="action-button action-button-delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+      {/* Enhanced Rent Agreements Table */}
+      <div className="search-card">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold heading-gradient">Rent Agreements</h2>
+            <p className="text-slate-400 mt-1">Property rental and lease management</p>
+          </div>
+          <div className="text-sm text-slate-400">
+            {data?.total || 0} total agreements
+          </div>
+        </div>
 
-              {/* Enhanced Pagination */}
-              {totalPages > 1 && (
-                <div className="pagination">
-                  <div className="pagination-info">
-                    Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} agreements
-                  </div>
-                  <div className="pagination-controls">
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
-                      className="pagination-button"
-                    >
-                      Previous
-                    </Button>
-                    {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                      const page = i + 1;
-                      return (
-                        <Button
-                          key={page}
-                          variant={currentPage === page ? "default" : "ghost"}
-                          size="sm"
-                          onClick={() => setCurrentPage(page)}
-                          className={currentPage === page ? "pagination-button-active" : "pagination-button"}
-                        >
-                          {page}
-                        </Button>
-                      );
-                    })}
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
-                      className="pagination-button"
-                    >
-                      Next
-                    </Button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </CardContent>
-      </Card>
+        {isLoading ? (
+          <div className="loading-container">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="loading-shimmer h-20"></div>
+            ))}
+          </div>
+        ) : error ? (
+          <div className="error-state-container">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">Failed to load rent agreements</h3>
+            <p>Please try refreshing the page or check your connection.</p>
+          </div>
+        ) : !data?.rentAgreements?.length ? (
+          <div className="empty-state-container">
+            <div className="text-6xl mb-4">🏠</div>
+            <h3 className="text-xl font-semibold text-white mb-2">No rent agreements found</h3>
+            <p>Get started by creating your first rent agreement.</p>
+          </div>
+        ) : (
+          <>
+            <div className="enhanced-table-wrapper">
+              <table className="enhanced-table">
+                <thead>
+                  <tr>
+                    <th className="w-12">
+                      <Checkbox
+                        checked={selectedAgreements.length === data?.rentAgreements.length && data?.rentAgreements.length > 0}
+                        onCheckedChange={handleSelectAll}
+                        className="border-white/30"
+                      />
+                    </th>
+                    <th className="w-16">#</th>
+                    <th>Agreement</th>
+                    <th>Company</th>
+                    <th>Location</th>
+                    <th>Monthly Rent</th>
+                    <th>Status</th>
+                    <th>Attachments</th>
+                    <th className="text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.rentAgreements.map((agreement: any, index: number) => (
+                    <tr key={agreement.id}>
+                      <td>
+                        <Checkbox
+                          checked={selectedAgreements.includes(agreement.id)}
+                          onCheckedChange={() => handleSelectAgreement(agreement.id)}
+                          className="border-white/30"
+                        />
+                      </td>
+                      <td>
+                        <div className="table-cell-primary font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                            <span className="text-blue-400 text-lg">🏠</span>
+                          </div>
+                          <div>
+                            <div className="table-cell-primary">{agreement.agreementNumber}</div>
+                            <div className="table-cell-secondary">
+                              {agreement.startDate ? new Date(agreement.startDate).toLocaleDateString() : 'No start date'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
+                          {companies?.companies?.find((c: any) => c.id === agreement.companyId)?.name || 'No company'}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
+                          {locations?.locations?.find((l: any) => l.id === agreement.locationId)?.name || 'No location'}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="table-cell-primary">
+                          €{agreement.monthlyRent || '0.00'}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${getStatusColor(agreement.status)}`}>
+                          {agreement.status}
+                        </span>
+                      </td>
+                      <td>
+                        <AttachmentButton 
+                          entityType="rent-agreements" 
+                          entityId={agreement.id}
+                        />
+                      </td>
+                      <td>
+                        <div className="action-button-group justify-end">
+                          <button 
+                            className="action-button text-amber-500 hover:text-amber-400"
+                            onClick={() => handleEdit(agreement)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button 
+                            className="action-button text-red-500 hover:text-red-400"
+                            onClick={() => handleDelete(agreement.id)}
+                            disabled={deleteMutation.isPending}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Pagination and entries info - SUB tabel */}
+      {data?.rentAgreements?.length > 0 && (
+        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+          <span>
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Previous
+            </Button>
+            <button
+              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+              disabled
+            >
+              {currentPage}
+            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

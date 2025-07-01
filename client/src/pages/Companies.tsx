@@ -1,24 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Plus, Edit, Trash2, Upload, Search, Mail, Phone } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertCompanySchema, type InsertCompany } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { ImportExportDialog } from "@/components/ui/import-export-dialog";
-import { AttachmentButton } from "@/components/ui/attachment-button";
-import { safeFormValue } from "@/utils/formUtils";
-import { Upload, Download, Edit, Trash2, Plus } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BulkOperations } from "@/components/ui/bulk-operations";
+import { ImportExportDialog } from "@/components/ui/import-export-dialog";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 
 export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -192,7 +188,6 @@ export default function Companies() {
   };
 
   const handleBulkEdit = () => {
-    // TODO: Implement bulk edit functionality
     toast({
       title: "Bulk Edit",
       description: `Editing ${selectedCompanies.length} companies`,
@@ -202,7 +197,6 @@ export default function Companies() {
   const handleBulkDelete = () => {
     if (selectedCompanies.length === 0) return;
     
-    // TODO: Add confirmation dialog
     toast({
       title: "Bulk Delete",
       description: `Deleting ${selectedCompanies.length} companies`,
@@ -214,7 +208,7 @@ export default function Companies() {
 
   return (
     <div className="space-y-6">
-      {/* Header with actions */}
+      {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <BulkOperations 
@@ -223,207 +217,58 @@ export default function Companies() {
             onBulkDelete={handleBulkDelete}
           />
         </div>
-        <div className="flex items-center gap-2">
-          <ImportExportDialog module="companies" moduleName="Companies">
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-              <Upload className="h-4 w-4 mr-2" />
-              Import/Export
-            </Button>
-          </ImportExportDialog>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
-              <Plus className="h-4 w-4 mr-2" />
-              Add new
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="glass-dialog dialog-lg">
-            <DialogHeader>
-              <DialogTitle className="text-white">Create New Company</DialogTitle>
-              <DialogDescription className="text-slate-400">
-                Add a new gaming company to the system with registration and contact details.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Company Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} className="form-input" placeholder="Enter company name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="registrationNumber"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Registration Number</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Registration number" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="taxId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Tax ID</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Tax identification" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} type="email" className="form-input" placeholder="company@email.com" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Address</FormLabel>
-                      <FormControl>
-                        <Textarea {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Company address" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="grid grid-cols-3 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">City</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="City" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Country</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Country" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-white">Phone</FormLabel>
-                        <FormControl>
-                          <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="Phone number" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Website</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={safeFormValue(field.value)} className="form-input" placeholder="https://company-website.com" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <div className="flex justify-end space-x-4">
-                  <Button 
-                    type="button" 
-                    variant="ghost" 
-                    onClick={() => setIsCreateDialogOpen(false)}
-                    className="text-slate-400 hover:text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="btn-gaming"
-                    disabled={createMutation.isPending}
-                  >
-                    {createMutation.isPending ? "Creating..." : "Create Company"}
-                  </Button>
-                </div>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <div className="text-sm text-slate-400">
+          {selectedCompanies.length > 0 && (
+            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+              {selectedCompanies.length} selected
+            </span>
+          )}
         </div>
       </div>
 
-      {/* Enhanced Search */}
+      {/* Title and Total - SUS */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold heading-gradient">Companies</h2>
+          <p className="text-slate-400 mt-1">Company and legal entity management</p>
+        </div>
+        <div className="text-sm text-slate-400">
+          {data?.total || 0} total companies
+        </div>
+      </div>
+
+      {/* Search Bar and Actions - SUS */}
       <div className="search-card">
-        <div className="relative">
-          <Input
-            type="text"
-            placeholder="Search companies by name, registration, or location..."
-            value={searchTerm}
-            onChange={handleSearch}
-            className="enhanced-input pl-12 pr-4 py-4 text-base"
-          />
-          <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 text-lg">🔍</span>
+        <div className="flex items-center justify-between w-full">
+          <div className="relative" style={{ width: '10cm' }}>
+            <Input
+              type="text"
+              placeholder="Search companies by name, CUI, or address..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="enhanced-input pl-12 pr-4 py-2 text-base text-right"
+            />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+          </div>
+          <div className="flex items-center gap-4">
+            <Button
+              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+              onClick={() => setIsCreateDialogOpen(true)}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Company
+            </Button>
+            <ImportExportDialog module="companies" moduleName="Companies">
+              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+                Import/Export
+              </Button>
+            </ImportExportDialog>
+          </div>
         </div>
       </div>
 
       {/* Enhanced Companies Table */}
-      <div className="content-card">
-        <div className="table-header">
-          <div>
-            <h2 className="text-2xl font-bold heading-gradient">Companies</h2>
-            <p className="text-slate-400 mt-1">Manage gaming companies and organizations</p>
-          </div>
-          <div className="text-sm text-slate-400">
-            {data?.total || 0} total companies
-          </div>
-        </div>
-
+      <div className="search-card">
         {isLoading ? (
           <div className="loading-container">
             {[...Array(5)].map((_, i) => (
@@ -455,6 +300,7 @@ export default function Companies() {
                         className="border-white/30"
                       />
                     </th>
+                    <th className="w-16">#</th>
                     <th>Company</th>
                     <th>Registration</th>
                     <th>Location</th>
@@ -464,7 +310,7 @@ export default function Companies() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.companies.map((company: any) => (
+                  {data.companies.map((company: any, index: number) => (
                     <tr key={company.id}>
                       <td>
                         <Checkbox
@@ -472,6 +318,11 @@ export default function Companies() {
                           onCheckedChange={() => handleSelectCompany(company.id)}
                           className="border-white/30"
                         />
+                      </td>
+                      <td>
+                        <div className="table-cell-primary font-medium">
+                          {(currentPage - 1) * limit + index + 1}
+                        </div>
                       </td>
                       <td>
                         <div>
@@ -490,12 +341,21 @@ export default function Companies() {
                         </div>
                       </td>
                       <td>
-                        <div>
+                        <div className="space-y-1">
                           {company.email && (
-                            <div className="table-cell-primary">{company.email}</div>
+                            <div className="flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-blue-400" />
+                              <span className="table-cell-primary">{company.email}</span>
+                            </div>
                           )}
                           {company.phone && (
-                            <div className="table-cell-secondary">{company.phone}</div>
+                            <div className="flex items-center gap-2">
+                              <Phone className="h-4 w-4 text-green-400" />
+                              <span className="table-cell-secondary">{company.phone}</span>
+                            </div>
+                          )}
+                          {!company.email && !company.phone && (
+                            <span className="text-slate-500 text-sm">No contact info</span>
                           )}
                         </div>
                       </td>
@@ -531,53 +391,44 @@ export default function Companies() {
                 </tbody>
               </table>
             </div>
-
-            {/* Enhanced Pagination */}
-            <div className="pagination-container">
-              <div className="text-sm text-slate-400">
-                Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
-              </div>
-              <div className="flex space-x-2">
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage(currentPage - 1)}
-                  className="action-button text-slate-400 hover:text-white"
-                >
-                  Previous
-                </Button>
-                {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                  const page = i + 1;
-                  return (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => setCurrentPage(page)}
-                      className={currentPage === page 
-                        ? "bg-blue-500 text-white px-3 py-1 rounded-lg" 
-                        : "action-button text-slate-400 hover:text-white"
-                      }
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
-                <Button 
-                  variant="ghost"
-                  size="sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage(currentPage + 1)}
-                  className="action-button text-slate-400 hover:text-white"
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
           </>
         )}
       </div>
+
+      {/* Pagination and entries info - SUB tabel */}
+      {data?.companies?.length > 0 && (
+        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+          <span>
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Previous
+            </Button>
+            <button
+              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+              disabled
+            >
+              {currentPage}
+            </button>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+              className="h-8 min-w-[40px] px-3"
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
@@ -627,7 +478,7 @@ export default function Companies() {
                     <FormItem>
                       <FormLabel className="text-white">Tax ID</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Tax ID" />
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Tax ID number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -635,12 +486,15 @@ export default function Companies() {
                 />
                 <FormField
                   control={editForm.control}
-                  name="phone"
+                  name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-white">Phone</FormLabel>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-blue-400" />
+                        Email
+                      </FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Phone number" />
+                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="company@email.com" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -655,14 +509,14 @@ export default function Companies() {
                   <FormItem>
                     <FormLabel className="text-white">Address</FormLabel>
                     <FormControl>
-                      <Input {...field} value={field.value || ""} className="form-input" placeholder="Company address" />
+                      <Textarea {...field} value={field.value || ""} className="form-input" placeholder="Company address" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-4">
                 <FormField
                   control={editForm.control}
                   name="city"
@@ -689,36 +543,37 @@ export default function Companies() {
                     </FormItem>
                   )}
                 />
+                <FormField
+                  control={editForm.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-green-400" />
+                        Phone
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Phone number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={editForm.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Email</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="Email address" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={editForm.control}
-                  name="website"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white">Website</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Website URL" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+              <FormField
+                control={editForm.control}
+                name="website"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Website</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} className="form-input" placeholder="https://company-website.com" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <div className="flex justify-end space-x-4">
                 <Button 

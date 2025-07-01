@@ -1,0 +1,2 @@
+-- This is the initial migration file that was missing
+-- It represents the base state of the database before any migrations 

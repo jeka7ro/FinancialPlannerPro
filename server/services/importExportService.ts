@@ -168,6 +168,57 @@ export class ImportExportService {
     }
   }
 
+  async importCabinetsFromExcel(buffer: Buffer): Promise<ImportResult> {
+    try {
+      const workbook = XLSX.read(buffer, { type: 'buffer' });
+      const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+
+      const errors: string[] = [];
+      let imported = 0;
+
+      for (const [i, row] of (data as any[]).entries()) {
+        try {
+          if (!row.model) {
+            errors.push(`Row ${i + 2}: Model is required`);
+            continue;
+          }
+
+          const cabinet: InsertCabinet = {
+            model: row.model,
+            serialNumber: row.serialNumber || row.serial_number || null,
+            manufacturer: row.manufacturer || null,
+            providerId: row.providerId || row.provider_id || null,
+            locationId: row.locationId || row.location_id || null,
+            status: row.status || 'active',
+            webLink: row.webLink || row.web_link || '',
+            technicalInfo: row.technicalInfo || row.technical_info || null,
+            isActive: typeof row.isActive === 'boolean' ? row.isActive : true,
+          };
+
+          await storage.createCabinet(cabinet);
+          imported++;
+        } catch (error: any) {
+          errors.push(`Row ${i + 2}: ${(error as any).message}`);
+        }
+      }
+
+      return {
+        success: true,
+        message: `Import completed. ${imported} cabinets imported.`,
+        imported,
+        errors
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        message: `Import failed: ${(error as any).message}`,
+        imported: 0,
+        errors: [(error as any).message]
+      };
+    }
+  }
+
   // Excel Export Functions
   async exportUsersToExcel(): Promise<Buffer> {
     const { users } = await storage.getUsers(1, 1000);
@@ -467,22 +518,21 @@ export class ImportExportService {
   }
 
   // Generic import method for other modules
-  async importFromExcel(moduleName: string, buffer: Buffer): Promise<ImportResult> {
-    switch (moduleName) {
-      case 'users':
-        return this.importUsersFromExcel(buffer);
-      case 'companies':
+  async importFromExcel(module: string, buffer: Buffer): Promise<ImportResult> {
+    switch (module) {
+      case "companies":
         return this.importCompaniesFromExcel(buffer);
-      case 'locations':
+      case "users":
+        return this.importUsersFromExcel(buffer);
+      case "providers":
+        return this.importProvidersFromExcel(buffer);
+      case "cabinets":
+        return this.importCabinetsFromExcel(buffer);
+      case "locations":
         return this.importLocationsFromExcel(buffer);
       // Add other modules as needed
       default:
-        return {
-          success: false,
-          message: `Import not supported for module: ${moduleName}`,
-          imported: 0,
-          errors: [`Module ${moduleName} import not implemented`]
-        };
+        return { success: false, message: `Import not supported for module: ${module}` };
     }
   }
 
