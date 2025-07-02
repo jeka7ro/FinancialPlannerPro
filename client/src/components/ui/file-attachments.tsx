@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Download, Eye, Trash2, FileText, Image, FileArchive } from "lucide-react";
-import type { Attachment } from '@shared/schema';
+import type { Attachment } from "../shared/schema";
 
 interface FileAttachmentsProps {
   entityType: string;

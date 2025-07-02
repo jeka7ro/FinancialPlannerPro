@@ -8,7 +8,7 @@ import type {
   InsertUser, InsertCompany, InsertLocation, InsertProvider,
   InsertCabinet, InsertGameMix, InsertSlot, InsertInvoice,
   InsertRentAgreement, InsertLegalDocument, InsertOnjnReport
-} from '@shared/schema';
+} from '../../client/shared/schema';
 
 interface ImportResult {
   success: boolean;

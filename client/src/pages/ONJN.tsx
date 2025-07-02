@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
+import { insertOnjnReportSchema, type InsertOnjnReport } from "../shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, Bell, ChevronDown } from "lucide-react";

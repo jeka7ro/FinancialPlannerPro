@@ -20,7 +20,7 @@ import {
   insertRentAgreementSchema,
   insertLegalDocumentSchema,
   insertOnjnReportSchema
-} from "@shared/schema";
+} from "../client/shared/schema";
 import { ZodError } from "zod";
 import { geocodeAddress } from './services/geocodeService';
 

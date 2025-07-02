@@ -11,7 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertGameMixSchema, type InsertGameMix, type GameMix } from "@shared/schema";
+import { insertGameMixSchema, type InsertGameMix, type GameMix } from "../shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Upload, Edit, Trash2, Plus, Search, ExternalLink, Download, X } from "lucide-react";

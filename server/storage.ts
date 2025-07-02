@@ -41,7 +41,7 @@ import {
   type InsertActivityLog,
   type Attachment,
   type InsertAttachment,
-} from "@shared/schema";
+} from "../client/shared/schema";
 import { db } from "./db";
 import { eq, desc, and, like, count, or, asc, sql, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
