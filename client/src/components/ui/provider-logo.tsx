@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { mockAttachments } from "@/lib/mockAttachments";
 
 interface ProviderLogoProps {
   providerId: number;
@@ -7,12 +8,32 @@ interface ProviderLogoProps {
   providerName?: string;
 }
 
+interface ProviderAttachment {
+  id: number;
+  filename: string;
+  mimeType: string;
+  fileSize: number;
+  createdAt: string;
+  url: string;
+}
+
+interface ProvidersMock {
+  [key: number]: ProviderAttachment[];
+}
+
 export function ProviderLogo({ providerId, size = "md", className = "", providerName }: ProviderLogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
 
   // Load logo from localStorage on component mount
   useEffect(() => {
+    const providers: ProvidersMock = mockAttachments.providers as ProvidersMock;
+    const providerLogos = providers[providerId];
+    if (providerLogos && providerLogos.length > 0) {
+      setLogoUrl(providerLogos[0].url);
+      return;
+    }
+    // Dacă nu există în mock, încearcă localStorage fallback
     const savedLogo = localStorage.getItem(`provider_logo_${providerId}`);
     if (savedLogo) {
       setLogoUrl(savedLogo);

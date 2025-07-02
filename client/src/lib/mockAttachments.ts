@@ -1,5 +1,26 @@
 // Mock attachments data shared between components
-export const mockAttachments = {
+
+interface Attachment {
+  id: number;
+  filename: string;
+  mimeType: string;
+  fileSize: number;
+  createdAt: string;
+  url: string;
+}
+
+interface EntityAttachments {
+  [key: number]: Attachment[];
+}
+
+interface MockAttachments {
+  users: EntityAttachments;
+  companies: EntityAttachments;
+  locations: EntityAttachments;
+  providers: EntityAttachments;
+}
+
+export const mockAttachments: MockAttachments = {
   users: {
     1: [
       {

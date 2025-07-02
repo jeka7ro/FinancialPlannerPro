@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { mockAttachments } from "@/lib/mockAttachments";
 
 interface UserAvatarProps {
   user: {
@@ -10,6 +11,19 @@ interface UserAvatarProps {
   } | null;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+}
+
+interface UserAttachment {
+  id: number;
+  filename: string;
+  mimeType: string;
+  fileSize: number;
+  createdAt: string;
+  url: string;
+}
+
+interface UsersMock {
+  [key: number]: UserAttachment[];
 }
 
 export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProps) {
@@ -34,45 +48,40 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
     return "??";
   };
 
+  const users: UsersMock = mockAttachments.users as UsersMock;
+
   useEffect(() => {
     if (!user) return;
-    
-    console.log(`[UserAvatar] Loading avatar for user ${user.id}`);
-    
-    const loadImage = async () => {
-      try {
-        // First try to get attachments
-        const response = await fetch(`/api/users/${user.id}/attachments`);
-        console.log(`[UserAvatar] Attachments response status: ${response.status}`);
-        
-        if (response.ok) {
-          const attachments = await response.json();
-          console.log(`[UserAvatar] Found ${attachments.length} attachments:`, attachments);
-          
-          const imageAttachment = attachments.find((att: any) => 
-            att.mimeType && att.mimeType.startsWith('image/')
-          );
-          
-          if (imageAttachment) {
-            const imageUrl = `/api/attachments/${imageAttachment.id}/download`;
-            console.log(`[UserAvatar] Setting image URL: ${imageUrl}`);
-            setImageUrl(imageUrl);
-            return;
-          } else {
-            console.log(`[UserAvatar] No image attachments found`);
-          }
+    const userAvatars = users[user.id];
+    if (userAvatars) {
+      const imageAttachment = userAvatars.find((att: any) => att.mimeType && att.mimeType.startsWith('image/'));
+      if (imageAttachment) {
+        setImageUrl(imageAttachment.url);
+        setHasError(false);
+        return;
+      }
+    }
+    setHasError(true);
+  }, [user]);
+
+  // Listen for avatar updates from AttachmentButton
+  useEffect(() => {
+    const handleAvatarUpdate = (event: CustomEvent) => {
+      if (event.detail.userId === user?.id) {
+        if (event.detail.avatarUrl) {
+          setImageUrl(event.detail.avatarUrl);
+          setHasError(false);
+        } else {
+          setImageUrl(null);
+          setHasError(true);
         }
-        
-        // If no attachment found, show initials
-        console.log(`[UserAvatar] Using initials fallback for user ${user.id}`);
-        setHasError(true);
-      } catch (error) {
-        console.error(`[UserAvatar] Error loading avatar for user ${user.id}:`, error);
-        setHasError(true);
       }
     };
-    
-    loadImage();
+
+    window.addEventListener('userAvatarUpdate', handleAvatarUpdate as EventListener);
+    return () => {
+      window.removeEventListener('userAvatarUpdate', handleAvatarUpdate as EventListener);
+    };
   }, [user]);
 
   if (!user) {

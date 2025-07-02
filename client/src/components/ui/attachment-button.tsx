@@ -64,13 +64,13 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       return newAttachment;
     },
     onSuccess: (newAttachment) => {
-      // Add to shared mock data
-      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
+      // Add to shared mock data with proper typing
+      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments] as any;
       if (entityAttachments) {
-        if (!entityAttachments[entityId as keyof typeof entityAttachments]) {
-          entityAttachments[entityId as keyof typeof entityAttachments] = [];
+        if (!entityAttachments[entityId]) {
+          entityAttachments[entityId] = [];
         }
-        entityAttachments[entityId as keyof typeof entityAttachments].push(newAttachment);
+        entityAttachments[entityId].push(newAttachment);
       }
       
       // If this is a provider logo, save to localStorage and emit event
@@ -87,9 +87,21 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
         window.dispatchEvent(event);
       }
       
+      // If this is a user avatar, emit event for UserAvatar components
+      if (entityType === 'users' && newAttachment.mimeType.startsWith('image/')) {
+        const event = new CustomEvent('userAvatarUpdate', {
+          detail: {
+            userId: entityId,
+            avatarUrl: newAttachment.url
+          }
+        });
+        window.dispatchEvent(event);
+      }
+      
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       setSelectedFile(null);
       setPreviewUrl(null);
+      setIsOpen(false); // Close dialog after successful upload
       toast({
         title: "Success",
         description: "File uploaded successfully.",
@@ -111,13 +123,39 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       return { success: true };
     },
     onSuccess: (_, attachmentId) => {
-      // Remove from mock data
-      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
-      const entityData = entityAttachments?.[entityId as keyof typeof entityAttachments];
+      // Remove from mock data with proper typing
+      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments] as any;
+      const entityData = entityAttachments?.[entityId];
       if (entityData) {
         const index = entityData.findIndex((att: any) => att.id === attachmentId);
         if (index > -1) {
+          const deletedAttachment = entityData[index];
           entityData.splice(index, 1);
+          
+          // If this was a provider logo, clear localStorage and emit event
+          if (entityType === 'providers' && deletedAttachment.mimeType.startsWith('image/')) {
+            localStorage.removeItem(`provider_logo_${entityId}`);
+            
+            // Emit event to clear logo
+            const event = new CustomEvent('providerLogoUpdate', {
+              detail: {
+                providerId: entityId,
+                logoUrl: null
+              }
+            });
+            window.dispatchEvent(event);
+          }
+          
+          // If this was a user avatar, emit event to clear avatar
+          if (entityType === 'users' && deletedAttachment.mimeType.startsWith('image/')) {
+            const event = new CustomEvent('userAvatarUpdate', {
+              detail: {
+                userId: entityId,
+                avatarUrl: null
+              }
+            });
+            window.dispatchEvent(event);
+          }
         }
       }
       
@@ -413,24 +451,8 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => {
-                          // Simulate delete
-                          const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
-                          if (entityAttachments) {
-                            const entityData = entityAttachments[entityId as keyof typeof entityAttachments];
-                            if (entityData) {
-                              const index = entityData.findIndex((att: any) => att.id === attachment.id);
-                              if (index > -1) {
-                                entityData.splice(index, 1);
-                                queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
-                                toast({
-                                  title: "Success",
-                                  description: "File deleted successfully.",
-                                });
-                              }
-                            }
-                          }
-                        }}
+                        onClick={() => deleteMutation.mutate(attachment.id)}
+                        disabled={deleteMutation.isPending}
                         className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                       >
                         <Trash2 className="h-4 w-4" />
