@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 
+// Mock logo data for providers - using better placeholder images
+const mockProviderLogos: Record<number, string> = {
+  1: "https://via.placeholder.com/100x100/2563eb/ffffff?text=Novomatic",
+  2: "https://via.placeholder.com/100x100/7c3aed/ffffff?text=IGT",
+  3: "https://via.placeholder.com/100x100/dc2626/ffffff?text=Aristocrat",
+  4: "https://via.placeholder.com/100x100/059669/ffffff?text=NetEnt",
+  5: "https://via.placeholder.com/100x100/ea580c/ffffff?text=Playtech",
+  6: "https://via.placeholder.com/100x100/be185d/ffffff?text=Microgaming",
+  7: "https://via.placeholder.com/100x100/0891b2/ffffff?text=Evolution",
+  8: "https://via.placeholder.com/100x100/7c2d12/ffffff?text=Pragmatic"
+};
+
 interface ProviderLogoProps {
   providerId: number;
   size?: "sm" | "md" | "lg" | "xl";
@@ -11,14 +23,22 @@ interface ProviderLogoProps {
 export function ProviderLogo({ providerId, size = "md", className = "", providerName }: ProviderLogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
 
+  // Use mock data instead of real API call
   const { data: attachments } = useQuery({
     queryKey: [`/api/provider/${providerId}/attachments`],
     queryFn: async () => {
-      const response = await fetch(`/api/provider/${providerId}/attachments`, {
-        credentials: 'include'
-      });
-      if (!response.ok) return [];
-      return response.json();
+      // Return mock attachments with logo data
+      const mockAttachments = [
+        {
+          id: providerId,
+          filename: `${providerName || 'provider'}_logo.png`,
+          mimeType: "image/png",
+          fileSize: 245760,
+          createdAt: new Date().toISOString(),
+          url: mockProviderLogos[providerId] || null
+        }
+      ];
+      return mockAttachments;
     },
     enabled: !!providerId,
   });
@@ -36,8 +56,8 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
         )
       );
       
-      if (logoAttachment) {
-        setLogoUrl(`/api/attachments/${logoAttachment.id}/download`);
+      if (logoAttachment && logoAttachment.url) {
+        setLogoUrl(logoAttachment.url);
       }
     }
   }, [attachments]);
