@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -319,6 +319,9 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
             <span className="text-2xl">{getEntityLogo()}</span>
             Attachments - {entityName || `${entityType} #${entityId}`}
           </DialogTitle>
+          <DialogDescription className="text-slate-400">
+            Manage files and documents for {entityName || `${entityType} #${entityId}`}. Upload new files, preview existing ones, or download attachments.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6">
