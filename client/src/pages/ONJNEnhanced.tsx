@@ -14,7 +14,7 @@ import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, Bell, ChevronDown } from "lucide-react";
-import { AttachmentButton } from "@/components/AttachmentButton";
+import { AttachmentButton } from "@/components/ui/attachment-button";
 import { LocationsDisplay } from "@/components/LocationsDisplay";
 import { MultiLocationSelect } from "@/components/MultiLocationSelect";
 import { SerialNumbersDisplay } from "@/components/SerialNumbersDisplay";
