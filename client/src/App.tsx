@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
 // Logo path for CASHPOT branding
-const cashpotLogo = "/cashpot-logo.png";
+import cashpotLogo from '@/assets/cashpot-logo.png';
 
 function useAuth() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

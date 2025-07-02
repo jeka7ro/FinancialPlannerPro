@@ -2,8 +2,7 @@ import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import clsx from "clsx";
-// Import logo using public path
-const cashpotLogo = "/cashpot-logo.png";
+import cashpotLogo from '@/assets/cashpot-logo.png';
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },

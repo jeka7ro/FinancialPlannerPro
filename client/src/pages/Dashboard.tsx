@@ -26,8 +26,7 @@ import LocationsMap from "@/components/dashboard/LocationsMap";
 import FinancialMetrics from "@/components/dashboard/FinancialMetrics";
 import { ProviderLogo } from "@/components/ui/provider-logo";
 
-// Import logo using public path
-const cashpotLogo = "/cashpot-logo.png";
+import cashpotLogo from '@/assets/cashpot-logo.png';
 
 interface DashboardStats {
   totalRevenue: number;
