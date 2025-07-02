@@ -68,10 +68,7 @@ export default function Settings() {
   const { data: currentUser, isLoading: userLoading } = useQuery({
     queryKey: ['/api/auth/user'],
     queryFn: async () => {
-      const response = await fetch('/api/auth/user', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch user');
+      const response = await apiRequest('GET', '/api/auth/user');
       return response.json();
     },
   });

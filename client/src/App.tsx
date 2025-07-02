@@ -41,17 +41,10 @@ function useAuth() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch("/api/auth/user", {
-          credentials: "include",
-        });
-        
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        const response = await apiRequest("GET", "/api/auth/user");
+        const userData = await response.json();
+        setUser(userData);
+        setIsAuthenticated(true);
       } catch (error) {
         setIsAuthenticated(false);
       } finally {
