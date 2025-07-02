@@ -25,10 +25,13 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
 
   const getInitials = () => {
     if (!user) return "??";
-    if (user.firstName && user.lastName) {
+    if (user.firstName && user.lastName && user.firstName.length > 0 && user.lastName.length > 0) {
       return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
     }
-    return user.username[0].toUpperCase();
+    if (user.username && user.username.length > 0) {
+      return user.username[0].toUpperCase();
+    }
+    return "??";
   };
 
   useEffect(() => {
@@ -144,10 +147,13 @@ export function UserAvatarWithInfo({
   }
 
   const getDisplayName = (user: { firstName?: string | null; lastName?: string | null; username: string }) => {
-    if (user.firstName && user.lastName) {
+    if (user.firstName && user.lastName && user.firstName.length > 0 && user.lastName.length > 0) {
       return `${user.firstName} ${user.lastName}`;
     }
-    return user.username;
+    if (user.username && user.username.length > 0) {
+      return user.username;
+    }
+    return "Unknown User";
   };
 
   return (
