@@ -362,14 +362,6 @@ let attachmentsState: MockAttachments = {
 // Event listeners for live updates
 const listeners: { [key: string]: Function[] } = {};
 
-// Add cache reference
-let attachmentCache: Map<string, any[]> | null = null;
-
-// Function to set cache reference
-export function setAttachmentCache(cache: Map<string, any[]>) {
-  attachmentCache = cache;
-}
-
 // Functions to manage attachments
 export const attachmentManager = {
   // Get attachments for an entity
@@ -395,13 +387,6 @@ export const attachmentManager = {
     
     console.log(`[attachmentManager] Total attachments for ${entityType}:${entityId}:`, attachmentsState[entityType][entityId].length);
     
-    // Clear cache for this entity
-    if (attachmentCache) {
-      const key = `${entityType}-${entityId}`;
-      attachmentCache.delete(key);
-      console.log(`[attachmentManager] Cleared cache for ${key}`);
-    }
-    
     // Emit update event
     this.emitUpdate(entityType, entityId);
   },
@@ -420,13 +405,6 @@ export const attachmentManager = {
       if (index > -1) {
         attachments.splice(index, 1);
         console.log(`[attachmentManager] Total attachments for ${entityType}:${entityId}:`, attachments.length);
-        
-        // Clear cache for this entity
-        if (attachmentCache) {
-          const key = `${entityType}-${entityId}`;
-          attachmentCache.delete(key);
-          console.log(`[attachmentManager] Cleared cache for ${key}`);
-        }
         
         this.emitUpdate(entityType, entityId);
       }

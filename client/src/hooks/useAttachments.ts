@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { attachmentManager, setAttachmentCache } from "@/lib/mockAttachments";
+import { attachmentManager } from "@/lib/mockAttachments";
 
 export type EntityType = 
   | 'users' 
@@ -18,43 +18,8 @@ export type EntityType =
   | 'slots'
   | 'game-mixes';
 
-// Cache for stable references with localStorage persistence
+// Cache for stable references
 const snapshotCache = new Map<string, any[]>();
-
-// Load cache from localStorage on initialization
-const loadCacheFromStorage = () => {
-  try {
-    const savedCache = localStorage.getItem('cashpot_attachments_cache');
-    if (savedCache) {
-      const parsedCache = JSON.parse(savedCache);
-      for (const [key, value] of Object.entries(parsedCache)) {
-        snapshotCache.set(key, value as any[]);
-      }
-      console.log('[useAttachments] Loaded cache from localStorage:', snapshotCache.size, 'entries');
-    }
-  } catch (error) {
-    console.error('[useAttachments] Error loading cache from localStorage:', error);
-  }
-};
-
-// Save cache to localStorage
-const saveCacheToStorage = () => {
-  try {
-    const cacheObject: { [key: string]: any[] } = {};
-    snapshotCache.forEach((value, key) => {
-      cacheObject[key] = value;
-    });
-    localStorage.setItem('cashpot_attachments_cache', JSON.stringify(cacheObject));
-  } catch (error) {
-    console.error('[useAttachments] Error saving cache to localStorage:', error);
-  }
-};
-
-// Initialize cache from localStorage
-loadCacheFromStorage();
-
-// Set the cache reference in attachmentManager
-setAttachmentCache(snapshotCache);
 
 function getSnapshotKey(entityType: EntityType, entityId: number): string {
   return `${entityType}-${entityId}`;
@@ -64,14 +29,12 @@ function getSnapshotKey(entityType: EntityType, entityId: number): string {
 export function clearAttachmentCache(entityType: EntityType, entityId: number) {
   const key = getSnapshotKey(entityType, entityId);
   snapshotCache.delete(key);
-  saveCacheToStorage();
   console.log(`[useAttachments] Cleared cache for ${key}`);
 }
 
 // Function to clear all cache
 export function clearAllAttachmentCache() {
   snapshotCache.clear();
-  localStorage.removeItem('cashpot_attachments_cache');
   console.log('[useAttachments] Cleared all cache');
 }
 
@@ -84,11 +47,6 @@ export function useAttachments(entityType: EntityType, entityId: number) {
       const attachments = attachmentManager.getAttachments(entityType, entityId);
       const cached = snapshotCache.get(snapshotKey);
       
-      // If no attachments found and no cache, return empty array
-      if (!attachments.length && !cached) {
-        return [];
-      }
-
       // If we have cached data and it matches current data, return cached
       if (cached && cached.length === attachments.length) {
         const hasChanged = cached.some((cachedAtt, index) => {
@@ -100,10 +58,13 @@ export function useAttachments(entityType: EntityType, entityId: number) {
         }
       }
       
-      // Update cache and save to localStorage
+      // Create new cached array if needed (don't modify cache in getSnapshot)
       const newAttachments = [...attachments];
-      snapshotCache.set(snapshotKey, newAttachments);
-      saveCacheToStorage();
+      
+      // Update cache outside of this function to avoid side effects in getSnapshot
+      setTimeout(() => {
+        snapshotCache.set(snapshotKey, newAttachments);
+      }, 0);
       
       return newAttachments;
     }
