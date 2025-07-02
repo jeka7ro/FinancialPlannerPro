@@ -11,7 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
-import { InsertOnjnReport, insertOnjnReportSchema } from "@shared/schema";
+import { insertOnjnReportSchema } from "@shared/schema";
+import type { InsertOnjnReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 import { AttachmentButton } from "@/components/ui/attachment-button";
