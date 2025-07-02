@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
+import { apiRequest } from "@/lib/queryClient";
 
 interface GameMixLogoProps {
   gameMixId: number | null | undefined;
@@ -26,10 +27,7 @@ export function GameMixLogo({ gameMixId, size = "md", className }: GameMixLogoPr
     queryKey: [`/api/game-mixes/${gameMixId}/attachments`],
     queryFn: async () => {
       if (!gameMixId) return [];
-      const response = await fetch(`/api/game-mixes/${gameMixId}/attachments`, {
-        credentials: 'include'
-      });
-      if (!response.ok) return [];
+      const response = await apiRequest('GET', `/api/game-mixes/${gameMixId}/attachments`);
       return response.json();
     },
     enabled: !!gameMixId,

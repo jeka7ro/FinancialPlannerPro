@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { apiRequest } from "@/lib/queryClient";
 
 interface CompanyLogoProps {
   companyId?: number;
@@ -29,14 +30,12 @@ export function CompanyLogo({ companyId, companyName, size = "md", className = "
     if (!companyId) return;
     const loadLogo = async () => {
       try {
-        const response = await fetch(`/api/companies/${companyId}/attachments`);
-        if (response.ok) {
-          const attachments = await response.json();
-          const imageAttachment = attachments.find((att: any) => att.mimeType && att.mimeType.startsWith('image/'));
-          if (imageAttachment) {
-            setLogoUrl(`/api/attachments/${imageAttachment.id}/download`);
-            return;
-          }
+        const response = await apiRequest('GET', `/api/companies/${companyId}/attachments`);
+        const attachments = await response.json();
+        const imageAttachment = attachments.find((att: any) => att.mimeType && att.mimeType.startsWith('image/'));
+        if (imageAttachment) {
+          setLogoUrl(`/api/attachments/${imageAttachment.id}/download`);
+          return;
         }
         setHasError(true);
       } catch {

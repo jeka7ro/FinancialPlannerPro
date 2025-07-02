@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Download, Eye, Trash2, FileText, Image, FileArchive } from "lucide-react";
 import type { Attachment } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 
 interface FileAttachmentsProps {
   entityType: string;
@@ -27,10 +28,7 @@ export function FileAttachments({ entityType, entityId, entityName }: FileAttach
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: [`/api/${entityType}/${entityId}/attachments`],
     queryFn: async () => {
-      const response = await fetch(`/api/${entityType}/${entityId}/attachments`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch attachments');
+      const response = await apiRequest('GET', `/api/${entityType}/${entityId}/attachments`);
       return response.json();
     },
   });
@@ -41,16 +39,7 @@ export function FileAttachments({ entityType, entityId, entityName }: FileAttach
       formData.append('file', file);
       formData.append('description', description);
       
-      const response = await fetch(`/api/${entityType}/${entityId}/attachments`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Upload failed: ${response.statusText}`);
-      }
-      
+      const response = await apiRequest('POST', `/api/${entityType}/${entityId}/attachments`, formData);
       return response.json();
     },
     onSuccess: () => {
@@ -74,15 +63,7 @@ export function FileAttachments({ entityType, entityId, entityName }: FileAttach
 
   const deleteMutation = useMutation({
     mutationFn: async (attachmentId: number) => {
-      const response = await fetch(`/api/attachments/${attachmentId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Delete failed: ${response.statusText}`);
-      }
-      
+      const response = await apiRequest('DELETE', `/api/attachments/${attachmentId}`);
       return response.json();
     },
     onSuccess: () => {

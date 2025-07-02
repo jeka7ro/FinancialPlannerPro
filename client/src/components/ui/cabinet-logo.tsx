@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
 
 interface CabinetLogoProps {
   cabinetId: number;
@@ -20,8 +21,7 @@ export function CabinetLogo({ cabinetId, model = 'Unknown', size = 'md' }: Cabin
   const { data: attachments } = useQuery<Attachment[]>({
     queryKey: ['cabinets', cabinetId, 'attachments'],
     queryFn: async () => {
-      const response = await fetch(`/api/cabinets/${cabinetId}/attachments`);
-      if (!response.ok) throw new Error('Failed to fetch attachments');
+      const response = await apiRequest('GET', `/api/cabinets/${cabinetId}/attachments`);
       return response.json();
     },
   });
