@@ -8,7 +8,7 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Paperclip, Download, Eye, Trash2, Upload, File, Image, FileText, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { mockAttachments } from "../../lib/mockAttachments";
+import { attachmentManager } from "@/lib/mockAttachments";
 
 interface AttachmentButtonProps {
   entityType: string;
@@ -25,9 +25,8 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
   const { data: attachments = [], isLoading } = useQuery({
     queryKey: [`/api/${entityType}/${entityId}/attachments`],
     queryFn: async () => {
-      // Return mock attachments for this entity
-      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
-      return entityAttachments?.[entityId as keyof typeof entityAttachments] || [];
+      // Return mock attachments for this entity using attachmentManager
+      return attachmentManager.getAttachments(entityType as any, entityId);
     },
     enabled: !!entityType && !!entityId,
   });
@@ -64,39 +63,8 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       return newAttachment;
     },
     onSuccess: (newAttachment) => {
-      // Add to shared mock data with proper typing
-      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments] as any;
-      if (entityAttachments) {
-        if (!entityAttachments[entityId]) {
-          entityAttachments[entityId] = [];
-        }
-        entityAttachments[entityId].push(newAttachment);
-      }
-      
-      // If this is a provider logo, save to localStorage and emit event
-      if (entityType === 'providers' && newAttachment.mimeType.startsWith('image/')) {
-        localStorage.setItem(`provider_logo_${entityId}`, newAttachment.url);
-        
-        // Emit custom event for ProviderLogo components
-        const event = new CustomEvent('providerLogoUpdate', {
-          detail: {
-            providerId: entityId,
-            logoUrl: newAttachment.url
-          }
-        });
-        window.dispatchEvent(event);
-      }
-      
-      // If this is a user avatar, emit event for UserAvatar components
-      if (entityType === 'users' && newAttachment.mimeType.startsWith('image/')) {
-        const event = new CustomEvent('userAvatarUpdate', {
-          detail: {
-            userId: entityId,
-            avatarUrl: newAttachment.url
-          }
-        });
-        window.dispatchEvent(event);
-      }
+      // Add to attachment manager (this will automatically trigger updates)
+      attachmentManager.addAttachment(entityType as any, entityId, newAttachment);
       
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       setSelectedFile(null);
@@ -123,41 +91,8 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       return { success: true };
     },
     onSuccess: (_, attachmentId) => {
-      // Remove from mock data with proper typing
-      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments] as any;
-      const entityData = entityAttachments?.[entityId];
-      if (entityData) {
-        const index = entityData.findIndex((att: any) => att.id === attachmentId);
-        if (index > -1) {
-          const deletedAttachment = entityData[index];
-          entityData.splice(index, 1);
-          
-          // If this was a provider logo, clear localStorage and emit event
-          if (entityType === 'providers' && deletedAttachment.mimeType.startsWith('image/')) {
-            localStorage.removeItem(`provider_logo_${entityId}`);
-            
-            // Emit event to clear logo
-            const event = new CustomEvent('providerLogoUpdate', {
-              detail: {
-                providerId: entityId,
-                logoUrl: null
-              }
-            });
-            window.dispatchEvent(event);
-          }
-          
-          // If this was a user avatar, emit event to clear avatar
-          if (entityType === 'users' && deletedAttachment.mimeType.startsWith('image/')) {
-            const event = new CustomEvent('userAvatarUpdate', {
-              detail: {
-                userId: entityId,
-                avatarUrl: null
-              }
-            });
-            window.dispatchEvent(event);
-          }
-        }
-      }
+      // Remove from attachment manager (this will automatically trigger updates)
+      attachmentManager.removeAttachment(entityType as any, entityId, attachmentId);
       
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       toast({

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { mockAttachments } from "@/lib/mockAttachments";
+import { attachmentManager } from "@/lib/mockAttachments";
 
 interface UserAvatarProps {
   user: {
@@ -11,19 +11,6 @@ interface UserAvatarProps {
   } | null;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
-}
-
-interface UserAttachment {
-  id: number;
-  filename: string;
-  mimeType: string;
-  fileSize: number;
-  createdAt: string;
-  url: string;
-}
-
-interface UsersMock {
-  [key: number]: UserAttachment[];
 }
 
 export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProps) {
@@ -48,40 +35,29 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
     return "??";
   };
 
-  const users: UsersMock = mockAttachments.users as UsersMock;
-
+  // Load avatar and subscribe to updates
   useEffect(() => {
     if (!user) return;
-    const userAvatars = users[user.id];
-    if (userAvatars) {
-      const imageAttachment = userAvatars.find((att: any) => att.mimeType && att.mimeType.startsWith('image/'));
+
+    const loadAvatar = () => {
+      const imageAttachment = attachmentManager.getFirstImage('users', user.id);
       if (imageAttachment) {
         setImageUrl(imageAttachment.url);
         setHasError(false);
-        return;
-      }
-    }
-    setHasError(true);
-  }, [user]);
-
-  // Listen for avatar updates from AttachmentButton
-  useEffect(() => {
-    const handleAvatarUpdate = (event: CustomEvent) => {
-      if (event.detail.userId === user?.id) {
-        if (event.detail.avatarUrl) {
-          setImageUrl(event.detail.avatarUrl);
-          setHasError(false);
-        } else {
-          setImageUrl(null);
-          setHasError(true);
-        }
+      } else {
+        setImageUrl(null);
+        setHasError(true);
       }
     };
 
-    window.addEventListener('userAvatarUpdate', handleAvatarUpdate as EventListener);
-    return () => {
-      window.removeEventListener('userAvatarUpdate', handleAvatarUpdate as EventListener);
-    };
+    // Load initial avatar
+    loadAvatar();
+
+    // Subscribe to updates
+    const unsubscribe = attachmentManager.subscribe('users', user.id, loadAvatar);
+
+    // Cleanup subscription
+    return unsubscribe;
   }, [user]);
 
   if (!user) {
@@ -99,13 +75,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
           src={`${imageUrl}?t=${Date.now()}`}
           alt={`${user.firstName || user.username} avatar`}
           className="w-full h-full object-cover"
-          onError={(e) => {
-            console.log(`[UserAvatar] Image failed to load for user ${user?.id}:`, e);
-            setHasError(true);
-          }}
-          onLoad={() => {
-            console.log(`[UserAvatar] Image loaded successfully for user ${user?.id}`);
-          }}
+          onError={() => setHasError(true)}
         />
       </div>
     );
