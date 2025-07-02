@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
-// Mock logo data for providers - using better placeholder images
+// Mock logo data for providers - using simple colored placeholders
 const mockProviderLogos: Record<number, string> = {
-  1: "https://via.placeholder.com/100x100/2563eb/ffffff?text=Novomatic",
-  2: "https://via.placeholder.com/100x100/7c3aed/ffffff?text=IGT",
-  3: "https://via.placeholder.com/100x100/dc2626/ffffff?text=Aristocrat",
-  4: "https://via.placeholder.com/100x100/059669/ffffff?text=NetEnt",
-  5: "https://via.placeholder.com/100x100/ea580c/ffffff?text=Playtech",
-  6: "https://via.placeholder.com/100x100/be185d/ffffff?text=Microgaming",
-  7: "https://via.placeholder.com/100x100/0891b2/ffffff?text=Evolution",
-  8: "https://via.placeholder.com/100x100/7c2d12/ffffff?text=Pragmatic"
+  1: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMjU2M2ViIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm92b21hdGljPC90ZXh0Pgo8L3N2Zz4K",
+  2: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjN2MzYWVkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SUdUPC90ZXh0Pgo8L3N2Zz4K",
+  3: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QXJpc3RvY3JhdDwvdGV4dD4KPC9zdmc+Cg==",
+  4: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDU5NjY5Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TmV0RW50PC90ZXh0Pgo8L3N2Zz4K",
+  5: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZWE1ODBjIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UGxheXRlY2g8L3RleHQ+Cjwvc3ZnPgo=",
+  6: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjYmUxODVkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TWljcm9nYW1pbmc8L3RleHQ+Cjwvc3ZnPgo=",
+  7: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDg5MWIyIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RXZvbHV0aW9uPC90ZXh0Pgo8L3N2Zz4K",
+  8: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjN2MyZDEyIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJhZ21hdGljPC90ZXh0Pgo8L3N2Zz4K"
 };
 
 interface ProviderLogoProps {
@@ -21,46 +20,10 @@ interface ProviderLogoProps {
 }
 
 export function ProviderLogo({ providerId, size = "md", className = "", providerName }: ProviderLogoProps) {
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-
-  // Use mock data instead of real API call
-  const { data: attachments } = useQuery({
-    queryKey: [`/api/provider/${providerId}/attachments`],
-    queryFn: async () => {
-      // Return mock attachments with logo data
-      const mockAttachments = [
-        {
-          id: providerId,
-          filename: `${providerName || 'provider'}_logo.png`,
-          mimeType: "image/png",
-          fileSize: 245760,
-          createdAt: new Date().toISOString(),
-          url: mockProviderLogos[providerId] || null
-        }
-      ];
-      return mockAttachments;
-    },
-    enabled: !!providerId,
-  });
-
-  useEffect(() => {
-    if (attachments && attachments.length > 0) {
-      // Find the first logo/image attachment
-      const logoAttachment = attachments.find((att: any) => 
-        att.filename && (
-          att.filename.toLowerCase().includes('logo') ||
-          att.filename.toLowerCase().endsWith('.png') ||
-          att.filename.toLowerCase().endsWith('.jpg') ||
-          att.filename.toLowerCase().endsWith('.jpeg') ||
-          att.filename.toLowerCase().endsWith('.svg')
-        )
-      );
-      
-      if (logoAttachment && logoAttachment.url) {
-        setLogoUrl(logoAttachment.url);
-      }
-    }
-  }, [attachments]);
+  const [logoError, setLogoError] = useState(false);
+  
+  // Get logo URL directly from mock data
+  const logoUrl = mockProviderLogos[providerId];
 
   const sizeClasses = {
     sm: "w-6 h-6",
@@ -75,14 +38,14 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
     return name.split(" ").map(word => word[0]).join("").toUpperCase().slice(0, 2);
   };
 
-  if (logoUrl) {
+  if (logoUrl && !logoError) {
     return (
       <div className={`${sizeClasses[size]} rounded-md overflow-hidden bg-white/5 flex items-center justify-center ${className}`}>
         <img 
           src={logoUrl} 
           alt="Provider Logo"
           className="w-full h-full object-contain"
-          onError={() => setLogoUrl(null)}
+          onError={() => setLogoError(true)}
         />
       </div>
     );

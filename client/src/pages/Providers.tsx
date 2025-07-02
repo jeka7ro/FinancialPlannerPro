@@ -548,7 +548,7 @@ export default function Providers() {
                       </td>
                       <td>
                         <div className="flex items-center gap-3">
-                          <ProviderLogo providerId={provider.id} size="lg" />
+                          <ProviderLogo providerId={provider.id} size="lg" providerName={provider.name} />
                           <div>
                             <div className="table-cell-primary">{provider.name}</div>
                             <div className="table-cell-secondary">{provider.companyName || 'Fără nume companie'}</div>
