@@ -18,55 +18,45 @@ export type EntityType =
   | 'slots'
   | 'game-mixes';
 
-// Cache for stable references
-const snapshotCache = new Map<string, any[]>();
+// Simple cache without complex logic
+const attachmentCache = new Map<string, any[]>();
 
-function getSnapshotKey(entityType: EntityType, entityId: number): string {
+function getCacheKey(entityType: EntityType, entityId: number): string {
   return `${entityType}-${entityId}`;
 }
 
 // Function to clear cache for a specific entity
 export function clearAttachmentCache(entityType: EntityType, entityId: number) {
-  const key = getSnapshotKey(entityType, entityId);
-  snapshotCache.delete(key);
-  console.log(`[useAttachments] Cleared cache for ${key}`);
+  const key = getCacheKey(entityType, entityId);
+  attachmentCache.delete(key);
 }
 
 // Function to clear all cache
 export function clearAllAttachmentCache() {
-  snapshotCache.clear();
-  console.log('[useAttachments] Cleared all cache');
+  attachmentCache.clear();
 }
 
 export function useAttachments(entityType: EntityType, entityId: number) {
-  const snapshotKey = getSnapshotKey(entityType, entityId);
-  
   return useSyncExternalStore(
     (callback) => attachmentManager.subscribe(entityType, entityId, callback),
     () => {
+      const key = getCacheKey(entityType, entityId);
       const attachments = attachmentManager.getAttachments(entityType, entityId);
-      const cached = snapshotCache.get(snapshotKey);
       
-      // If we have cached data and it matches current data, return cached
-      if (cached && cached.length === attachments.length) {
-        const hasChanged = cached.some((cachedAtt, index) => {
-          const newAtt = attachments[index];
-          return !newAtt || cachedAtt.id !== newAtt.id || cachedAtt.url !== newAtt.url;
-        });
-        if (!hasChanged) {
-          return cached;
+      // Simple caching - just return the same array reference if data hasn't changed
+      const existing = attachmentCache.get(key);
+      if (existing && existing.length === attachments.length) {
+        // Quick check - if lengths match and first item is same, assume no change
+        if (attachments.length === 0 || 
+           (existing[0] && attachments[0] && existing[0].id === attachments[0].id)) {
+          return existing;
         }
       }
       
-      // Create new cached array if needed (don't modify cache in getSnapshot)
-      const newAttachments = [...attachments];
-      
-      // Update cache outside of this function to avoid side effects in getSnapshot
-      setTimeout(() => {
-        snapshotCache.set(snapshotKey, newAttachments);
-      }, 0);
-      
-      return newAttachments;
+      // Cache and return new array
+      const newArray = [...attachments];
+      attachmentCache.set(key, newArray);
+      return newArray;
     }
   );
 } 
