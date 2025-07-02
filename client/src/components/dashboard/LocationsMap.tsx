@@ -37,7 +37,7 @@ interface Location {
 const createCustomIcon = () => {
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); background-color: #dc2626; display: flex; align-items: center; justify-content: center;">
+    html: `<div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); background-color: #3b82f6; display: flex; align-items: center; justify-content: center;">
       <svg style="width: 12px; height: 12px; color: white;" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
       </svg>
@@ -74,7 +74,7 @@ function MapBounds({ locations }: { locations: any[] }) {
 export default function LocationsMap() {
   const [mapKey, setMapKey] = useState(0);
 
-  const { data: locations, isLoading, error } = useQuery({
+  const { data: locationsData, isLoading, error } = useQuery({
     queryKey: ['/api/locations'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/locations');
@@ -82,7 +82,7 @@ export default function LocationsMap() {
     },
   });
 
-  const { data: cabinets } = useQuery({
+  const { data: cabinetsData } = useQuery({
     queryKey: ['/api/cabinets'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/cabinets');
@@ -90,7 +90,7 @@ export default function LocationsMap() {
     },
   });
 
-  const { data: companies } = useQuery({
+  const { data: companiesData } = useQuery({
     queryKey: ['/api/companies'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/companies');
@@ -98,40 +98,45 @@ export default function LocationsMap() {
     },
   });
 
+  // Extract data from new structure
+  const locations = locationsData?.locations || [];
+  const cabinets = cabinetsData?.cabinets || [];
+  const companies = companiesData?.companies || [];
+
   // Debug logging
   console.log('LocationsMap Debug:', {
-    locations: locations?.locations,
-    cabinets: cabinets?.cabinets,
-    companies: companies?.companies,
+    locations,
+    cabinets,
+    companies,
     isLoading,
     error
   });
 
   // Calculate stats for each location
   const getLocationStats = (locationId: number) => {
-    const locationCabinets = cabinets?.cabinets?.filter((cabinet: any) => 
-      cabinet.locationId === locationId && cabinet.isActive
+    const locationCabinets = cabinets.filter((cabinet: any) => 
+      cabinet.locationId === locationId && cabinet.status === 'active'
     ) || [];
     
     const activeCabinets = locationCabinets.length;
     const totalRevenue = locationCabinets.reduce((sum: number, cabinet: any) => 
-      sum + (cabinet.dailyRevenue || 0), 0
+      sum + (parseFloat(cabinet.dailyRevenue) || 0), 0
     );
 
     return { activeCabinets, totalRevenue };
   };
 
   const getCompanyName = (companyId: number) => {
-    return companies?.companies?.find((company: any) => company.id === companyId)?.name || 'Unknown';
+    return companies.find((company: any) => company.id === companyId)?.name || 'Unknown';
   };
 
   // Generate coordinates for locations based on city or use fallback coordinates
-  const getLocationCoordinates = (location: Location) => {
+  const getLocationCoordinates = (location: Location): { lat: number; lng: number } => {
     // If location already has coordinates, use them
     if (location.latitude && location.longitude) {
       return {
-        latitude: Number(location.latitude),
-        longitude: Number(location.longitude),
+        lat: Number(location.latitude),
+        lng: Number(location.longitude),
       };
     }
 
@@ -198,266 +203,176 @@ export default function LocationsMap() {
       'Satu-Mare': { lat: 47.8017, lng: 22.8572 },
       'Harghita': { lat: 46.3609, lng: 25.8026 },
       'Covasna': { lat: 45.8526, lng: 26.1829 },
-      'Mureș': { lat: 46.5386, lng: 24.5514 },
-      'Mures': { lat: 46.5386, lng: 24.5514 },
     };
 
     // Try to find coordinates by city name
-    const cityKey = location.city?.trim();
-    if (cityKey && cityCoordinates[cityKey]) {
+    const cityKey = Object.keys(cityCoordinates).find(key => 
+      location.city.toLowerCase().includes(key.toLowerCase())
+    );
+
+    if (cityKey) {
       return cityCoordinates[cityKey];
     }
 
-    // Try to find coordinates by county name
-    const countyKey = location.county?.trim();
-    if (countyKey && cityCoordinates[countyKey]) {
-      return cityCoordinates[countyKey];
+    // Fallback to Romania center
+    return { lat: 45.9432, lng: 24.9668 };
+  };
+
+  const getMapCenter = () => {
+    if (locations.length === 0) {
+      return { lat: 45.9432, lng: 24.9668 }; // Romania center
     }
 
-    // Fallback to Bucharest with slight offset based on location ID
-    const baseLat = 44.4268; // Bucharest latitude
-    const baseLng = 26.1025; // Bucharest longitude
-    
+    const validLocations = locations.filter((loc: Location) => {
+      const coords = getLocationCoordinates(loc);
+      return coords.lat && coords.lng;
+    });
+
+    if (validLocations.length === 0) {
+      return { lat: 45.9432, lng: 24.9668 }; // Romania center
+    }
+
+    const totalLat = validLocations.reduce((sum: number, loc: Location) => {
+      const coords = getLocationCoordinates(loc);
+      return sum + coords.lat;
+    }, 0);
+
+    const totalLng = validLocations.reduce((sum: number, loc: Location) => {
+      const coords = getLocationCoordinates(loc);
+      return sum + coords.lng;
+    }, 0);
+
     return {
-      latitude: baseLat + (location.id * 0.01) + (Math.random() - 0.5) * 0.02,
-      longitude: baseLng + (location.id * 0.01) + (Math.random() - 0.5) * 0.02,
+      lat: totalLat / validLocations.length,
+      lng: totalLng / validLocations.length,
     };
   };
 
-  const locationsWithCoords = locations?.locations?.map((location: Location) => ({
-    ...location,
-    ...getLocationCoordinates(location)
-  })) || [];
-
-  // Debug logging for coordinates
-  console.log('LocationsMap Coordinates Debug:', {
-    locationsWithCoords,
-    validLocations: locationsWithCoords.filter((loc: any) => loc.latitude && loc.longitude)
-  });
-
-  // Calculate map center based on available locations
-  const getMapCenter = () => {
-    if (locationsWithCoords.length === 0) {
-      return [44.4268, 26.1025] as [number, number]; // Bucharest default
-    }
-
-    const validLocations = locationsWithCoords.filter((loc: any) => loc.latitude && loc.longitude);
-    if (validLocations.length === 0) {
-      return [44.4268, 26.1025] as [number, number]; // Bucharest default
-    }
-
-    const avgLat = validLocations.reduce((sum: number, loc: any) => sum + loc.latitude, 0) / validLocations.length;
-    const avgLng = validLocations.reduce((sum: number, loc: any) => sum + loc.longitude, 0) / validLocations.length;
-    
-    return [avgLat, avgLng] as [number, number];
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
   };
 
-  const mapCenter = getMapCenter();
+  if (isLoading) {
+    return (
+      <Card className="glass-card">
+        <div className="p-8 text-center">
+          <div className="loading-shimmer h-64 rounded-lg"></div>
+          <p className="text-slate-400 mt-4">Loading locations map...</p>
+        </div>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card className="glass-card">
+        <div className="p-8 text-center">
+          <MapPin className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <h3 className="text-white font-semibold mb-2">Error Loading Map</h3>
+          <p className="text-slate-400">Unable to load locations data</p>
+        </div>
+      </Card>
+    );
+  }
+
+  const center = getMapCenter();
 
   return (
-    <Card className="glass-card rounded-2xl p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center space-x-3">
-          <div className="p-2 bg-blue-500/20 rounded-lg">
-            <Navigation className="w-5 h-5 text-blue-400" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-white">Interactive Map</h3>
-            <p className="text-sm text-slate-400">Locations overview on map</p>
-          </div>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="text-blue-500 hover:text-blue-400"
-          onClick={() => setMapKey(prev => prev + 1)}
+    <div className="space-y-4">
+      {/* Map Container */}
+      <div className="relative">
+        <MapContainer
+          key={mapKey}
+          center={[center.lat, center.lng]}
+          zoom={6}
+          style={{ height: '500px', width: '100%', borderRadius: '12px' }}
+          className="glass-card"
         >
-          Refresh Map
-        </Button>
-      </div>
-      
-      {isLoading ? (
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
-          ))}
-        </div>
-      ) : error ? (
-        <div className="text-center py-8 text-slate-400">
-          <span className="text-2xl mb-2 block">⚠️</span>
-          Failed to load locations
-        </div>
-      ) : !locations?.locations?.length ? (
-        <div className="text-center py-8 text-slate-400">
-          <span className="text-2xl mb-2 block">📍</span>
-          No locations found
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {/* Interactive Map */}
-          <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-xl overflow-hidden border border-slate-700">
-            <div className="h-80 w-full">
-              {typeof window !== 'undefined' ? (
-                <MapContainer
-                  key={mapKey}
-                  center={mapCenter}
-                  zoom={10}
-                  className="h-full w-full"
-                  style={{ background: '#1e293b' }}
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-                  
-                  <MapBounds locations={locationsWithCoords} />
-                  
-                  {locationsWithCoords.map((location: any) => {
-                    const stats = getLocationStats(location.id);
-                    const companyName = getCompanyName(location.companyId);
-                    
-                    // Skip locations without valid coordinates
-                    if (!location.latitude || !location.longitude) {
-                      console.log('Skipping location without coordinates:', location);
-                      return null;
-                    }
-                    
-                    console.log('Adding marker for location:', location.name, 'at:', location.latitude, location.longitude);
-                    
-                    const icon = createCustomIcon();
-                    if (!icon) {
-                      console.log('Failed to create icon for location:', location.name);
-                      return null;
-                    }
-                    
-                    return (
-                      <Marker
-                        key={location.id}
-                        position={[location.latitude, location.longitude] as [number, number]}
-                        icon={icon}
-                      >
-                        <Popup>
-                          <div className="p-2 min-w-[200px]">
-                            <div className="flex items-center space-x-2 mb-2">
-                              <MapPin className={`w-4 h-4 ${
-                                location.isActive ? 'text-emerald-500' : 'text-slate-500'
-                              }`} />
-                              <h3 className="font-semibold text-gray-900">{location.name}</h3>
-                            </div>
-                            
-                            <p className="text-sm text-gray-600 mb-2">{location.address}</p>
-                            <p className="text-xs text-gray-500 mb-3">{companyName}</p>
-                            
-                            <div className="grid grid-cols-2 gap-2 text-xs">
-                              <div className="flex items-center space-x-1">
-                                <Building2 className="w-3 h-3 text-blue-500" />
-                                <span>{stats.activeCabinets} cabinets</span>
-                              </div>
-                              <div className="flex items-center space-x-1">
-                                <Activity className="w-3 h-3 text-emerald-500" />
-                                <span>€{stats.totalRevenue.toLocaleString()}</span>
-                              </div>
-                            </div>
-                            
-                            <div className={`mt-2 px-2 py-1 rounded text-xs text-center ${
-                              location.isActive 
-                                ? 'bg-emerald-100 text-emerald-800' 
-                                : 'bg-slate-100 text-slate-800'
-                            }`}>
-                              {location.isActive ? 'Active' : 'Inactive'}
-                            </div>
-                          </div>
-                        </Popup>
-                      </Marker>
-                    );
-                  })}
-                </MapContainer>
-              ) : (
-                <div className="h-full w-full flex items-center justify-center text-slate-400">
-                  <div className="text-center">
-                    <span className="text-2xl mb-2 block">🗺️</span>
-                    <p>Loading map...</p>
-                    <p className="text-xs mt-1">Please wait while the map loads</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            {/* Map Legend */}
-            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-lg">
-              <div className="flex items-center space-x-4 text-xs">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-                  <span className="text-gray-700">Active</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 bg-slate-500 rounded-full"></div>
-                  <span className="text-gray-700">Inactive</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          />
+          
+          {locations.map((location: Location) => {
+            const coords = getLocationCoordinates(location);
+            const stats = getLocationStats(location.id);
+            const companyName = getCompanyName(location.companyId);
 
-          {/* Fallback: Simple Locations List */}
-          {locationsWithCoords.length > 0 && (
-            <div className="bg-slate-800/50 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-slate-300 mb-3">Locations List (Fallback)</h4>
-              <div className="space-y-2 max-h-40 overflow-y-auto">
-                {locationsWithCoords.map((location: any) => {
-                  const stats = getLocationStats(location.id);
-                  const companyName = getCompanyName(location.companyId);
-                  
-                  return (
-                    <div key={location.id} className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
-                      <div className="flex items-center space-x-3">
-                        <MapPin className={`w-4 h-4 ${
-                          location.isActive ? 'text-emerald-500' : 'text-slate-500'
-                        }`} />
-                        <div>
-                          <div className="text-sm font-medium text-white">{location.name}</div>
-                          <div className="text-xs text-slate-400">{location.city}, {location.country}</div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-xs text-slate-400">{stats.activeCabinets} cabinets</div>
-                        <div className="text-xs text-emerald-400">€{stats.totalRevenue.toLocaleString()}</div>
-                      </div>
+            return (
+              <Marker
+                key={location.id}
+                position={[coords.lat, coords.lng]}
+                icon={createCustomIcon()}
+              >
+                <Popup className="glass-card">
+                  <div className="p-2 min-w-[200px]">
+                    <h3 className="font-bold text-white mb-2">{location.name}</h3>
+                    <div className="space-y-1 text-sm">
+                      <p className="text-slate-300">
+                        <Building2 className="inline h-3 w-3 mr-1" />
+                        {companyName}
+                      </p>
+                      <p className="text-slate-300">
+                        <MapPin className="inline h-3 w-3 mr-1" />
+                        {location.city}, {location.country}
+                      </p>
+                      <p className="text-slate-300">
+                        <Users className="inline h-3 w-3 mr-1" />
+                        {stats.activeCabinets} active cabinets
+                      </p>
+                      <p className="text-slate-300">
+                        <Activity className="inline h-3 w-3 mr-1" />
+                        {formatCurrency(stats.totalRevenue)} daily revenue
+                      </p>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+                    <Button 
+                      size="sm" 
+                      className="mt-2 action-button w-full"
+                      onClick={() => console.log('View location details:', location.id)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </Popup>
+              </Marker>
+            );
+          })}
+          
+          <MapBounds locations={locations} />
+        </MapContainer>
+      </div>
 
-          {/* Location Stats Summary */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-emerald-400">
-                {locations.locations.filter((loc: Location) => loc.isActive).length}
-              </div>
-              <div className="text-xs text-slate-400">Active Locations</div>
-            </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-400">
-                {cabinets?.cabinets?.filter((cabinet: any) => cabinet.isActive).length || 0}
-              </div>
-              <div className="text-xs text-slate-400">Active Cabinets</div>
-            </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-purple-400">
-                {companies?.companies?.length || 0}
-              </div>
-              <div className="text-xs text-slate-400">Companies</div>
-            </div>
-            <div className="text-center p-3 bg-slate-800/50 rounded-lg">
-              <div className="text-2xl font-bold text-amber-400">
-                {locations.locations.length}
-              </div>
-              <div className="text-xs text-slate-400">Total Locations</div>
-            </div>
+      {/* Location Stats Summary */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="glass-card">
+          <div className="p-4 text-center">
+            <MapPin className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+            <h3 className="text-white font-semibold">{locations.length}</h3>
+            <p className="text-slate-400 text-sm">Total Locations</p>
           </div>
-        </div>
-      )}
-    </Card>
+        </Card>
+        
+        <Card className="glass-card">
+          <div className="p-4 text-center">
+            <Building2 className="h-8 w-8 text-green-400 mx-auto mb-2" />
+            <h3 className="text-white font-semibold">{companies.length}</h3>
+            <p className="text-slate-400 text-sm">Companies</p>
+          </div>
+        </Card>
+        
+        <Card className="glass-card">
+          <div className="p-4 text-center">
+            <Activity className="h-8 w-8 text-purple-400 mx-auto mb-2" />
+            <h3 className="text-white font-semibold">{cabinets.filter((c: any) => c.status === 'active').length}</h3>
+            <p className="text-slate-400 text-sm">Active Cabinets</p>
+          </div>
+        </Card>
+      </div>
+    </div>
   );
 } 

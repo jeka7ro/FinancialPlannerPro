@@ -18,9 +18,12 @@ import {
   Eye,
   EyeOff,
   Users2,
-  User2
+  User2,
+  TrendingUp,
+  Activity
 } from "lucide-react";
 import LocationsMap from "@/components/dashboard/LocationsMap";
+import FinancialMetrics from "@/components/dashboard/FinancialMetrics";
 import { ProviderLogo } from "@/components/ui/provider-logo";
 
 // Import logo using public path
@@ -45,27 +48,28 @@ interface Provider {
   id: number;
   name: string;
   companyName: string;
-  status: string;
+  isActive: boolean;
 }
 
 interface Cabinet {
   id: number;
   model: string;
   status: string;
-  locationId: number | null;
+  providerId: number;
 }
 
 interface GameMix {
   id: number;
   name: string;
   description: string;
-  status: string;
+  isActive: boolean;
+  gameCount: number;
 }
 
 interface Invoice {
   id: number;
   invoiceNumber: string;
-  totalAmount: number;
+  totalAmount: string;
   status: string;
   dueDate: string;
 }
@@ -88,43 +92,40 @@ export default function Dashboard() {
     stats: true
   });
 
-  // Fetch dashboard statistics
-  const { data: stats } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: async () => {
-      const response = await apiRequest('GET', '/api/dashboard/stats');
-      return response.json();
-    },
-  });
-  const { data: providers, isLoading: providersLoading } = useQuery({
+  // Fetch dashboard data using new mock structure
+  const { data: providersData, isLoading: providersLoading } = useQuery({
     queryKey: ['providers'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/providers');
       return response.json();
     },
   });
-  const { data: cabinets, isLoading: cabinetsLoading } = useQuery({
+
+  const { data: cabinetsData, isLoading: cabinetsLoading } = useQuery({
     queryKey: ['cabinets'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/cabinets');
       return response.json();
     },
   });
-  const { data: gameMixes, isLoading: gameMixesLoading } = useQuery({
+
+  const { data: gameMixesData, isLoading: gameMixesLoading } = useQuery({
     queryKey: ['game-mixes'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/game-mixes');
       return response.json();
     },
   });
-  const { data: invoices, isLoading: invoicesLoading } = useQuery({
+
+  const { data: invoicesData, isLoading: invoicesLoading } = useQuery({
     queryKey: ['invoices'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/invoices');
       return response.json();
     },
   });
-  const { data: legalDocuments, isLoading: legalLoading } = useQuery({
+
+  const { data: legalDocumentsData, isLoading: legalLoading } = useQuery({
     queryKey: ['legal-documents'],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/legal-documents');
@@ -132,326 +133,407 @@ export default function Dashboard() {
     },
   });
 
+  const { data: slotsData, isLoading: slotsLoading } = useQuery({
+    queryKey: ['slots'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/slots');
+      return response.json();
+    },
+  });
+
+  // Extract data from new structure
+  const providers = providersData?.providers || [];
+  const cabinets = cabinetsData?.cabinets || [];
+  const gameMixes = gameMixesData?.gameMixes || [];
+  const invoices = invoicesData?.invoices || [];
+  const legalDocuments = legalDocumentsData?.legalDocuments || [];
+  const slots = slotsData?.slots || [];
+
+  // Calculate stats from actual data
+  const activeCabinets = cabinets.filter((cabinet: Cabinet) => cabinet.status === 'active').length;
+  const activeProviders = providers.filter((provider: Provider) => provider.isActive).length;
+  const activeGameMixes = gameMixes.filter((mix: GameMix) => mix.isActive).length;
+  const paidInvoices = invoices.filter((invoice: Invoice) => invoice.status === 'paid').length;
+  const unpaidInvoices = invoices.filter((invoice: Invoice) => invoice.status === 'pending').length;
+  const overdueInvoices = invoices.filter((invoice: Invoice) => invoice.status === 'overdue').length;
+  const totalRevenue = invoices
+    .filter((invoice: Invoice) => invoice.status === 'paid')
+    .reduce((sum: number, invoice: Invoice) => sum + parseFloat(invoice.totalAmount), 0);
+  
+  // Calculate daily revenue from slots
+  const totalDailyRevenue = slots.reduce((sum: number, slot: any) => 
+    sum + parseFloat(slot.dailyRevenue || '0'), 0
+  );
+
   const mockStats: DashboardStats = {
-    totalRevenue: 2847394,
-    activeCabinets: 1247,
-    totalLocations: 89,
-    avgDailyPlay: 18943,
-    totalProviders: 15,
-    totalGameMixes: 8,
-    paidInvoices: 156,
-    unpaidInvoices: 23,
-    legalIssues: 5,
-    activeProviders: 10,
-    activeLocations: 50,
-    activeUsers: 1000
+    totalRevenue,
+    activeCabinets,
+    totalLocations: 6, // Updated from mock data
+    avgDailyPlay: Math.round(totalDailyRevenue * 100), // Convert to play amount
+    totalProviders: providers.length,
+    totalGameMixes: gameMixes.length,
+    paidInvoices,
+    unpaidInvoices,
+    legalIssues: overdueInvoices,
+    activeProviders,
+    activeLocations: 6,
+    activeUsers: 6
   };
-  const displayStats = stats || mockStats;
 
   const toggleWidget = (widget: keyof typeof visibleWidgets) => {
     setVisibleWidgets(prev => ({ ...prev, [widget]: !prev[widget] }));
   };
+
   const formatCurrency = (amount: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(amount);
   const formatDate = (dateString: string) => new Date(dateString).toLocaleDateString();
+  
   const getStatusColor = (status: string | undefined | null) => {
     switch ((status || '').toLowerCase()) {
-      case 'active': case 'paid': case 'approved': return 'bg-green-100 text-green-800';
-      case 'inactive': case 'unpaid': case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'expired': case 'overdue': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': case 'paid': case 'approved': return 'status-active';
+      case 'inactive': case 'unpaid': case 'pending': return 'status-pending';
+      case 'expired': case 'overdue': case 'maintenance': return 'status-overdue';
+      default: return 'status-badge';
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header with Title (logo removed) */}
-      <div className="flex items-center space-x-4">
-        {/* <img src={cashpotLogo} alt="CashPot Logo" className="h-12 w-auto" /> */}
+    <div className="space-y-6 p-6">
+      {/* Header with Title */}
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Financial Planner Pro</h1>
-          <p className="text-gray-600">Comprehensive Dashboard Overview</p>
+          <h1 className="text-4xl font-bold text-white mb-2">Financial Planner Pro</h1>
+          <p className="text-slate-400 text-lg">Comprehensive Gaming Management Dashboard</p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Activity className="h-8 w-8 text-blue-400" />
+          <TrendingUp className="h-8 w-8 text-green-400" />
         </div>
       </div>
-      {/* Filters Row - now below the title */}
-      <div className="flex space-x-2 mt-4">
+
+      {/* Filters Row */}
+      <div className="flex flex-wrap gap-2">
         {Object.keys(visibleWidgets).map((key) => (
-          <Button key={key} variant="outline" size="sm" onClick={() => toggleWidget(key as any)} className="flex items-center space-x-2">
-            {visibleWidgets[key as keyof typeof visibleWidgets] ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            <span>{key}</span>
+          <Button 
+            key={key} 
+            variant="outline" 
+            size="sm" 
+            onClick={() => toggleWidget(key as any)} 
+            className="glass-card border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
+          >
+            {visibleWidgets[key as keyof typeof visibleWidgets] ? 
+              <Eye className="h-4 w-4 mr-2" /> : 
+              <EyeOff className="h-4 w-4 mr-2" />
+            }
+            <span className="capitalize">{key}</span>
           </Button>
         ))}
       </div>
-      {/* Stats Grid - Remove Total Revenue Card */}
+
+      {/* Stats Grid */}
       {visibleWidgets.stats && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* Active Cabinets Card */}
-          <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+          <Card className="glass-card metric-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-green-700">Active Cabinets</CardTitle>
-              <Gamepad2 className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-medium text-slate-300">Active Cabinets</CardTitle>
+              <Gamepad2 className="h-6 w-6 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-900">{displayStats.activeCabinets}</div>
-              <Progress value={85} className="mt-2" />
+              <div className="text-3xl font-bold text-white">{mockStats.activeCabinets}</div>
+              <Progress value={85} className="mt-2 bg-slate-700" />
+              <p className="text-xs text-slate-400 mt-2">85% operational</p>
             </CardContent>
           </Card>
+
           {/* Active Providers Card */}
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <Card className="glass-card metric-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-blue-700">Active Providers</CardTitle>
-              <Users2 className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-medium text-slate-300">Active Providers</CardTitle>
+              <Building2 className="h-6 w-6 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-900">{displayStats.activeProviders}</div>
-              <Progress value={90} className="mt-2" />
+              <div className="text-3xl font-bold text-white">{mockStats.activeProviders}</div>
+              <Progress value={67} className="mt-2 bg-slate-700" />
+              <p className="text-xs text-slate-400 mt-2">67% of total</p>
             </CardContent>
           </Card>
+
+          {/* Total Revenue Card */}
+          <Card className="glass-card metric-card">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-slate-300">Total Revenue</CardTitle>
+              <DollarSign className="h-6 w-6 text-yellow-400" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold text-white">{formatCurrency(mockStats.totalRevenue)}</div>
+              <Progress value={92} className="mt-2 bg-slate-700" />
+              <p className="text-xs text-slate-400 mt-2">92% target achieved</p>
+            </CardContent>
+          </Card>
+
           {/* Active Locations Card */}
-          <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+          <Card className="glass-card metric-card">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-yellow-700">Active Locations</CardTitle>
-              <MapPin className="h-4 w-4 text-yellow-600" />
+              <CardTitle className="text-sm font-medium text-slate-300">Active Locations</CardTitle>
+              <MapPin className="h-6 w-6 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-900">{displayStats.activeLocations}</div>
-              <Progress value={75} className="mt-2" />
-            </CardContent>
-          </Card>
-          {/* Active Users Card */}
-          <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-purple-700">Active Users</CardTitle>
-              <User2 className="h-4 w-4 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-purple-900">{displayStats.activeUsers}</div>
-              <Progress value={60} className="mt-2" />
+              <div className="text-3xl font-bold text-white">{mockStats.activeLocations}</div>
+              <Progress value={100} className="mt-2 bg-slate-700" />
+              <p className="text-xs text-slate-400 mt-2">All locations active</p>
             </CardContent>
           </Card>
         </div>
       )}
-      {/* Map Widget - positioned first and MUCH WIDER */}
-      {visibleWidgets.map && (
-        <div className="mb-8">
-          <LocationsMap />
-        </div>
-      )}
-      
-      {/* Providers and Cabinets Cards in 2 columns below map */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Providers Card */}
-        {visibleWidgets.providers && (
-          <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users2 className="h-5 w-5 text-blue-600" /> Providers
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {providers?.providers?.slice(0, 5).map((provider: Provider) => (
-                <div key={provider.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <ProviderLogo providerId={provider.id} providerName={provider.name} size="md" />
-                    <div>
-                      <p className="font-medium">{provider.name}</p>
-                      <p className="text-sm text-gray-600">{provider.companyName}</p>
-                    </div>
-                  </div>
-                  <Badge className={getStatusColor(provider.status)}>{provider.status}</Badge>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
-        
-        {/* Cabinets Card */}
-        {visibleWidgets.cabinets && (
-          <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-cyan-700">
-                <Gamepad2 className="h-5 w-5" />
-                <span>Cabinets ({cabinets?.cabinets?.length || 0})</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {cabinetsLoading ? (
-                  <div className="text-center py-4">Loading cabinets...</div>
-                ) : (
-                  cabinets?.cabinets?.slice(0, 5).map((cabinet: Cabinet) => (
-                    <div key={cabinet.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                      <div>
-                        <p className="font-medium">{cabinet.model}</p>
-                        <p className="text-sm text-gray-600">ID: {cabinet.id}</p>
-                      </div>
-                      <Badge className={getStatusColor(cabinet.status)}>{cabinet.status}</Badge>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+
+      {/* Financial Metrics */}
+      <FinancialMetrics
+        totalRevenue={mockStats.totalRevenue}
+        paidInvoices={mockStats.paidInvoices}
+        unpaidInvoices={mockStats.unpaidInvoices}
+        overdueInvoices={mockStats.legalIssues}
+        totalInvoices={mockStats.paidInvoices + mockStats.unpaidInvoices + mockStats.legalIssues}
+        avgDailyRevenue={Math.round(totalDailyRevenue)}
+      />
+
       {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="financial">Financial</TabsTrigger>
-          <TabsTrigger value="operations">Operations</TabsTrigger>
-          <TabsTrigger value="legal">Legal & Compliance</TabsTrigger>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="glass-card bg-slate-800/50">
+          <TabsTrigger value="overview" className="text-slate-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="providers" className="text-slate-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            Providers
+          </TabsTrigger>
+          <TabsTrigger value="cabinets" className="text-slate-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            Cabinets
+          </TabsTrigger>
+          <TabsTrigger value="game-mixes" className="text-slate-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            Game Mixes
+          </TabsTrigger>
+          <TabsTrigger value="invoices" className="text-slate-300 data-[state=active]:bg-blue-600 data-[state=active]:text-white">
+            Invoices
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="overview" className="space-y-4">
+
+        <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Overview content can be added here */}
-          </div>
-        </TabsContent>
-        <TabsContent value="financial" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {visibleWidgets.invoices && (
-              <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2 text-blue-700">
-                    <CreditCard className="h-5 w-5" />
-                    <span>Invoices Overview</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div className="text-center p-4 bg-green-100 rounded-lg">
-                      <div className="text-2xl font-bold text-green-700">{displayStats.paidInvoices}</div>
-                      <div className="text-sm text-green-600">Paid</div>
-                    </div>
-                    <div className="text-center p-4 bg-red-100 rounded-lg">
-                      <div className="text-2xl font-bold text-red-700">{displayStats.unpaidInvoices}</div>
-                      <div className="text-sm text-red-600">Unpaid</div>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    {invoicesLoading ? (
-                      <div className="text-center py-4">Loading invoices...</div>
-                    ) : (
-                      invoices?.invoices?.slice(0, 3).map((invoice: Invoice) => (
-                        <div key={invoice.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <div>
-                            <p className="font-medium">{invoice.invoiceNumber}</p>
-                            <p className="text-sm text-gray-600">{formatCurrency(invoice.totalAmount)}</p>
-                          </div>
-                          <Badge className={getStatusColor(invoice.status)}>{invoice.status}</Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-            {visibleWidgets.gameMixes && (
-              <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2 text-purple-700">
-                    <Gamepad2 className="h-5 w-5" />
-                    <span>Game Mixes ({gameMixes?.gameMixes?.length || 0})</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {gameMixesLoading ? (
-                      <div className="text-center py-4">Loading game mixes...</div>
-                    ) : (
-                      gameMixes?.gameMixes?.slice(0, 5).map((mix: GameMix) => (
-                        <div key={mix.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <div className="flex-1">
-                            <p className="font-medium">{mix.name}</p>
-                            <p className="text-sm text-gray-600 truncate">{mix.description}</p>
-                          </div>
-                          <Badge className={getStatusColor(mix.status)}>{mix.status}</Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
-        <TabsContent value="operations" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {visibleWidgets.cabinets && (
-              <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100 border-cyan-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2 text-cyan-700">
-                    <Gamepad2 className="h-5 w-5" />
-                    <span>Cabinets Management</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Model</TableHead>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {cabinetsLoading ? (
-                        <TableRow>
-                          <TableCell colSpan={3} className="text-center">Loading...</TableCell>
-                        </TableRow>
-                      ) : (
-                        cabinets?.cabinets?.slice(0, 5).map((cabinet: Cabinet) => (
-                          <TableRow key={cabinet.id}>
-                            <TableCell className="font-medium">{cabinet.model}</TableCell>
-                            <TableCell>{cabinet.id}</TableCell>
-                            <TableCell>
-                              <Badge className={getStatusColor(cabinet.status)}>{cabinet.status}</Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </TabsContent>
-        <TabsContent value="legal" className="space-y-4">
-          {visibleWidgets.legalIssues && (
-            <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+            {/* Recent Activity */}
+            <Card className="glass-card">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-red-700">
-                  <AlertTriangle className="h-5 w-5" />
-                  <span>Legal & Compliance Issues ({displayStats.legalIssues})</span>
+                <CardTitle className="text-white">Recent Activity</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {invoices.slice(0, 5).map((invoice: Invoice) => (
+                    <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+                      <div>
+                        <p className="text-white font-medium">{invoice.invoiceNumber}</p>
+                        <p className="text-slate-400 text-sm">{formatDate(invoice.dueDate)}</p>
+                      </div>
+                      <Badge className={getStatusColor(invoice.status)}>
+                        {invoice.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* System Alerts */}
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400 mr-2" />
+                  System Alerts
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <Alert>
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>
-                      <strong>5 documents</strong> require attention before expiry
+                  <Alert className="bg-yellow-900/20 border-yellow-600/30">
+                    <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                    <AlertDescription className="text-yellow-200">
+                      2 invoices due this week
                     </AlertDescription>
                   </Alert>
-                  <div className="space-y-3">
-                    {legalLoading ? (
-                      <div className="text-center py-4">Loading legal documents...</div>
-                    ) : (
-                      legalDocuments?.legalDocuments?.slice(0, 5).map((doc: LegalDocument) => (
-                        <div key={doc.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
-                          <div>
-                            <p className="font-medium">{doc.title}</p>
-                            <p className="text-sm text-gray-600">Expires: {formatDate(doc.expiryDate)}</p>
-                          </div>
-                          <Badge className={getStatusColor(doc.status)}>{doc.status}</Badge>
-                        </div>
-                      ))
-                    )}
-                  </div>
+                  <Alert className="bg-green-900/20 border-green-600/30">
+                    <AlertTriangle className="h-4 w-4 text-green-400" />
+                    <AlertDescription className="text-green-200">
+                      All cabinets operational
+                    </AlertDescription>
+                  </Alert>
                 </div>
               </CardContent>
             </Card>
+          </div>
+
+          {/* Map */}
+          {visibleWidgets.map && (
+            <Card className="glass-card">
+              <CardHeader>
+                <CardTitle className="text-white">Locations Map</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LocationsMap />
+              </CardContent>
+            </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="providers" className="space-y-6">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-white">Gaming Providers</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="enhanced-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-slate-300">Provider</TableHead>
+                    <TableHead className="text-slate-300">Company</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {providers.map((provider: Provider) => (
+                    <TableRow key={provider.id}>
+                      <TableCell className="text-white font-medium">{provider.name}</TableCell>
+                      <TableCell className="text-slate-300">{provider.companyName}</TableCell>
+                      <TableCell>
+                        <Badge className={provider.isActive ? 'status-active' : 'status-inactive'}>
+                          {provider.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" className="action-button">
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="cabinets" className="space-y-6">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-white">Gaming Cabinets</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="enhanced-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-slate-300">Model</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Provider</TableHead>
+                    <TableHead className="text-slate-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {cabinets.map((cabinet: Cabinet) => (
+                    <TableRow key={cabinet.id}>
+                      <TableCell className="text-white font-medium">{cabinet.model}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(cabinet.status)}>
+                          {cabinet.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-slate-300">Provider {cabinet.providerId}</TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" className="action-button">
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="game-mixes" className="space-y-6">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-white">Game Mixes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="enhanced-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-slate-300">Name</TableHead>
+                    <TableHead className="text-slate-300">Description</TableHead>
+                    <TableHead className="text-slate-300">Games</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {gameMixes.map((mix: GameMix) => (
+                    <TableRow key={mix.id}>
+                      <TableCell className="text-white font-medium">{mix.name}</TableCell>
+                      <TableCell className="text-slate-300">{mix.description}</TableCell>
+                      <TableCell className="text-slate-300">{mix.gameCount} games</TableCell>
+                      <TableCell>
+                        <Badge className={mix.isActive ? 'status-active' : 'status-inactive'}>
+                          {mix.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" className="action-button">
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="invoices" className="space-y-6">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-white">Invoices</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table className="enhanced-table">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-slate-300">Invoice #</TableHead>
+                    <TableHead className="text-slate-300">Amount</TableHead>
+                    <TableHead className="text-slate-300">Due Date</TableHead>
+                    <TableHead className="text-slate-300">Status</TableHead>
+                    <TableHead className="text-slate-300">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((invoice: Invoice) => (
+                    <TableRow key={invoice.id}>
+                      <TableCell className="text-white font-medium">{invoice.invoiceNumber}</TableCell>
+                      <TableCell className="text-slate-300">{invoice.totalAmount} EUR</TableCell>
+                      <TableCell className="text-slate-300">{formatDate(invoice.dueDate)}</TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(invoice.status)}>
+                          {invoice.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Button variant="outline" size="sm" className="action-button">
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

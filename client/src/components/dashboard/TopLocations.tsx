@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { MapPin, TrendingUp } from "lucide-react";
 
 const getRankIcon = (rank: number) => {
   switch (rank) {
@@ -17,7 +18,7 @@ const getRankIcon = (rank: number) => {
 };
 
 export default function TopLocations() {
-  const { data: locations, isLoading, error } = useQuery({
+  const { data: locationsData, isLoading, error } = useQuery({
     queryKey: ['/api/locations', 1, 3],
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/locations?page=1&limit=3');
@@ -25,11 +26,60 @@ export default function TopLocations() {
     },
   });
 
+  const { data: cabinetsData } = useQuery({
+    queryKey: ['/api/cabinets'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/cabinets');
+      return response.json();
+    },
+  });
+
+  // Extract data from new structure
+  const locations = locationsData?.locations || [];
+  const cabinets = cabinetsData?.cabinets || [];
+
+  // Calculate revenue for each location based on cabinets
+  const getLocationRevenue = (locationId: number) => {
+    const locationCabinets = cabinets.filter((cabinet: any) => 
+      cabinet.locationId === locationId && cabinet.status === 'active'
+    );
+    
+    return locationCabinets.reduce((sum: number, cabinet: any) => 
+      sum + (parseFloat(cabinet.dailyRevenue) || 0), 0
+    ) * 7; // Weekly revenue
+  };
+
+  // Sort locations by revenue
+  const sortedLocations = locations
+    .map((location: any) => ({
+      ...location,
+      revenue: getLocationRevenue(location.id)
+    }))
+    .sort((a: any, b: any) => b.revenue - a.revenue)
+    .slice(0, 3);
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', { 
+      style: 'currency', 
+      currency: 'EUR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  };
+
   return (
-    <Card className="glass-card rounded-2xl p-6">
+    <Card className="glass-card">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">Top Locations</h3>
-        <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-blue-500/20 rounded-lg">
+            <MapPin className="w-5 h-5 text-blue-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white">Top Locations</h3>
+            <p className="text-sm text-slate-400">Highest revenue locations</p>
+          </div>
+        </div>
+        <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400 action-button">
           View All
         </Button>
       </div>
@@ -41,47 +91,51 @@ export default function TopLocations() {
           ))}
         </div>
       ) : error ? (
-        <div className="text-center py-8 text-slate-400">
-          <span className="text-2xl mb-2 block">⚠️</span>
-          Failed to load locations
+        <div className="text-center py-8">
+          <MapPin className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <h3 className="text-white font-semibold mb-2">Error Loading Data</h3>
+          <p className="text-slate-400">Unable to load locations</p>
         </div>
-      ) : !locations?.locations?.length ? (
-        <div className="text-center py-8 text-slate-400">
-          <span className="text-2xl mb-2 block">📍</span>
-          No locations found
+      ) : !sortedLocations.length ? (
+        <div className="text-center py-8">
+          <MapPin className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+          <h3 className="text-white font-semibold mb-2">No Locations</h3>
+          <p className="text-slate-400">No locations found</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {locations.locations.slice(0, 3).map((location: any, index: number) => {
+          {sortedLocations.map((location: any, index: number) => {
             const rank = index + 1;
             const rankInfo = getRankIcon(rank);
-            // Mock revenue data since it's not in the database
-            const mockRevenue = [284750, 198420, 156890][index] || 100000;
             
             return (
               <div
                 key={location.id}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
+                className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 cursor-pointer border border-slate-700/50"
               >
                 <div className="flex items-center space-x-3">
-                  <div className={`w-8 h-8 ${rankInfo.color} rounded-lg flex items-center justify-center`}>
+                  <div className={`w-10 h-10 ${rankInfo.color} rounded-lg flex items-center justify-center`}>
                     <span className="font-bold text-sm">{rankInfo.icon}</span>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-white">{location.name}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-slate-400 flex items-center">
+                      <MapPin className="h-3 w-3 mr-1" />
                       {location.city}, {location.country}
                     </p>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className={`text-sm font-semibold ${
-                    rank === 1 ? 'text-emerald-500' : 
-                    rank === 2 ? 'text-blue-500' : 'text-amber-500'
-                  }`}>
-                    €{mockRevenue.toLocaleString()}
-                  </p>
-                  <p className="text-xs text-slate-400">Weekly</p>
+                  <div className="flex items-center space-x-2">
+                    <TrendingUp className="h-4 w-4 text-green-400" />
+                    <p className={`text-sm font-semibold ${
+                      rank === 1 ? 'text-emerald-500' : 
+                      rank === 2 ? 'text-blue-500' : 'text-amber-500'
+                    }`}>
+                      {formatCurrency(location.revenue)}
+                    </p>
+                  </div>
+                  <p className="text-xs text-slate-400">Weekly Revenue</p>
                 </div>
               </div>
             );

@@ -2,15 +2,16 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Activity, Clock, TrendingUp, AlertTriangle, UserPlus, Settings } from "lucide-react";
 
 const getActivityIcon = (action: string) => {
-  if (action.includes('payout') || action.includes('revenue')) return { icon: "💰", color: "bg-emerald-500/20 text-emerald-500" };
-  if (action.includes('maintenance')) return { icon: "🔧", color: "bg-amber-500/20 text-amber-500" };
-  if (action.includes('user') || action.includes('login')) return { icon: "👤", color: "bg-blue-500/20 text-blue-500" };
-  if (action.includes('create') || action.includes('add')) return { icon: "➕", color: "bg-green-500/20 text-green-500" };
-  if (action.includes('update') || action.includes('edit')) return { icon: "✏️", color: "bg-yellow-500/20 text-yellow-500" };
-  if (action.includes('delete') || action.includes('remove')) return { icon: "🗑️", color: "bg-red-500/20 text-red-500" };
-  return { icon: "📝", color: "bg-slate-500/20 text-slate-400" };
+  if (action.includes('payout') || action.includes('revenue')) return { icon: TrendingUp, color: "bg-emerald-500/20 text-emerald-500" };
+  if (action.includes('maintenance')) return { icon: Settings, color: "bg-amber-500/20 text-amber-500" };
+  if (action.includes('user') || action.includes('login')) return { icon: UserPlus, color: "bg-blue-500/20 text-blue-500" };
+  if (action.includes('create') || action.includes('add')) return { icon: Activity, color: "bg-green-500/20 text-green-500" };
+  if (action.includes('update') || action.includes('edit')) return { icon: Settings, color: "bg-yellow-500/20 text-yellow-500" };
+  if (action.includes('delete') || action.includes('remove')) return { icon: AlertTriangle, color: "bg-red-500/20 text-red-500" };
+  return { icon: Activity, color: "bg-slate-500/20 text-slate-400" };
 };
 
 const formatTimeAgo = (date: string) => {
@@ -53,6 +54,22 @@ const mockActivities = [
     timestamp: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
     entityType: "user", 
     entityId: 123
+  },
+  {
+    id: 4,
+    action: "Invoice paid",
+    details: "INV-2024-001 • €5,950",
+    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    entityType: "invoice",
+    entityId: 1
+  },
+  {
+    id: 5,
+    action: "New cabinet added",
+    details: "Novomatic Diamond X • Timișoara",
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
+    entityType: "cabinet",
+    entityId: 2
   }
 ];
 
@@ -73,10 +90,18 @@ export default function RecentActivity() {
   const displayActivities = activities?.activityLogs?.length ? activities.activityLogs : mockActivities;
 
   return (
-    <Card className="glass-card rounded-2xl p-6">
+    <Card className="glass-card">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
-        <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400">
+        <div className="flex items-center space-x-3">
+          <div className="p-2 bg-blue-500/20 rounded-lg">
+            <Activity className="w-5 h-5 text-blue-400" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-white">Recent Activity</h3>
+            <p className="text-sm text-slate-400">Latest system activities</p>
+          </div>
+        </div>
+        <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-400 action-button">
           View All
         </Button>
       </div>
@@ -89,31 +114,37 @@ export default function RecentActivity() {
         </div>
       ) : (
         <div className="space-y-4">
-          {displayActivities.slice(0, 3).map((activity: any) => {
+          {displayActivities.slice(0, 5).map((activity: any) => {
             const activityInfo = getActivityIcon(activity.action);
+            const IconComponent = activityInfo.icon;
             
             return (
               <div
                 key={activity.id}
-                className="flex items-center space-x-4 p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer"
+                className="flex items-center space-x-4 p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 cursor-pointer border border-slate-700/50"
               >
-                <div className={`w-8 h-8 ${activityInfo.color} rounded-full flex items-center justify-center flex-shrink-0`}>
-                  <span className="text-sm">{activityInfo.icon}</span>
+                <div className={`w-10 h-10 ${activityInfo.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                  <IconComponent className="w-5 h-5" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm text-white">{activity.action}</p>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-sm font-medium text-white">{activity.action}</p>
+                  <p className="text-xs text-slate-400 flex items-center mt-1">
+                    <Clock className="h-3 w-3 mr-1" />
                     {activity.details} • {formatTimeAgo(activity.timestamp)}
                   </p>
+                </div>
+                <div className="text-right">
+                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
                 </div>
               </div>
             );
           })}
           
           {displayActivities.length === 0 && (
-            <div className="text-center py-8 text-slate-400">
-              <span className="text-2xl mb-2 block">📝</span>
-              No recent activity
+            <div className="text-center py-8">
+              <Activity className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+              <h3 className="text-white font-semibold mb-2">No Recent Activity</h3>
+              <p className="text-slate-400">No activities recorded yet</p>
             </div>
           )}
         </div>
