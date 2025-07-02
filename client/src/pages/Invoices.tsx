@@ -400,7 +400,7 @@ export default function Invoices() {
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-none">
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

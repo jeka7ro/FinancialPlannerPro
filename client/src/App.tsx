@@ -163,7 +163,7 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
   };
 
   return (
-    <div className="dark min-h-screen bg-slate-900 flex items-center justify-center p-4">
+    <div className="dark min-h-screen w-full bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <Card className="glass-card border-white/10">
           <CardHeader className="text-center">

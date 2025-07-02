@@ -221,7 +221,7 @@ export default function Settings() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-none">
       {/* Enhanced Header */}
       <Card className="search-card">
         <CardContent className="p-6">

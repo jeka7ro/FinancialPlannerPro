@@ -1,8 +1,27 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+html, body {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Ensure all containers use full width */
+.container, .container-fluid, [class*="container"] {
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Ensure all main content areas use full width */
+main, .main, [class*="main"] {
+  width: 100% !important;
+  max-width: none !important;
 }
 
 .logo {
