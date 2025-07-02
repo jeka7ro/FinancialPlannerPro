@@ -27,16 +27,7 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch(`/api/${module}/import`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Import failed: ${response.statusText}`);
-      }
-      
+      const response = await apiRequest('POST', `/api/${module}/import`, formData);
       return response.json();
     },
     onSuccess: (data) => {
@@ -87,15 +78,7 @@ export function ImportExportDialog({ module, moduleName, children }: ImportExpor
 
   const handleExportExcel = async () => {
     try {
-      const response = await fetch(`/api/${module}/export/excel`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to export data');
-      }
-      
+      const response = await apiRequest('GET', `/api/${module}/export/excel`);
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');

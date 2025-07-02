@@ -32,10 +32,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
   const { data: suggestions } = useQuery<LogoSuggestions>({
     queryKey: [`/api/providers/${providerId}/logo/suggestions`],
     queryFn: async () => {
-      const response = await fetch(`/api/providers/${providerId}/logo/suggestions`, {
-        credentials: 'include'
-      });
-      if (!response.ok) return { suggested: null, common: {} };
+      const response = await apiRequest('GET', `/api/providers/${providerId}/logo/suggestions`);
       return response.json();
     },
     enabled: isDialogOpen,
@@ -46,17 +43,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
       const formData = new FormData();
       formData.append('logo', file);
       
-      const response = await fetch(`/api/providers/${providerId}/logo/upload`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Upload failed');
-      }
-      
+      const response = await apiRequest('POST', `/api/providers/${providerId}/logo/upload`, formData);
       return response.json();
     },
     onSuccess: () => {
@@ -79,18 +66,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
 
   const fetchMutation = useMutation({
     mutationFn: async (url: string) => {
-      const response = await fetch(`/api/providers/${providerId}/logo/fetch`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Fetch failed');
-      }
-      
+      const response = await apiRequest('POST', `/api/providers/${providerId}/logo/fetch`, JSON.stringify({ url }));
       return response.json();
     },
     onSuccess: () => {
@@ -113,16 +89,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`/api/providers/${providerId}/logo`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Delete failed');
-      }
-      
+      const response = await apiRequest('DELETE', `/api/providers/${providerId}/logo`);
       return response.json();
     },
     onSuccess: () => {
