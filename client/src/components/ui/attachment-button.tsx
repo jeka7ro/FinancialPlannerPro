@@ -73,6 +73,20 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
         entityAttachments[entityId as keyof typeof entityAttachments].push(newAttachment);
       }
       
+      // If this is a provider logo, save to localStorage and emit event
+      if (entityType === 'providers' && newAttachment.mimeType.startsWith('image/')) {
+        localStorage.setItem(`provider_logo_${entityId}`, newAttachment.url);
+        
+        // Emit custom event for ProviderLogo components
+        const event = new CustomEvent('providerLogoUpdate', {
+          detail: {
+            providerId: entityId,
+            logoUrl: newAttachment.url
+          }
+        });
+        window.dispatchEvent(event);
+      }
+      
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       setSelectedFile(null);
       setPreviewUrl(null);

@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { mockAttachments } from "../../lib/mockAttachments";
+import { useState, useEffect } from "react";
 
 interface ProviderLogoProps {
   providerId: number;
@@ -10,27 +8,31 @@ interface ProviderLogoProps {
 }
 
 export function ProviderLogo({ providerId, size = "md", className = "", providerName }: ProviderLogoProps) {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
-  
-  // Get attachments for this provider - use the same data source as AttachmentButton
-  const { data: attachments } = useQuery({
-    queryKey: [`/api/provider/${providerId}/attachments`],
-    queryFn: async () => {
-      // Return mock attachments for this provider
-      return mockAttachments.providers[providerId as keyof typeof mockAttachments.providers] || [];
-    },
-    enabled: !!providerId,
-    // Refresh more frequently to catch new uploads
-    refetchInterval: 2000,
-  });
 
-  // Find logo attachment (first image file or file with 'logo' in name)
-  const logoAttachment = attachments?.find((att: any) => 
-    att.filename && (
-      att.filename.toLowerCase().includes('logo') ||
-      att.mimeType?.startsWith('image/')
-    )
-  );
+  // Load logo from localStorage on component mount
+  useEffect(() => {
+    const savedLogo = localStorage.getItem(`provider_logo_${providerId}`);
+    if (savedLogo) {
+      setLogoUrl(savedLogo);
+    }
+  }, [providerId]);
+
+  // Listen for logo updates from AttachmentButton
+  useEffect(() => {
+    const handleLogoUpdate = (event: CustomEvent) => {
+      if (event.detail.providerId === providerId) {
+        setLogoUrl(event.detail.logoUrl);
+        setLogoError(false);
+      }
+    };
+
+    window.addEventListener('providerLogoUpdate', handleLogoUpdate as EventListener);
+    return () => {
+      window.removeEventListener('providerLogoUpdate', handleLogoUpdate as EventListener);
+    };
+  }, [providerId]);
 
   const sizeClasses = {
     sm: "w-6 h-6",
@@ -45,11 +47,11 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
     return name.split(" ").map(word => word[0]).join("").toUpperCase().slice(0, 2);
   };
 
-  if (logoAttachment && !logoError) {
+  if (logoUrl && !logoError) {
     return (
       <div className={`${sizeClasses[size]} rounded-md overflow-hidden bg-white/5 flex items-center justify-center ${className}`}>
         <img 
-          src={logoAttachment.url} 
+          src={logoUrl} 
           alt="Provider Logo"
           className="w-full h-full object-contain"
           onError={() => setLogoError(true)}
