@@ -19,6 +19,54 @@ const mockUser = {
   created_at: new Date().toISOString(),
 };
 
+// Mock authentication state
+let mockAuthState: {
+  isAuthenticated: boolean;
+  currentUser: any;
+  sessionToken: string | null;
+} = {
+  isAuthenticated: false,
+  currentUser: null,
+  sessionToken: null
+};
+
+// Mock users for authentication
+const mockAuthUsers = [
+  {
+    id: 1,
+    username: "admin",
+    password: "admin123", // In real app, this would be hashed
+    email: "admin@example.com",
+    firstName: "Admin",
+    lastName: "User",
+    role: "admin",
+    isActive: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 2,
+    username: "manager1",
+    password: "manager123",
+    email: "manager1@royalgaming.ro",
+    firstName: "Maria",
+    lastName: "Popescu",
+    role: "manager",
+    isActive: true,
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 3,
+    username: "operator1",
+    password: "operator123",
+    email: "operator1@diamondclub.ro",
+    firstName: "Ion",
+    lastName: "Ionescu",
+    role: "operator",
+    isActive: true,
+    created_at: new Date().toISOString(),
+  }
+];
+
 // Mock data pentru toate entitățile
 const mockCompanies = [
   {
@@ -659,9 +707,9 @@ function paginateData(data: any[], page: number, limit: number, search?: string)
 
 // Mock API responses cu paginare
 const mockApiResponses: Record<string, any> = {
-  "/api/auth/user": mockUser,
-  "/api/auth/login": { success: true, user: mockUser },
-  "/api/auth/logout": { success: true },
+  "/api/auth/user": () => mockAuthState.isAuthenticated ? mockAuthState.currentUser : null,
+  "/api/auth/login": () => ({ success: true, user: mockAuthState.currentUser }),
+  "/api/auth/logout": () => ({ success: true }),
   "/api/users": { users: mockUsers, total: mockUsers.length },
   "/api/companies": { companies: mockCompanies, total: mockCompanies.length },
   "/api/locations": { locations: mockLocations, total: mockLocations.length },
@@ -690,11 +738,72 @@ export async function apiRequest(
   // Găsește cheia de bază pentru mock data
   const baseKey = urlObj.pathname;
   
+  // Handle authentication endpoints
+  if (baseKey === "/api/auth/login" && method === "POST") {
+    const { username, password } = data as { username: string; password: string };
+    const user = mockAuthUsers.find(u => u.username === username && u.password === password);
+    
+    if (user) {
+      // Remove password from user object
+      const { password: _, ...userWithoutPassword } = user;
+      mockAuthState.isAuthenticated = true;
+      mockAuthState.currentUser = userWithoutPassword;
+      mockAuthState.sessionToken = `mock-token-${Date.now()}`;
+      
+      return new Response(JSON.stringify({ 
+        success: true, 
+        user: userWithoutPassword,
+        token: mockAuthState.sessionToken 
+      }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new Response(JSON.stringify({ 
+        success: false, 
+        message: "Invalid credentials" 
+      }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
+  
+  if (baseKey === "/api/auth/logout" && method === "POST") {
+    mockAuthState.isAuthenticated = false;
+    mockAuthState.currentUser = null;
+    mockAuthState.sessionToken = null;
+    
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+  
+  if (baseKey === "/api/auth/user" && method === "GET") {
+    if (mockAuthState.isAuthenticated && mockAuthState.currentUser) {
+      return new Response(JSON.stringify(mockAuthState.currentUser), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      return new Response(JSON.stringify(null), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+  }
+  
   if (mockApiResponses[baseKey]) {
     let responseData = mockApiResponses[baseKey];
     
+    // Handle function responses
+    if (typeof responseData === 'function') {
+      responseData = responseData();
+    }
+    
     // Aplică paginarea dacă este necesar
-    if (responseData.data || Array.isArray(responseData)) {
+    if (responseData && (responseData.data || Array.isArray(responseData))) {
       const dataArray = responseData.data || responseData;
       responseData = paginateData(dataArray, page, limit, search);
     }

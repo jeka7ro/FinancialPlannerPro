@@ -42,9 +42,17 @@ function useAuth() {
     const checkAuth = async () => {
       try {
         const response = await apiRequest("GET", "/api/auth/user");
-        const userData = await response.json();
-        setUser(userData);
-        setIsAuthenticated(true);
+        if (response.ok) {
+          const userData = await response.json();
+          if (userData) {
+            setUser(userData);
+            setIsAuthenticated(true);
+          } else {
+            setIsAuthenticated(false);
+          }
+        } else {
+          setIsAuthenticated(false);
+        }
       } catch (error) {
         setIsAuthenticated(false);
       } finally {
