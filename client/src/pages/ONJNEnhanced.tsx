@@ -722,7 +722,6 @@ export default function ONJNEnhanced() {
                       <AttachmentButton
                         entityType="onjn_report"
                         entityId={report.id}
-                        allowedTypes={["pdf", "xls", "xlsx", "png", "jpg", "jpeg"]}
                       />
                     </td>
                     <td className="py-4 px-4 text-right">
