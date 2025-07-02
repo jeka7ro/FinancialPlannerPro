@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
 import { ThemeSelector } from "@/components/ui/theme-selector";
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "../shared/schema";
+import type { User } from "@shared/schema";
 import { Power } from "lucide-react";
 import { useTheme } from "next-themes";
 import clsx from "clsx";

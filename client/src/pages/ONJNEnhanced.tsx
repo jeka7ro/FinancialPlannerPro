@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertOnjnReportSchema, type InsertOnjnReport } from "../shared/schema";
+import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, Bell, ChevronDown } from "lucide-react";
@@ -243,14 +243,26 @@ export default function ONJNEnhanced() {
     editForm.reset({
       type: safeFormValue(report.type),
       commissionType: safeFormValue(report.commissionType),
-      commissionDate: report.commissionDate ? new Date(report.commissionDate).toISOString().split('T')[0] : "",
+      commissionDate: report.commissionDate
+        ? typeof report.commissionDate === "string"
+          ? report.commissionDate
+          : report.commissionDate instanceof Date
+            ? report.commissionDate.toISOString().split('T')[0]
+            : ""
+        : "",
       serialNumbers: safeFormValue(report.serialNumbers),
       companyId: report.companyId || undefined,
       status: safeFormValue(report.status),
       notes: safeFormValue(report.notes),
       notificationAuthority: safeFormValue(report.notificationAuthority),
       notificationType: safeFormValue(report.notificationType),
-      notificationDate: report.notificationDate ? new Date(report.notificationDate).toISOString().split('T')[0] : "",
+      notificationDate: report.notificationDate
+        ? typeof report.notificationDate === "string"
+          ? report.notificationDate
+          : report.notificationDate instanceof Date
+            ? report.notificationDate.toISOString().split('T')[0]
+            : ""
+        : "",
       locationIds: safeFormValue(report.locationIds),
     });
     setIsEditDialogOpen(true);
@@ -407,7 +419,7 @@ export default function ONJNEnhanced() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -527,7 +539,7 @@ export default function ONJNEnhanced() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -546,7 +558,7 @@ export default function ONJNEnhanced() {
                             className="glass-card border-white/20 text-slate-300"
                             placeholder="Enter serial numbers separated by spaces"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -612,7 +624,7 @@ export default function ONJNEnhanced() {
                           <Textarea 
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -821,7 +833,7 @@ export default function ONJNEnhanced() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -842,7 +854,7 @@ export default function ONJNEnhanced() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -861,7 +873,7 @@ export default function ONJNEnhanced() {
                             className="glass-card border-white/20 text-slate-300"
                             placeholder="Enter serial numbers separated by spaces"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -929,7 +941,7 @@ export default function ONJNEnhanced() {
                       <Textarea 
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value || ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />

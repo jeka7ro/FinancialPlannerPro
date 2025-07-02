@@ -1,6 +1,6 @@
 import { pgTable, text, serial, integer, boolean, timestamp, decimal, varchar, jsonb, primaryKey } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { createInsertSchema } from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Users table
@@ -396,43 +396,30 @@ export const insertProviderSchema = createInsertSchema(providers).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  website: z.string().optional().or(z.literal("")),
 });
 
 export const insertCabinetSchema = createInsertSchema(cabinets).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  webLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 export const insertGameMixSchema = createInsertSchema(gameMixes).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  webLink: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
 });
 
 export const insertSlotSchema = createInsertSchema(slots).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  invoiceId: z.number().optional(),
 });
 
 export const insertInvoiceSchema = createInsertSchema(invoices).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
-}).extend({
-  invoiceDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
-  dueDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
-  paidDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
-  locationIds: z.array(z.number()).optional(),
 });
 
 export const insertRentAgreementSchema = createInsertSchema(rentAgreements).omit({
@@ -452,8 +439,9 @@ export const insertOnjnReportSchema = createInsertSchema(onjnReports).omit({
   createdAt: true,
   updatedAt: true,
 }).extend({
-  commissionDate: z.union([z.date(), z.string().transform((str) => new Date(str))]),
-  submissionDate: z.union([z.date(), z.string().transform((str) => new Date(str)), z.undefined()]).optional(),
+  commissionDate: z.string().optional(),
+  notificationDate: z.string().optional(),
+  submissionDate: z.string().optional(),
 });
 
 export const insertActivityLogSchema = createInsertSchema(activityLogs).omit({

@@ -449,14 +449,26 @@ export default function ONJNWorking() {
     editForm.reset({
       type: safeFormValue(report.type),
       commissionType: safeFormValue(report.commissionType),
-      commissionDate: report.commissionDate ? new Date(report.commissionDate).toISOString().split('T')[0] : "",
+      commissionDate: report.commissionDate
+        ? typeof report.commissionDate === "string"
+          ? report.commissionDate
+          : report.commissionDate instanceof Date
+            ? report.commissionDate.toISOString().split('T')[0]
+            : ""
+        : "",
       serialNumbers: safeFormValue(report.serialNumbers),
       companyId: report.companyId || undefined,
       status: safeFormValue(report.status),
       notes: safeFormValue(report.notes),
       notificationAuthority: safeFormValue(report.notificationAuthority),
       notificationType: safeFormValue(report.notificationType),
-      notificationDate: report.notificationDate ? new Date(report.notificationDate).toISOString().split('T')[0] : "",
+      notificationDate: report.notificationDate
+        ? typeof report.notificationDate === "string"
+          ? report.notificationDate
+          : report.notificationDate instanceof Date
+            ? report.notificationDate.toISOString().split('T')[0]
+            : ""
+        : "",
       locationIds: safeFormValue(report.locationIds),
     });
     setIsEditDialogOpen(true);
@@ -591,7 +603,7 @@ export default function ONJNWorking() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -714,7 +726,7 @@ export default function ONJNWorking() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1011,7 +1023,7 @@ export default function ONJNWorking() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1032,7 +1044,7 @@ export default function ONJNWorking() {
                             type="date"
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={typeof field.value === "string" ? field.value : ""}
                           />
                         </FormControl>
                         <FormMessage />

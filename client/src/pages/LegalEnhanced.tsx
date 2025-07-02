@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertLegalDocumentSchema, type InsertLegalDocument } from "../shared/schema";
+import { insertLegalDocumentSchema, type InsertLegalDocument } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, ChevronDown } from "lucide-react";
@@ -362,8 +362,20 @@ export default function LegalEnhanced() {
       title: safeFormValue(document.title),
       documentType: safeFormValue(document.documentType),
       companyId: document.companyId || undefined,
-      issueDate: document.issueDate ? document.issueDate.split('T')[0] : "",
-      expiryDate: document.expiryDate ? document.expiryDate.split('T')[0] : "",
+      issueDate: document.issueDate
+        ? typeof document.issueDate === "string"
+          ? document.issueDate
+          : document.issueDate instanceof Date
+            ? document.issueDate.toISOString().split('T')[0]
+            : ""
+        : "",
+      expiryDate: document.expiryDate
+        ? typeof document.expiryDate === "string"
+          ? document.expiryDate
+          : document.expiryDate instanceof Date
+            ? document.expiryDate.toISOString().split('T')[0]
+            : ""
+        : "",
       issuingAuthority: safeFormValue(document.issuingAuthority),
       documentNumber: safeFormValue(document.documentNumber),
       status: safeFormValue(document.status),
@@ -436,7 +448,7 @@ export default function LegalEnhanced() {
                           className="glass-card border-white/20 text-slate-300"
                           placeholder="Enter document title"
                           {...field}
-                          value={field.value || ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -450,7 +462,7 @@ export default function LegalEnhanced() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-slate-300">Document Type</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(e)}>
                         <FormControl>
                           <SelectTrigger className="glass-card border-white/20 text-slate-300">
                             <SelectValue placeholder="Select document type" />
@@ -479,7 +491,7 @@ export default function LegalEnhanced() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-slate-300">Company</FormLabel>
-                      <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(parseInt(e))}>
                         <FormControl>
                           <SelectTrigger className="glass-card border-white/20 text-slate-300">
                             <SelectValue placeholder="Select company" />
@@ -516,7 +528,7 @@ export default function LegalEnhanced() {
                           className="glass-card border-white/20 text-slate-300"
                           placeholder="Enter document number"
                           {...field}
-                          value={field.value || ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -535,7 +547,7 @@ export default function LegalEnhanced() {
                           className="glass-card border-white/20 text-slate-300"
                           placeholder="Enter issuing authority"
                           {...field}
-                          value={field.value || ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -554,7 +566,7 @@ export default function LegalEnhanced() {
                           type="date"
                           className="glass-card border-white/20 text-slate-300"
                           {...field}
-                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -573,7 +585,7 @@ export default function LegalEnhanced() {
                           type="date"
                           className="glass-card border-white/20 text-slate-300"
                           {...field}
-                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -587,7 +599,7 @@ export default function LegalEnhanced() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-slate-300">Status</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(e)}>
                         <FormControl>
                           <SelectTrigger className="glass-card border-white/20 text-slate-300">
                             <SelectValue placeholder="Select status" />
@@ -616,7 +628,7 @@ export default function LegalEnhanced() {
                           className="glass-card border-white/20 text-slate-300"
                           placeholder="Enter file path or upload document"
                           {...field}
-                          value={field.value || ""}
+                          value={typeof field.value === "string" ? field.value : ""}
                         />
                       </FormControl>
                       <FormMessage />
@@ -798,7 +810,7 @@ export default function LegalEnhanced() {
                         className="glass-card border-white/20 text-slate-300"
                         placeholder="Enter document title"
                         {...field}
-                        value={field.value || ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -812,7 +824,7 @@ export default function LegalEnhanced() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Document Type</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(e)}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select document type" />
@@ -841,7 +853,7 @@ export default function LegalEnhanced() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Company</FormLabel>
-                    <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                    <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(parseInt(e))}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select company" />
@@ -869,7 +881,7 @@ export default function LegalEnhanced() {
                         className="glass-card border-white/20 text-slate-300"
                         placeholder="Enter document number"
                         {...field}
-                        value={field.value || ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -888,7 +900,7 @@ export default function LegalEnhanced() {
                         className="glass-card border-white/20 text-slate-300"
                         placeholder="Enter issuing authority"
                         {...field}
-                        value={field.value || ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -907,7 +919,7 @@ export default function LegalEnhanced() {
                         type="date"
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -926,7 +938,7 @@ export default function LegalEnhanced() {
                         type="date"
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -940,7 +952,7 @@ export default function LegalEnhanced() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Status</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={typeof field.value === "string" ? field.value : ""} onValueChange={e => field.onChange(e)}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select status" />
@@ -969,7 +981,7 @@ export default function LegalEnhanced() {
                         className="glass-card border-white/20 text-slate-300"
                         placeholder="Enter file path or upload document"
                         {...field}
-                        value={field.value || ""}
+                        value={typeof field.value === "string" ? field.value : ""}
                       />
                     </FormControl>
                     <FormMessage />

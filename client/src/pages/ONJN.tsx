@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertOnjnReportSchema, type InsertOnjnReport } from "../shared/schema";
+import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, Bell, ChevronDown } from "lucide-react";
@@ -242,11 +242,23 @@ export default function ONJN() {
     setEditingReport(report);
     editForm.reset({
       commissionType: report.commissionType || "license_commission",
-      commissionDate: report.commissionDate ? new Date(report.commissionDate) : new Date(),
+      commissionDate: report.commissionDate
+        ? typeof report.commissionDate === "string"
+          ? report.commissionDate
+          : report.commissionDate instanceof Date
+            ? report.commissionDate.toISOString().split('T')[0]
+            : ""
+        : "",
       serialNumbers: report.serialNumbers || "",
       companyId: report.companyId || undefined,
       locationIds: report.locationIds || "",
-      submissionDate: report.submissionDate ? new Date(report.submissionDate) : undefined,
+      submissionDate: report.submissionDate
+        ? typeof report.submissionDate === "string"
+          ? report.submissionDate
+          : report.submissionDate instanceof Date
+            ? report.submissionDate.toISOString().split('T')[0]
+            : ""
+        : "",
       status: report.status || "draft",
       notes: report.notes || "",
     });
@@ -455,8 +467,8 @@ export default function ONJN() {
                           <Input
                             type="date"
                             {...field}
-                            value={field.value ? (field.value instanceof Date ? field.value.toISOString().split('T')[0] : new Date(field.value).toISOString().split('T')[0]) : ""}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={e => field.onChange(e.target.value)}
                             className="form-input"
                           />
                         </FormControl>
@@ -541,8 +553,8 @@ export default function ONJN() {
                           <Input
                             type="date"
                             {...field}
-                            value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                            onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={e => field.onChange(e.target.value)}
                             className="form-input"
                           />
                         </FormControl>
@@ -777,8 +789,8 @@ export default function ONJN() {
                         <Input
                           type="date"
                           {...field}
-                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                          onChange={(e) => field.onChange(new Date(e.target.value))}
+                          value={typeof field.value === "string" ? field.value : ""}
+                          onChange={e => field.onChange(e.target.value)}
                           className="form-input"
                         />
                       </FormControl>
@@ -863,8 +875,8 @@ export default function ONJN() {
                         <Input
                           type="date"
                           {...field}
-                          value={field.value ? new Date(field.value).toISOString().split('T')[0] : ""}
-                          onChange={(e) => field.onChange(e.target.value ? new Date(e.target.value) : undefined)}
+                          value={typeof field.value === "string" ? field.value : ""}
+                          onChange={e => field.onChange(e.target.value)}
                           className="form-input"
                         />
                       </FormControl>

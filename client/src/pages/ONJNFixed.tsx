@@ -11,8 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
-import { insertOnjnReportSchema } from "../shared/schema";
-import type { InsertOnjnReport } from "../shared/schema";
+import { insertOnjnReportSchema } from "../../shared/schema";
+import type { InsertOnjnReport } from "../../shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -76,7 +76,7 @@ export default function ONJNFixed() {
     resolver: zodResolver(insertOnjnReportSchema),
     defaultValues: {
       commissionType: "license_commission",
-      commissionDate: new Date(),
+      commissionDate: new Date().toISOString().split('T')[0],
       serialNumbers: "",
       companyId: undefined,
       locationIds: "",
@@ -90,7 +90,7 @@ export default function ONJNFixed() {
     resolver: zodResolver(insertOnjnReportSchema),
     defaultValues: {
       commissionType: "license_commission",
-      commissionDate: new Date(),
+      commissionDate: new Date().toISOString().split('T')[0],
       serialNumbers: "",
       companyId: undefined,
       locationIds: "",
@@ -144,11 +144,11 @@ export default function ONJNFixed() {
     setEditingReport(report);
     editForm.reset({
       commissionType: report.commissionType || "license_commission",
-      commissionDate: report.commissionDate ? new Date(report.commissionDate) : new Date(),
+      commissionDate: report.commissionDate ? (typeof report.commissionDate === "string" ? report.commissionDate : report.commissionDate.toISOString().split('T')[0]) : "",
       serialNumbers: report.serialNumbers || "",
       companyId: report.companyId || undefined,
       locationIds: report.locationIds || "",
-      submissionDate: report.submissionDate ? new Date(report.submissionDate) : undefined,
+      submissionDate: report.submissionDate ? (typeof report.submissionDate === "string" ? report.submissionDate : report.submissionDate.toISOString().split('T')[0]) : "",
       status: report.status || "draft",
       notes: report.notes || "",
     });
@@ -170,7 +170,7 @@ export default function ONJNFixed() {
       type: "notification" as const,
       notificationAuthority,
       locationIds: selectedLocations.join(','),
-      commissionDate: new Date(),
+      commissionDate: new Date().toISOString().split('T')[0],
       status: "pending" as const,
       notes: "ONJN Notification created",
     };
@@ -369,8 +369,8 @@ export default function ONJNFixed() {
                           <Input 
                             type="date" 
                             {...field} 
-                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={e => field.onChange(e.target.value)}
                             className="form-input" 
                           />
                         </FormControl>
@@ -602,8 +602,8 @@ export default function ONJNFixed() {
                       <Input 
                         type="date" 
                         {...field} 
-                        value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        value={typeof field.value === "string" ? field.value : ""}
+                        onChange={e => field.onChange(e.target.value)}
                         className="form-input" 
                       />
                     </FormControl>

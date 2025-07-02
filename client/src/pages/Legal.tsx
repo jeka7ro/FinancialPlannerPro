@@ -185,10 +185,10 @@ export default function Legal() {
       title: document.title || "",
       documentType: document.documentType || "contract",
       companyId: document.companyId,
-      issueDate: document.issueDate ? new Date(document.issueDate) : new Date(),
-      expiryDate: document.expiryDate ? new Date(document.expiryDate) : new Date(),
+      issueDate: document.issueDate ? (typeof document.issueDate === "string" ? document.issueDate : document.issueDate.toISOString().split('T')[0]) : "",
+      expiryDate: document.expiryDate ? (typeof document.expiryDate === "string" ? document.expiryDate : document.expiryDate.toISOString().split('T')[0]) : "",
       status: document.status || "active",
-      description: document.description || "",
+      // description: document.description || "",
     });
     setIsEditDialogOpen(true);
   };
@@ -345,7 +345,7 @@ export default function Legal() {
                       <FormItem>
                         <FormLabel className="text-white">Document Title</FormLabel>
                         <FormControl>
-                          <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter document title" />
+                          <Input {...field} value={typeof field.value === "string" ? field.value : ""} className="form-input" placeholder="Enter document title" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -360,7 +360,7 @@ export default function Legal() {
                         <FormItem>
                           <FormLabel className="text-white">Document Type</FormLabel>
                           <FormControl>
-                            <Input {...field} value={field.value || ""} className="form-input" placeholder="License, Certificate, etc." />
+                            <Input {...field} value={typeof field.value === "string" ? field.value : ""} className="form-input" placeholder="License, Certificate, etc." />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -372,7 +372,7 @@ export default function Legal() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Status</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value || ""}>
+                          <Select onValueChange={field.onChange} value={typeof field.value === "string" ? field.value : ""}>
                             <FormControl>
                               <SelectTrigger className="form-input">
                                 <SelectValue placeholder="Select status" />

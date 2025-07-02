@@ -11,8 +11,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
-import { insertOnjnReportSchema } from "../shared/schema";
-import type { InsertOnjnReport } from "../shared/schema";
+import { insertOnjnReportSchema } from "@shared/schema";
+import type { InsertOnjnReport } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
 import { AttachmentButton } from "@/components/ui/attachment-button";
@@ -258,8 +258,8 @@ export default function ONJNClean() {
       commissionType: report.commissionType || "license_commission",
       serialNumbers: report.serialNumbers || "",
       companyId: report.companyId,
-      commissionDate: report.commissionDate ? new Date(report.commissionDate) : undefined,
-      submissionDate: report.submissionDate ? new Date(report.submissionDate) : undefined,
+      commissionDate: report.commissionDate ? (typeof report.commissionDate === "string" ? report.commissionDate : report.commissionDate.toISOString().split('T')[0]) : "",
+      submissionDate: report.submissionDate ? (typeof report.submissionDate === "string" ? report.submissionDate : report.submissionDate.toISOString().split('T')[0]) : "",
       status: report.status || "draft",
       notes: report.notes || "",
     });
@@ -457,8 +457,8 @@ export default function ONJNClean() {
                           <Input 
                             type="date" 
                             {...field} 
-                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="glass-card border-white/20 text-white" 
                           />
                         </FormControl>
@@ -478,8 +478,8 @@ export default function ONJNClean() {
                           <Input 
                             type="date" 
                             {...field} 
-                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="glass-card border-white/20 text-white" 
                           />
                         </FormControl>
@@ -608,8 +608,8 @@ export default function ONJNClean() {
                           <Input 
                             type="date" 
                             {...field} 
-                            value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                            onChange={(e) => field.onChange(new Date(e.target.value))}
+                            value={typeof field.value === "string" ? field.value : ""}
+                            onChange={(e) => field.onChange(e.target.value)}
                             className="glass-card border-white/20 text-white" 
                           />
                         </FormControl>
@@ -927,8 +927,8 @@ export default function ONJNClean() {
                       <Input 
                         type="date" 
                         {...field} 
-                        value={field.value ? field.value.toISOString().split('T')[0] : ''}
-                        onChange={(e) => field.onChange(new Date(e.target.value))}
+                        value={typeof field.value === "string" ? field.value : ""}
+                        onChange={(e) => field.onChange(e.target.value)}
                         className="glass-card border-white/20 text-white" 
                       />
                     </FormControl>
