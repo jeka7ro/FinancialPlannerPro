@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
 import { ThemeSelector } from "@/components/ui/theme-selector";
 import { useQuery } from "@tanstack/react-query";
@@ -31,6 +31,9 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
+      // Instead of reloading, invalidate the auth query to trigger re-authentication
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      // Force a page reload to reset the entire app state
       window.location.reload();
     } catch (error) {
       toast({

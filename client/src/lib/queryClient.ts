@@ -30,6 +30,50 @@ let mockAuthState: {
   sessionToken: null
 };
 
+// Load authentication state from localStorage on initialization
+const loadAuthState = () => {
+  try {
+    const savedState = localStorage.getItem('cashpot_auth_state');
+    if (savedState) {
+      const parsedState = JSON.parse(savedState);
+      mockAuthState = {
+        isAuthenticated: parsedState.isAuthenticated || false,
+        currentUser: parsedState.currentUser || null,
+        sessionToken: parsedState.sessionToken || null
+      };
+    }
+  } catch (error) {
+    console.error('Error loading auth state:', error);
+    // Reset to default state if there's an error
+    mockAuthState = {
+      isAuthenticated: false,
+      currentUser: null,
+      sessionToken: null
+    };
+  }
+};
+
+// Save authentication state to localStorage
+const saveAuthState = () => {
+  try {
+    localStorage.setItem('cashpot_auth_state', JSON.stringify(mockAuthState));
+  } catch (error) {
+    console.error('Error saving auth state:', error);
+  }
+};
+
+// Clear authentication state from localStorage
+const clearAuthState = () => {
+  try {
+    localStorage.removeItem('cashpot_auth_state');
+  } catch (error) {
+    console.error('Error clearing auth state:', error);
+  }
+};
+
+// Initialize auth state on module load
+loadAuthState();
+
 // Mock users for authentication
 const mockAuthUsers = [
   {
@@ -750,6 +794,9 @@ export async function apiRequest(
       mockAuthState.currentUser = userWithoutPassword;
       mockAuthState.sessionToken = `mock-token-${Date.now()}`;
       
+      // Save authentication state to localStorage
+      saveAuthState();
+      
       return new Response(JSON.stringify({ 
         success: true, 
         user: userWithoutPassword,
@@ -773,6 +820,9 @@ export async function apiRequest(
     mockAuthState.isAuthenticated = false;
     mockAuthState.currentUser = null;
     mockAuthState.sessionToken = null;
+    
+    // Clear authentication state from localStorage
+    clearAuthState();
     
     return new Response(JSON.stringify({ success: true }), {
       status: 200,

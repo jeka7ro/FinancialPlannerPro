@@ -41,6 +41,19 @@ function useAuth() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        // First check if we have saved auth state in localStorage
+        const savedAuthState = localStorage.getItem('cashpot_auth_state');
+        if (savedAuthState) {
+          const parsedState = JSON.parse(savedAuthState);
+          if (parsedState.isAuthenticated && parsedState.currentUser) {
+            setUser(parsedState.currentUser);
+            setIsAuthenticated(true);
+            setIsLoading(false);
+            return;
+          }
+        }
+
+        // If no saved state, check with API
         const response = await apiRequest("GET", "/api/auth/user");
         if (response.ok) {
           const userData = await response.json();
