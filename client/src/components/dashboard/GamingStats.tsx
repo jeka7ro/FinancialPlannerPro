@@ -2,15 +2,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Gamepad2, Dice1, Trophy, TrendingUp } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function GamingStats() {
   const { data: slots, isLoading: slotsLoading } = useQuery({
     queryKey: ['/api/slots'],
     queryFn: async () => {
-      const response = await fetch('/api/slots', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch slots');
+      const response = await apiRequest('GET', '/api/slots');
       return response.json();
     },
   });
@@ -18,10 +16,7 @@ export default function GamingStats() {
   const { data: gameMixes, isLoading: gameMixesLoading } = useQuery({
     queryKey: ['/api/game-mixes'],
     queryFn: async () => {
-      const response = await fetch('/api/game-mixes', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch game mixes');
+      const response = await apiRequest('GET', '/api/game-mixes');
       return response.json();
     },
   });
@@ -29,10 +24,7 @@ export default function GamingStats() {
   const { data: providers, isLoading: providersLoading } = useQuery({
     queryKey: ['/api/providers'],
     queryFn: async () => {
-      const response = await fetch('/api/providers', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', '/api/providers');
       return response.json();
     },
   });

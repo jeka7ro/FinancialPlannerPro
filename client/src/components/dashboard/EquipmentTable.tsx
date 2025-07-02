@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 
 interface Equipment {
@@ -50,10 +51,7 @@ export default function EquipmentTable() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/cabinets', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/cabinets?page=${currentPage}&limit=${limit}&search=${searchTerm}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch cabinets');
+      const response = await apiRequest('GET', `/api/cabinets?page=${currentPage}&limit=${limit}&search=${searchTerm}`);
       return response.json();
     },
   });

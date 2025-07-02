@@ -2,15 +2,13 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, Receipt, Shield, AlertTriangle } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function FinancialOverview() {
   const { data: invoices, isLoading: invoicesLoading } = useQuery({
     queryKey: ['/api/invoices'],
     queryFn: async () => {
-      const response = await fetch('/api/invoices', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch invoices');
+      const response = await apiRequest('GET', '/api/invoices');
       return response.json();
     },
   });
@@ -18,10 +16,7 @@ export default function FinancialOverview() {
   const { data: legalDocuments, isLoading: legalLoading } = useQuery({
     queryKey: ['/api/legal-documents'],
     queryFn: async () => {
-      const response = await fetch('/api/legal-documents', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch legal documents');
+      const response = await apiRequest('GET', '/api/legal-documents');
       return response.json();
     },
   });
@@ -29,10 +24,7 @@ export default function FinancialOverview() {
   const { data: rentAgreements, isLoading: rentLoading } = useQuery({
     queryKey: ['/api/rent-agreements'],
     queryFn: async () => {
-      const response = await fetch('/api/rent-agreements', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch rent agreements');
+      const response = await apiRequest('GET', '/api/rent-agreements');
       return response.json();
     },
   });

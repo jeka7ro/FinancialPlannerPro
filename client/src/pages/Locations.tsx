@@ -379,10 +379,7 @@ export default function Locations() {
     queryKey: ['/api/locations', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/locations?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', `/api/locations?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
@@ -390,10 +387,7 @@ export default function Locations() {
   const { data: companies } = useQuery({
     queryKey: ['/api/companies', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/companies?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch companies');
+      const response = await apiRequest('GET', '/api/companies?page=1&limit=100');
       return response.json();
     },
   });
@@ -401,10 +395,7 @@ export default function Locations() {
   const { data: users } = useQuery({
     queryKey: ['/api/users', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/users?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch users');
+      const response = await apiRequest('GET', '/api/users?page=1&limit=100');
       return response.json();
     },
   });

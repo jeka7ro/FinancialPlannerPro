@@ -53,10 +53,7 @@ export default function Cabinets() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/cabinets', { page: currentPage, limit, search: searchTerm }],
     queryFn: async () => {
-      const response = await fetch(`/api/cabinets?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch cabinets');
+      const response = await apiRequest('GET', `/api/cabinets?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`);
       return response.json();
     },
   });
@@ -65,10 +62,7 @@ export default function Cabinets() {
   const { data: providers } = useQuery({
     queryKey: ['/api/providers'],
     queryFn: async () => {
-      const response = await fetch('/api/providers', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', '/api/providers');
       return response.json();
     },
   });

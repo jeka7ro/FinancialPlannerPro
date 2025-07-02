@@ -35,10 +35,7 @@ export default function Users() {
     queryKey: ['/api/users', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/users?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch users');
+      const response = await apiRequest('GET', `/api/users?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
@@ -46,10 +43,7 @@ export default function Users() {
   const { data: locations } = useQuery({
     queryKey: ['/api/locations'],
     queryFn: async () => {
-      const response = await fetch('/api/locations?page=1&limit=1000', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', '/api/locations?page=1&limit=1000');
       return response.json();
     },
   });
@@ -174,13 +168,9 @@ export default function Users() {
     
     // Load user's current location assignments
     try {
-      const response = await fetch(`/api/users/${user.id}/locations`, {
-        credentials: 'include'
-      });
-      if (response.ok) {
-        const userLocations = await response.json();
-        setEditSelectedLocations(userLocations.map((ul: any) => ul.locationId));
-      }
+      const response = await apiRequest('GET', `/api/users/${user.id}/locations`);
+      const userLocations = await response.json();
+      setEditSelectedLocations(userLocations.map((ul: any) => ul.locationId));
     } catch (error) {
       console.error('Failed to load user locations:', error);
       setEditSelectedLocations([]);

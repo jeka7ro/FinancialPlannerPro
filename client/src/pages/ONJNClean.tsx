@@ -58,10 +58,7 @@ export default function ONJNClean() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/onjn-reports', currentPage, limit, searchTerm],
     queryFn: async () => {
-      const response = await fetch(`/api/onjn-reports?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch ONJN reports');
+      const response = await apiRequest('GET', `/api/onjn-reports?page=${currentPage}&limit=${limit}&search=${encodeURIComponent(searchTerm)}`);
       return response.json();
     },
   });
@@ -70,8 +67,7 @@ export default function ONJNClean() {
   const { data: companies } = useQuery({
     queryKey: ['/api/companies'],
     queryFn: async () => {
-      const response = await fetch('/api/companies', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch companies');
+      const response = await apiRequest('GET', '/api/companies');
       return response.json();
     },
   });
@@ -80,8 +76,7 @@ export default function ONJNClean() {
   const { data: locations } = useQuery({
     queryKey: ['/api/locations'],
     queryFn: async () => {
-      const response = await fetch('/api/locations', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', '/api/locations');
       return response.json();
     },
   });

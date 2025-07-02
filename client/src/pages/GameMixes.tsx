@@ -36,10 +36,7 @@ export default function GameMixes() {
     queryKey: ['/api/game-mixes', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/game-mixes?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch game mixes');
+      const response = await apiRequest('GET', `/api/game-mixes?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
@@ -47,10 +44,7 @@ export default function GameMixes() {
   const { data: providers } = useQuery({
     queryKey: ['/api/providers', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/providers?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', '/api/providers?page=1&limit=100');
       return response.json();
     },
   });

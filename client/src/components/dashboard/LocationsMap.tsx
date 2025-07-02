@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Building2, Users, Activity, Navigation } from "lucide-react";
 import { useEffect, useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
 
 // Regular imports for Leaflet
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -76,10 +77,7 @@ export default function LocationsMap() {
   const { data: locations, isLoading, error } = useQuery({
     queryKey: ['/api/locations'],
     queryFn: async () => {
-      const response = await fetch('/api/locations', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', '/api/locations');
       return response.json();
     },
   });
@@ -87,10 +85,7 @@ export default function LocationsMap() {
   const { data: cabinets } = useQuery({
     queryKey: ['/api/cabinets'],
     queryFn: async () => {
-      const response = await fetch('/api/cabinets', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch cabinets');
+      const response = await apiRequest('GET', '/api/cabinets');
       return response.json();
     },
   });
@@ -98,10 +93,7 @@ export default function LocationsMap() {
   const { data: companies } = useQuery({
     queryKey: ['/api/companies'],
     queryFn: async () => {
-      const response = await fetch('/api/companies', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch companies');
+      const response = await apiRequest('GET', '/api/companies');
       return response.json();
     },
   });

@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 const getRankIcon = (rank: number) => {
   switch (rank) {
@@ -19,10 +20,7 @@ export default function TopLocations() {
   const { data: locations, isLoading, error } = useQuery({
     queryKey: ['/api/locations', 1, 3],
     queryFn: async () => {
-      const response = await fetch('/api/locations?page=1&limit=3', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', '/api/locations?page=1&limit=3');
       return response.json();
     },
   });

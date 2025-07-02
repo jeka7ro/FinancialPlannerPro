@@ -65,10 +65,7 @@ export default function Legal() {
     queryKey: ['/api/legal-documents', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/legal-documents?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch legal documents');
+      const response = await apiRequest('GET', `/api/legal-documents?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
@@ -76,10 +73,7 @@ export default function Legal() {
   const { data: companies } = useQuery({
     queryKey: ['/api/companies', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/companies?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch companies');
+      const response = await apiRequest('GET', '/api/companies?page=1&limit=100');
       return response.json();
     },
   });

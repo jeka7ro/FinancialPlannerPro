@@ -47,10 +47,7 @@ export default function Slots() {
     queryKey: ['/api/slots', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/slots?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch slots');
+      const response = await apiRequest('GET', `/api/slots?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
@@ -58,10 +55,7 @@ export default function Slots() {
   const { data: cabinets } = useQuery({
     queryKey: ['/api/cabinets', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/cabinets?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch cabinets');
+      const response = await apiRequest('GET', '/api/cabinets?page=1&limit=100');
       return response.json();
     },
   });
@@ -69,10 +63,7 @@ export default function Slots() {
   const { data: gameMixes } = useQuery({
     queryKey: ['/api/game-mixes', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/game-mixes?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch game mixes');
+      const response = await apiRequest('GET', '/api/game-mixes?page=1&limit=100');
       return response.json();
     },
   });
@@ -80,10 +71,7 @@ export default function Slots() {
   const { data: providers } = useQuery({
     queryKey: ['/api/providers', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/providers?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', '/api/providers?page=1&limit=100');
       return response.json();
     },
   });
@@ -91,10 +79,7 @@ export default function Slots() {
   const { data: invoices } = useQuery({
     queryKey: ['/api/invoices', 1, 1000],
     queryFn: async () => {
-      const response = await fetch('/api/invoices?page=1&limit=1000', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch invoices');
+      const response = await apiRequest('GET', '/api/invoices?page=1&limit=1000');
       return response.json();
     },
   });
@@ -102,10 +87,7 @@ export default function Slots() {
   const { data: locations } = useQuery({
     queryKey: ['/api/locations', 1, 100],
     queryFn: async () => {
-      const response = await fetch('/api/locations?page=1&limit=100', {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      const response = await apiRequest('GET', '/api/locations?page=1&limit=100');
       return response.json();
     },
   });

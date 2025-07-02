@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 const getActivityIcon = (action: string) => {
   if (action.includes('payout') || action.includes('revenue')) return { icon: "💰", color: "bg-emerald-500/20 text-emerald-500" };
@@ -59,14 +60,13 @@ export default function RecentActivity() {
   const { data: activities, isLoading, error } = useQuery({
     queryKey: ['/api/activity-logs', 1, 5],
     queryFn: async () => {
-      const response = await fetch('/api/activity-logs?page=1&limit=5', {
-        credentials: 'include'
-      });
-      if (!response.ok) {
+      try {
+        const response = await apiRequest('GET', '/api/activity-logs?page=1&limit=5');
+        return response.json();
+      } catch (error) {
         // Return mock data if API fails
         return { activityLogs: mockActivities, total: mockActivities.length };
       }
-      return response.json();
     },
   });
 

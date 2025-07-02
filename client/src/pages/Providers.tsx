@@ -240,10 +240,7 @@ export default function Providers() {
     queryKey: ['/api/providers', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/providers?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', `/api/providers?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
