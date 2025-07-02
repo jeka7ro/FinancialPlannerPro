@@ -20,4 +20,15 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
+  preview: {
+    port: 4173,
+    host: true,
+  },
 })
