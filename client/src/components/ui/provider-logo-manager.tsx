@@ -15,6 +15,11 @@ interface ProviderLogoManagerProps {
   currentLogoUrl?: string | null;
 }
 
+interface LogoSuggestions {
+  suggested?: string | null;
+  common?: Record<string, string>;
+}
+
 export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }: ProviderLogoManagerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -24,7 +29,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
   const queryClient = useQueryClient();
 
   // Get logo suggestions
-  const { data: suggestions } = useQuery({
+  const { data: suggestions } = useQuery<LogoSuggestions>({
     queryKey: [`/api/providers/${providerId}/logo/suggestions`],
     queryFn: async () => {
       const response = await fetch(`/api/providers/${providerId}/logo/suggestions`, {
@@ -235,7 +240,7 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={suggestions.suggested} 
+                          src={suggestions.suggested || ''} 
                           alt="Suggested logo"
                           className="h-12 w-12 object-contain rounded border border-white/10"
                           onError={(e) => {
@@ -244,13 +249,13 @@ export function ProviderLogoManager({ providerId, providerName, currentLogoUrl }
                         />
                         <div>
                           <p className="text-sm font-medium text-white">Recommended Logo</p>
-                          <p className="text-xs text-slate-400 truncate max-w-xs">{suggestions.suggested}</p>
+                          <p className="text-xs text-slate-400 truncate max-w-xs">{suggestions.suggested || ''}</p>
                         </div>
                       </div>
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleUseSuggestion(suggestions.suggested)}
+                        onClick={() => handleUseSuggestion(suggestions.suggested || '')}
                         className="border-blue-400/20 text-blue-400 hover:bg-blue-400/10"
                       >
                         Use This

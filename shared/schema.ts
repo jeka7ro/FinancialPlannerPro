@@ -230,13 +230,13 @@ export const activityLogs = pgTable("activity_logs", {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }: any) => ({
   managedLocations: many(locations),
   activityLogs: many(activityLogs),
   userLocations: many(userLocations),
 }));
 
-export const companiesRelations = relations(companies, ({ many }) => ({
+export const companiesRelations = relations(companies, ({ many }: any) => ({
   locations: many(locations),
   invoices: many(invoices),
   rentAgreements: many(rentAgreements),
@@ -244,7 +244,7 @@ export const companiesRelations = relations(companies, ({ many }) => ({
   onjnReports: many(onjnReports),
 }));
 
-export const locationsRelations = relations(locations, ({ one, many }) => ({
+export const locationsRelations = relations(locations, ({ one, many }: any) => ({
   company: one(companies, {
     fields: [locations.companyId],
     references: [companies.id],
@@ -261,7 +261,7 @@ export const locationsRelations = relations(locations, ({ one, many }) => ({
   userLocations: many(userLocations),
 }));
 
-export const userLocationsRelations = relations(userLocations, ({ one }) => ({
+export const userLocationsRelations = relations(userLocations, ({ one }: any) => ({
   user: one(users, {
     fields: [userLocations.userId],
     references: [users.id],
@@ -272,12 +272,12 @@ export const userLocationsRelations = relations(userLocations, ({ one }) => ({
   }),
 }));
 
-export const providersRelations = relations(providers, ({ many }) => ({
+export const providersRelations = relations(providers, ({ many }: any) => ({
   cabinets: many(cabinets),
   gameMixes: many(gameMixes),
 }));
 
-export const cabinetsRelations = relations(cabinets, ({ one, many }) => ({
+export const cabinetsRelations = relations(cabinets, ({ one, many }: any) => ({
   provider: one(providers, {
     fields: [cabinets.providerId],
     references: [providers.id],
