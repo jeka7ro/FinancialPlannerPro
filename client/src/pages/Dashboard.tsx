@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { apiRequest } from "@/lib/queryClient";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,48 +92,42 @@ export default function Dashboard() {
   const { data: stats } = useQuery({
     queryKey: ['dashboard-stats'],
     queryFn: async () => {
-      const response = await fetch('/api/dashboard/stats', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch dashboard stats');
+      const response = await apiRequest('GET', '/api/dashboard/stats');
       return response.json();
     },
   });
   const { data: providers, isLoading: providersLoading } = useQuery({
     queryKey: ['providers'],
     queryFn: async () => {
-      const response = await fetch('/api/providers', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch providers');
+      const response = await apiRequest('GET', '/api/providers');
       return response.json();
     },
   });
   const { data: cabinets, isLoading: cabinetsLoading } = useQuery({
     queryKey: ['cabinets'],
     queryFn: async () => {
-      const response = await fetch('/api/cabinets', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch cabinets');
+      const response = await apiRequest('GET', '/api/cabinets');
       return response.json();
     },
   });
   const { data: gameMixes, isLoading: gameMixesLoading } = useQuery({
     queryKey: ['game-mixes'],
     queryFn: async () => {
-      const response = await fetch('/api/game-mixes', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch game mixes');
+      const response = await apiRequest('GET', '/api/game-mixes');
       return response.json();
     },
   });
   const { data: invoices, isLoading: invoicesLoading } = useQuery({
     queryKey: ['invoices'],
     queryFn: async () => {
-      const response = await fetch('/api/invoices', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch invoices');
+      const response = await apiRequest('GET', '/api/invoices');
       return response.json();
     },
   });
   const { data: legalDocuments, isLoading: legalLoading } = useQuery({
     queryKey: ['legal-documents'],
     queryFn: async () => {
-      const response = await fetch('/api/legal-documents', { credentials: 'include' });
-      if (!response.ok) throw new Error('Failed to fetch legal documents');
+      const response = await apiRequest('GET', '/api/legal-documents');
       return response.json();
     },
   });

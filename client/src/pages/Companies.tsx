@@ -30,10 +30,7 @@ export default function Companies() {
     queryKey: ['/api/companies', currentPage, limit, searchTerm],
     queryFn: async () => {
       const searchParam = searchTerm ? `&search=${encodeURIComponent(searchTerm)}` : '';
-      const response = await fetch(`/api/companies?page=${currentPage}&limit=${limit}${searchParam}`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch companies');
+      const response = await apiRequest('GET', `/api/companies?page=${currentPage}&limit=${limit}${searchParam}`);
       return response.json();
     },
   });
