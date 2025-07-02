@@ -58,27 +58,29 @@ export default function Sidebar({ className }: SidebarProps) {
         </div>
       </div>
       
-      <nav className="mt-8 px-4">
-        <div className="space-y-2">
+      <nav className="mt-8 px-2">
+        <ul className="flex flex-col gap-2">
           {navigation.map((item) => {
             const isActive = location === item.href;
             return (
-              <Link key={item.name} href={item.href}>
-                <a
-                  className={cn(
-                    "nav-item group flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 relative z-10",
-                    isActive
-                      ? "bg-blue-500/20 text-white"
-                      : "text-slate-300 hover:text-white hover:bg-blue-500/10"
-                  )}
-                >
-                  <span className="mr-3 text-lg flex-shrink-0">{item.icon}</span>
-                  <span className="truncate">{item.name}</span>
-                </a>
-              </Link>
+              <li key={item.name}>
+                <Link href={item.href}>
+                  <a
+                    className={cn(
+                      "flex items-center gap-3 px-4 py-2 rounded-lg font-medium transition-colors duration-200",
+                      isActive
+                        ? "bg-blue-600 text-white shadow"
+                        : "text-slate-700 dark:text-slate-300 hover:bg-blue-100 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-white"
+                    )}
+                  >
+                    <span className="text-xl">{item.icon}</span>
+                    <span className="truncate">{item.name}</span>
+                  </a>
+                </Link>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </nav>
     </div>
   );

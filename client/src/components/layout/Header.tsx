@@ -4,7 +4,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
 import { ThemeSelector } from "@/components/ui/theme-selector";
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "@shared/schema";
+import type { User } from "../../../shared/schema";
 import { Power } from "lucide-react";
 import { useTheme } from "next-themes";
 import clsx from "clsx";
@@ -44,50 +44,37 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   return (
     <header
       className={clsx(
-        'header',
-        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : '',
-        'glass-morphism h-28 flex items-center justify-between px-6 border-b border-white/10 min-h-[7rem]'
+        'w-full h-28 min-h-[7rem] bg-white dark:bg-slate-900/80 shadow flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-700',
+        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : ''
       )}
       style={theme.theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
     >
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center gap-2">
         <Button
           variant="ghost"
           size="sm"
-          className="lg:hidden p-2 text-slate-300 hover:text-white hover:bg-white/10"
+          className="lg:hidden p-2 text-slate-400 hover:text-blue-600"
           onClick={onMenuToggle}
         >
           <span className="text-lg">☰</span>
         </Button>
+        <span className="text-xl font-bold text-blue-700 dark:text-blue-300">{title}</span>
+        {subtitle && <span className="ml-2 text-sm text-slate-500 dark:text-slate-400">{subtitle}</span>}
       </div>
-      
-      <div className="flex items-center space-x-4">
-        {/* Notifications */}
+      <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="sm"
-          className="relative p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl"
+          className="relative p-2 text-slate-400 hover:text-blue-600"
         >
           <span className="text-lg">🔔</span>
           <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
             3
           </span>
         </Button>
-        
-        {/* Theme Selector */}
         <ThemeSelector />
-        
-        {/* User Profile */}
-        <div className="flex items-center space-x-3">
-          <UserAvatarWithInfo 
-            user={currentUser || null} 
-            className="flex sm:hidden"
-          />
-          <UserAvatar 
-            user={currentUser || null} 
-            size="lg"
-            className="hidden sm:flex ring-2 ring-white/20"
-          />
+        <div className="flex items-center gap-2">
+          <UserAvatar user={currentUser || null} size="lg" className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200" />
           {currentUser && (
             <span className="hidden sm:inline text-base font-semibold text-slate-900 dark:text-white truncate max-w-xs">
               {currentUser.firstName && currentUser.lastName
