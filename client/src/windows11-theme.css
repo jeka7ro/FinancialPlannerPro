@@ -1,0 +1,44 @@
+/* Windows 11 Theme - Pastel/Gradient Override */
+/* Acest fișier se încarcă după index.css pentru a forța stilurile */
+
+.windows11 .glass-card,
+.windows11 .content-card,
+.windows11 .search-card,
+.windows11 .rounded-xl.bg-white,
+.windows11 .rounded-xl.bg-card,
+.windows11 [class*="card"] {
+  background: linear-gradient(135deg, #E8F4FD 0%, #FFFBF0 50%, #F3F3F3 100%) !important;
+  border: 1px solid #E1E1E1 !important;
+  box-shadow: 0 8px 32px rgba(0, 95, 184, 0.08), 0 4px 16px rgba(16, 124, 16, 0.06), 0 2px 8px rgba(255, 185, 0, 0.04) !important;
+}
+
+.windows11 button,
+.windows11 .btn,
+.windows11 [class*="button"],
+.windows11 [class*="btn"],
+.windows11 .action-button {
+  background: linear-gradient(135deg, #E8F4FD 0%, #FFFBF0 50%, #F3F3F3 100%) !important;
+  border: 1px solid #E1E1E1 !important;
+  color: #1A1A1A !important;
+  box-shadow: 0 4px 16px rgba(0, 95, 184, 0.08), 0 2px 8px rgba(16, 124, 16, 0.06) !important;
+}
+
+.windows11 button:hover,
+.windows11 .btn:hover,
+.windows11 [class*="button"]:hover,
+.windows11 [class*="btn"]:hover,
+.windows11 .action-button:hover {
+  background: linear-gradient(135deg, #D1E9FB 0%, #FFF2E6 50%, #E8E8E8 100%) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 20px rgba(0, 95, 184, 0.12), 0 3px 12px rgba(16, 124, 16, 0.08) !important;
+}
+
+.windows11 button:active,
+.windows11 .btn:active,
+.windows11 [class*="button"]:active,
+.windows11 [class*="btn"]:active,
+.windows11 .action-button:active {
+  background: linear-gradient(135deg, #B8D9F7 0%, #FFE8D1 50%, #D8D8D8 100%) !important;
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 8px rgba(0, 95, 184, 0.16), 0 1px 4px rgba(16, 124, 16, 0.12) !important;
+} 

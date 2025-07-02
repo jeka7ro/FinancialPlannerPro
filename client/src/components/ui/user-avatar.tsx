@@ -1,0 +1,169 @@
+import { useState, useEffect } from "react";
+
+interface UserAvatarProps {
+  user: {
+    id: number;
+    firstName?: string | null;
+    lastName?: string | null;
+    username: string;
+    [key: string]: any;
+  } | null;
+  size?: "sm" | "md" | "lg" | "xl";
+  className?: string;
+}
+
+export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProps) {
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
+  
+  const sizeClasses = {
+    sm: "avatar-sm",
+    md: "avatar-md", 
+    lg: "avatar-lg",
+    xl: "avatar-xl"
+  };
+
+  const getInitials = () => {
+    if (!user) return "??";
+    if (user.firstName && user.lastName) {
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    }
+    return user.username[0].toUpperCase();
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    
+    console.log(`[UserAvatar] Loading avatar for user ${user.id}`);
+    
+    const loadImage = async () => {
+      try {
+        // First try to get attachments
+        const response = await fetch(`/api/users/${user.id}/attachments`);
+        console.log(`[UserAvatar] Attachments response status: ${response.status}`);
+        
+        if (response.ok) {
+          const attachments = await response.json();
+          console.log(`[UserAvatar] Found ${attachments.length} attachments:`, attachments);
+          
+          const imageAttachment = attachments.find((att: any) => 
+            att.mimeType && att.mimeType.startsWith('image/')
+          );
+          
+          if (imageAttachment) {
+            const imageUrl = `/api/attachments/${imageAttachment.id}/download`;
+            console.log(`[UserAvatar] Setting image URL: ${imageUrl}`);
+            setImageUrl(imageUrl);
+            return;
+          } else {
+            console.log(`[UserAvatar] No image attachments found`);
+          }
+        }
+        
+        // If no attachment found, show initials
+        console.log(`[UserAvatar] Using initials fallback for user ${user.id}`);
+        setHasError(true);
+      } catch (error) {
+        console.error(`[UserAvatar] Error loading avatar for user ${user.id}:`, error);
+        setHasError(true);
+      }
+    };
+    
+    loadImage();
+  }, [user]);
+
+  if (!user) {
+    return (
+      <div className={`${sizeClasses[size]} rounded-full bg-gray-300 flex items-center justify-center text-xs ${className}`}>
+        <span className="text-gray-500">??</span>
+      </div>
+    );
+  }
+
+  if (imageUrl && !hasError) {
+    return (
+      <div className={`${sizeClasses[size]} rounded-full overflow-hidden border-2 border-gray-200 ${className}`}>
+        <img 
+          src={`${imageUrl}?t=${Date.now()}`}
+          alt={`${user.firstName || user.username} avatar`}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            console.log(`[UserAvatar] Image failed to load for user ${user?.id}:`, e);
+            setHasError(true);
+          }}
+          onLoad={() => {
+            console.log(`[UserAvatar] Image loaded successfully for user ${user?.id}`);
+          }}
+        />
+      </div>
+    );
+  }
+
+  // Fallback to initials
+  return (
+    <div 
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${className}`}
+    >
+      {getInitials()}
+    </div>
+  );
+}
+
+interface UserAvatarWithInfoProps {
+  user: {
+    id: number;
+    firstName?: string | null;
+    lastName?: string | null;
+    username: string;
+    email?: string | null;
+    telephone?: string | null;
+    [key: string]: any;
+  } | null;
+  showEmail?: boolean;
+  showTelephone?: boolean;
+  size?: "sm" | "md" | "lg" | "xl";
+  className?: string;
+}
+
+export function UserAvatarWithInfo({ 
+  user, 
+  showEmail = false, 
+  showTelephone = false, 
+  size = "md", 
+  className = "" 
+}: UserAvatarWithInfoProps) {
+  if (!user) {
+    return (
+      <div className={`flex items-center space-x-3 ${className}`}>
+        <UserAvatar user={null} size={size} />
+        <div>
+          <p className="text-sm text-gray-500">No user data</p>
+        </div>
+      </div>
+    );
+  }
+
+  const getDisplayName = (user: { firstName?: string | null; lastName?: string | null; username: string }) => {
+    if (user.firstName && user.lastName) {
+      return `${user.firstName} ${user.lastName}`;
+    }
+    return user.username;
+  };
+
+  return (
+    <div className={`flex items-center space-x-3 ${className}`}>
+      <UserAvatar user={user} size={size} />
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-gray-900 truncate">
+          {getDisplayName(user)}
+        </p>
+        {showEmail && user.email && (
+          <p className="text-sm text-gray-500 truncate">{user.email}</p>
+        )}
+        {showTelephone && user.telephone && (
+          <p className="text-sm text-gray-500 truncate">{user.telephone}</p>
+        )}
+      </div>
+    </div>
+  );
+}
