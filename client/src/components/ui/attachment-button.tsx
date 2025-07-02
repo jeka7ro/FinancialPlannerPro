@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Paperclip, Download, Eye, Trash2, Upload } from "lucide-react";
+import { Paperclip, Download, Eye, Trash2, Upload, File, Image, FileText, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { mockAttachments } from "../../lib/mockAttachments";
 
 interface AttachmentButtonProps {
   entityType: string;
@@ -15,168 +16,20 @@ interface AttachmentButtonProps {
   entityName?: string;
 }
 
-// Mock attachments data
-const mockAttachments = {
-  users: {
-    1: [
-      {
-        id: 1,
-        filename: "user_profile.jpg",
-        mimeType: "image/jpeg",
-        fileSize: 245760,
-        createdAt: "2024-01-15T10:30:00Z",
-        url: "/api/attachments/1/download"
-      },
-      {
-        id: 2,
-        filename: "contract.pdf",
-        mimeType: "application/pdf",
-        fileSize: 1024000,
-        createdAt: "2024-01-10T14:20:00Z",
-        url: "/api/attachments/2/download"
-      }
-    ],
-    2: [
-      {
-        id: 3,
-        filename: "id_document.pdf",
-        mimeType: "application/pdf",
-        fileSize: 512000,
-        createdAt: "2024-01-12T09:15:00Z",
-        url: "/api/attachments/3/download"
-      }
-    ]
-  },
-  companies: {
-    1: [
-      {
-        id: 4,
-        filename: "company_logo.png",
-        mimeType: "image/png",
-        fileSize: 128000,
-        createdAt: "2024-01-08T16:45:00Z",
-        url: "/api/attachments/4/download"
-      },
-      {
-        id: 5,
-        filename: "business_plan.docx",
-        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        fileSize: 2048000,
-        createdAt: "2024-01-05T11:30:00Z",
-        url: "/api/attachments/5/download"
-      }
-    ]
-  },
-  locations: {
-    1: [
-      {
-        id: 6,
-        filename: "location_photo.jpg",
-        mimeType: "image/jpeg",
-        fileSize: 512000,
-        createdAt: "2024-01-14T13:20:00Z",
-        url: "/api/attachments/6/download"
-      }
-    ]
-  },
-  providers: {
-    1: [
-      {
-        id: 101,
-        filename: "novomatic_logo.png",
-        mimeType: "image/png",
-        fileSize: 128000,
-        createdAt: "2024-01-15T10:30:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMjU2M2ViIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Tm92b21hdGljPC90ZXh0Pgo8L3N2Zz4K"
-      }
-    ],
-    2: [
-      {
-        id: 102,
-        filename: "igt_logo.png",
-        mimeType: "image/png",
-        fileSize: 156000,
-        createdAt: "2024-01-14T11:20:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjN2MzYWVkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+SUdUPC90ZXh0Pgo8L3N2Zz4K"
-      }
-    ],
-    3: [
-      {
-        id: 103,
-        filename: "aristocrat_logo.png",
-        mimeType: "image/png",
-        fileSize: 142000,
-        createdAt: "2024-01-13T09:15:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZGMyNjI2Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+QXJpc3RvY3JhdDwvdGV4dD4KPC9zdmc+Cg=="
-      }
-    ],
-    4: [
-      {
-        id: 104,
-        filename: "netent_logo.png",
-        mimeType: "image/png",
-        fileSize: 118000,
-        createdAt: "2024-01-12T14:30:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDU5NjY5Ii8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TmV0RW50PC90ZXh0Pgo8L3N2Zz4K"
-      }
-    ],
-    5: [
-      {
-        id: 105,
-        filename: "playtech_logo.png",
-        mimeType: "image/png",
-        fileSize: 134000,
-        createdAt: "2024-01-11T16:45:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjZWE1ODBjIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UGxheXRlY2g8L3RleHQ+Cjwvc3ZnPgo="
-      }
-    ],
-    6: [
-      {
-        id: 106,
-        filename: "microgaming_logo.png",
-        mimeType: "image/png",
-        fileSize: 148000,
-        createdAt: "2024-01-10T12:20:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjYmUxODVkIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+TWljcm9nYW1pbmc8L3RleHQ+Cjwvc3ZnPgo="
-      }
-    ],
-    7: [
-      {
-        id: 107,
-        filename: "evolution_logo.png",
-        mimeType: "image/png",
-        fileSize: 162000,
-        createdAt: "2024-01-09T10:10:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjMDg5MWIyIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RXZvbHV0aW9uPC90ZXh0Pgo8L3N2Zz4K"
-      }
-    ],
-    8: [
-      {
-        id: 108,
-        filename: "pragmatic_logo.png",
-        mimeType: "image/png",
-        fileSize: 138000,
-        createdAt: "2024-01-08T15:30:00Z",
-        url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSIjN2MyZDEyIi8+Cjx0ZXh0IHg9IjUwIiB5PSI1NSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UHJhZ21hdGljPC90ZXh0Pgo8L3N2Zz4K"
-      }
-    ]
-  }
-};
-
 export function AttachmentButton({ entityType, entityId, entityName }: AttachmentButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const { data: attachments, isLoading } = useQuery({
+  const { data: attachments = [], isLoading } = useQuery({
     queryKey: [`/api/${entityType}/${entityId}/attachments`],
     queryFn: async () => {
-      // Use mock data instead of real API call
+      // Return mock attachments for this entity
       const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
-      const entityData = entityAttachments?.[entityId as keyof typeof entityAttachments];
-      return entityData || [];
+      return entityAttachments?.[entityId as keyof typeof entityAttachments] || [];
     },
+    enabled: !!entityType && !!entityId,
   });
 
   const uploadMutation = useMutation({
@@ -184,20 +37,34 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       // Simulate upload delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Create mock attachment object
+      // Create mock attachment object with real data URL for images
+      let url: string;
+      if (file.type.startsWith('image/')) {
+        // For images, create a data URL that can be displayed
+        const reader = new FileReader();
+        const dataUrl = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+        url = dataUrl;
+      } else {
+        // For non-images, use mock download URL
+        url = `/api/attachments/${Date.now()}/download`;
+      }
+      
       const newAttachment = {
         id: Date.now(),
         filename: file.name,
         mimeType: file.type,
         fileSize: file.size,
         createdAt: new Date().toISOString(),
-        url: `/api/attachments/${Date.now()}/download`
+        url: url
       };
       
       return newAttachment;
     },
     onSuccess: (newAttachment) => {
-      // Add to mock data
+      // Add to shared mock data
       const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
       if (entityAttachments) {
         if (!entityAttachments[entityId as keyof typeof entityAttachments]) {
@@ -481,44 +348,76 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
                 {attachments.map((attachment: any) => (
                   <div
                     key={attachment.id}
-                    className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+                    className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-xl">{getFileIcon(attachment.mimeType)}</span>
-                      <div>
-                        <p className="text-sm font-medium text-white">{attachment.filename}</p>
+                    <div className="flex items-center space-x-3">
+                      <div className="flex-shrink-0">
+                        {attachment.mimeType?.startsWith('image/') ? (
+                          <Image className="h-5 w-5 text-blue-400" />
+                        ) : attachment.mimeType?.includes('pdf') ? (
+                          <FileText className="h-5 w-5 text-red-400" />
+                        ) : attachment.mimeType?.includes('zip') || attachment.mimeType?.includes('rar') ? (
+                          <Archive className="h-5 w-5 text-yellow-400" />
+                        ) : (
+                          <File className="h-5 w-5 text-gray-400" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-white truncate">
+                          {attachment.filename}
+                        </p>
                         <p className="text-xs text-slate-400">
-                          {attachment.fileSize ? formatFileSize(attachment.fileSize) : 'Unknown size'}
-                          {attachment.createdAt && (
-                            <> • {new Date(attachment.createdAt).toLocaleDateString()}</>
-                          )}
+                          {(attachment.fileSize / 1024).toFixed(1)} KB
                         </p>
                       </div>
                     </div>
-                    
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center space-x-2">
+                      {attachment.mimeType?.startsWith('image/') && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(attachment.url, '_blank')}
+                          className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10"
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      )}
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handlePreview(attachment)}
-                        className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/20"
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDownload(attachment)}
-                        className="text-green-400 hover:text-green-300 hover:bg-green-500/20"
+                        onClick={() => {
+                          // Simulate download
+                          const link = document.createElement('a');
+                          link.href = attachment.url;
+                          link.download = attachment.filename;
+                          link.click();
+                        }}
+                        className="h-8 w-8 p-0 text-slate-400 hover:text-white hover:bg-white/10"
                       >
                         <Download className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => deleteMutation.mutate(attachment.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
-                        disabled={deleteMutation.isPending}
+                        onClick={() => {
+                          // Simulate delete
+                          const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
+                          if (entityAttachments) {
+                            const entityData = entityAttachments[entityId as keyof typeof entityAttachments];
+                            if (entityData) {
+                              const index = entityData.findIndex((att: any) => att.id === attachment.id);
+                              if (index > -1) {
+                                entityData.splice(index, 1);
+                                queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
+                                toast({
+                                  title: "Success",
+                                  description: "File deleted successfully.",
+                                });
+                              }
+                            }
+                          }
+                        }}
+                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
