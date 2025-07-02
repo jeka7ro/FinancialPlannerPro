@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Paperclip, Download, Eye, Trash2, Upload, File, Image, FileText, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { attachmentManager } from "@/lib/mockAttachments";
+import { useAttachments } from "@/hooks/useAttachments";
+import type { EntityType } from "@/hooks/useAttachments";
 
 interface AttachmentButtonProps {
   entityType: string;
@@ -22,45 +24,45 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const { data: attachments = [], isLoading } = useQuery({
-    queryKey: [`/api/${entityType}/${entityId}/attachments`],
-    queryFn: async () => {
-      // Return mock attachments for this entity using attachmentManager
-      return attachmentManager.getAttachments(entityType as any, entityId);
-    },
-    enabled: !!entityType && !!entityId,
-  });
+  const attachments = useAttachments(entityType as EntityType, entityId);
+  const isLoading = false;
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Create mock attachment object with real data URL for images
-      let url: string;
-      if (file.type.startsWith('image/')) {
-        // For images, create a data URL that can be displayed
-        const reader = new FileReader();
-        const dataUrl = await new Promise<string>((resolve) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(file);
-        });
-        url = dataUrl;
-      } else {
-        // For non-images, use mock download URL
-        url = `/api/attachments/${Date.now()}/download`;
+      try {
+        // Simulate upload delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Create mock attachment object with real data URL for images
+        let url: string;
+        if (file.type.startsWith('image/')) {
+          // For images, create a data URL that can be displayed
+          const reader = new FileReader();
+          const dataUrl = await new Promise<string>((resolve, reject) => {
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (e) => reject(reader.error || e);
+            reader.readAsDataURL(file);
+          });
+          url = dataUrl;
+        } else {
+          // For non-images, use mock download URL
+          url = `/api/attachments/${Date.now()}/download`;
+        }
+        
+        const newAttachment = {
+          id: Date.now(),
+          filename: file.name,
+          mimeType: file.type,
+          fileSize: file.size,
+          createdAt: new Date().toISOString(),
+          url: url
+        };
+        console.log('[AttachmentButton] Upload success:', newAttachment);
+        return newAttachment;
+      } catch (err) {
+        console.error('[AttachmentButton] Upload error:', err);
+        throw new Error('Failed to process file for upload.');
       }
-      
-      const newAttachment = {
-        id: Date.now(),
-        filename: file.name,
-        mimeType: file.type,
-        fileSize: file.size,
-        createdAt: new Date().toISOString(),
-        url: url
-      };
-      
-      return newAttachment;
     },
     onSuccess: (newAttachment) => {
       // Add to attachment manager (this will automatically trigger updates)

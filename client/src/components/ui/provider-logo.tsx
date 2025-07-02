@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { attachmentManager } from "@/lib/mockAttachments";
+import { useAttachments } from "@/hooks/useAttachments";
 
 interface ProviderLogoProps {
   providerId: number;
@@ -11,6 +11,9 @@ interface ProviderLogoProps {
 export function ProviderLogo({ providerId, size = "md", className = "", providerName }: ProviderLogoProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
+
+  // Use the useAttachments hook for live updates
+  const attachments = useAttachments('providers', providerId);
 
   const sizeClasses = {
     sm: "w-6 h-6",
@@ -25,28 +28,23 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
     return name.split(" ").map(word => word[0]).join("").toUpperCase().slice(0, 2);
   };
 
-  // Load logo and subscribe to updates
+  // Update logo URL when attachments change
   useEffect(() => {
-    const loadLogo = () => {
-      const imageAttachment = attachmentManager.getFirstImage('providers', providerId);
-      if (imageAttachment) {
-        setLogoUrl(imageAttachment.url);
-        setLogoError(false);
-      } else {
-        setLogoUrl(null);
-        setLogoError(true);
-      }
-    };
+    if (!attachments.length) {
+      setLogoUrl(null);
+      setLogoError(true);
+      return;
+    }
 
-    // Load initial logo
-    loadLogo();
-
-    // Subscribe to updates
-    const unsubscribe = attachmentManager.subscribe('providers', providerId, loadLogo);
-
-    // Cleanup subscription
-    return unsubscribe;
-  }, [providerId]);
+    const imageAttachment = attachments.find(att => att.mimeType.startsWith('image/'));
+    if (imageAttachment) {
+      setLogoUrl(imageAttachment.url);
+      setLogoError(false);
+    } else {
+      setLogoUrl(null);
+      setLogoError(true);
+    }
+  }, [attachments]);
 
   if (logoUrl && !logoError) {
     return (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { attachmentManager } from "@/lib/mockAttachments";
+import { useAttachments } from "@/hooks/useAttachments";
 
 interface UserAvatarProps {
   user: {
@@ -17,11 +17,14 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
   
+  // Always call the hook, even if user is null
+  const attachments = useAttachments('users', user?.id ?? 0);
+  
   const sizeClasses = {
-    sm: "avatar-sm",
-    md: "avatar-md", 
-    lg: "avatar-lg",
-    xl: "avatar-xl"
+    sm: "w-8 h-8 text-xs",
+    md: "w-10 h-10 text-sm",
+    lg: "w-12 h-12 text-base",
+    xl: "w-16 h-16 text-lg"
   };
 
   const getInitials = () => {
@@ -35,34 +38,27 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
     return "??";
   };
 
-  // Load avatar and subscribe to updates
+  // Update image URL when attachments change
   useEffect(() => {
-    if (!user) return;
+    if (!user || !attachments.length) {
+      setImageUrl(null);
+      setHasError(false);
+      return;
+    }
 
-    const loadAvatar = () => {
-      const imageAttachment = attachmentManager.getFirstImage('users', user.id);
-      if (imageAttachment) {
-        setImageUrl(imageAttachment.url);
-        setHasError(false);
-      } else {
-        setImageUrl(null);
-        setHasError(true);
-      }
-    };
-
-    // Load initial avatar
-    loadAvatar();
-
-    // Subscribe to updates
-    const unsubscribe = attachmentManager.subscribe('users', user.id, loadAvatar);
-
-    // Cleanup subscription
-    return unsubscribe;
-  }, [user]);
+    const imageAttachment = attachments.find(att => att.mimeType.startsWith('image/'));
+    if (imageAttachment) {
+      setImageUrl(imageAttachment.url);
+      setHasError(false);
+    } else {
+      setImageUrl(null);
+      setHasError(false);
+    }
+  }, [attachments, user]);
 
   if (!user) {
     return (
-      <div className={`${sizeClasses[size]} rounded-full bg-gray-300 flex items-center justify-center text-xs ${className}`}>
+      <div className={`${sizeClasses[size]} rounded-full bg-gray-300 flex items-center justify-center ${className}`}>
         <span className="text-gray-500">??</span>
       </div>
     );
@@ -72,7 +68,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
     return (
       <div className={`${sizeClasses[size]} rounded-full overflow-hidden border-2 border-gray-200 ${className}`}>
         <img 
-          src={`${imageUrl}?t=${Date.now()}`}
+          src={imageUrl}
           alt={`${user.firstName || user.username} avatar`}
           className="w-full h-full object-cover"
           onError={() => setHasError(true)}
