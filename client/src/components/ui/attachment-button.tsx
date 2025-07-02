@@ -15,6 +15,72 @@ interface AttachmentButtonProps {
   entityName?: string;
 }
 
+// Mock attachments data
+const mockAttachments = {
+  users: {
+    1: [
+      {
+        id: 1,
+        filename: "user_profile.jpg",
+        mimeType: "image/jpeg",
+        fileSize: 245760,
+        createdAt: "2024-01-15T10:30:00Z",
+        url: "/api/attachments/1/download"
+      },
+      {
+        id: 2,
+        filename: "contract.pdf",
+        mimeType: "application/pdf",
+        fileSize: 1024000,
+        createdAt: "2024-01-10T14:20:00Z",
+        url: "/api/attachments/2/download"
+      }
+    ],
+    2: [
+      {
+        id: 3,
+        filename: "id_document.pdf",
+        mimeType: "application/pdf",
+        fileSize: 512000,
+        createdAt: "2024-01-12T09:15:00Z",
+        url: "/api/attachments/3/download"
+      }
+    ]
+  },
+  companies: {
+    1: [
+      {
+        id: 4,
+        filename: "company_logo.png",
+        mimeType: "image/png",
+        fileSize: 128000,
+        createdAt: "2024-01-08T16:45:00Z",
+        url: "/api/attachments/4/download"
+      },
+      {
+        id: 5,
+        filename: "business_plan.docx",
+        mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        fileSize: 2048000,
+        createdAt: "2024-01-05T11:30:00Z",
+        url: "/api/attachments/5/download"
+      }
+    ]
+  },
+  locations: {
+    1: [
+      {
+        id: 6,
+        filename: "location_photo.jpg",
+        mimeType: "image/jpeg",
+        fileSize: 512000,
+        createdAt: "2024-01-14T13:20:00Z",
+        url: "/api/attachments/6/download"
+      }
+    ]
+  }
+};
+
 export function AttachmentButton({ entityType, entityId, entityName }: AttachmentButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -24,31 +90,43 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
   const { data: attachments, isLoading } = useQuery({
     queryKey: [`/api/${entityType}/${entityId}/attachments`],
     queryFn: async () => {
-      const response = await fetch(`/api/${entityType}/${entityId}/attachments`, {
-        credentials: 'include'
-      });
-      if (!response.ok) throw new Error('Failed to fetch attachments');
-      return response.json();
+      // Use mock data instead of real API call
+      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
+      const entityData = entityAttachments?.[entityId as keyof typeof entityAttachments];
+      return entityData || [];
     },
   });
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch(`/api/${entityType}/${entityId}/attachments`, {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-
-      if (!response.ok) throw new Error('Failed to upload file');
-      return response.json();
+      // Simulate upload delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Create mock attachment object
+      const newAttachment = {
+        id: Date.now(),
+        filename: file.name,
+        mimeType: file.type,
+        fileSize: file.size,
+        createdAt: new Date().toISOString(),
+        url: `/api/attachments/${Date.now()}/download`
+      };
+      
+      return newAttachment;
     },
-    onSuccess: () => {
+    onSuccess: (newAttachment) => {
+      // Add to mock data
+      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
+      if (entityAttachments) {
+        if (!entityAttachments[entityId as keyof typeof entityAttachments]) {
+          entityAttachments[entityId as keyof typeof entityAttachments] = [];
+        }
+        entityAttachments[entityId as keyof typeof entityAttachments].push(newAttachment);
+      }
+      
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       setSelectedFile(null);
+      setPreviewUrl(null);
       toast({
         title: "Success",
         description: "File uploaded successfully.",
@@ -65,9 +143,21 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
 
   const deleteMutation = useMutation({
     mutationFn: async (attachmentId: number) => {
-      return await apiRequest("DELETE", `/api/attachments/${attachmentId}`);
+      // Simulate delete delay
+      await new Promise(resolve => setTimeout(resolve, 500));
+      return { success: true };
     },
-    onSuccess: () => {
+    onSuccess: (_, attachmentId) => {
+      // Remove from mock data
+      const entityAttachments = mockAttachments[entityType as keyof typeof mockAttachments];
+      const entityData = entityAttachments?.[entityId as keyof typeof entityAttachments];
+      if (entityData) {
+        const index = entityData.findIndex((att: any) => att.id === attachmentId);
+        if (index > -1) {
+          entityData.splice(index, 1);
+        }
+      }
+      
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       toast({
         title: "Success",
@@ -106,13 +196,9 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
 
   const handleDownload = async (attachment: any) => {
     try {
-      const response = await fetch(`/api/attachments/${attachment.id}/download`, {
-        credentials: 'include'
-      });
-      
-      if (!response.ok) throw new Error('Failed to download file');
-      
-      const blob = await response.blob();
+      // For mock data, create a dummy blob and download it
+      const dummyContent = `This is a mock file: ${attachment.filename}\n\nFile Type: ${attachment.mimeType}\nFile Size: ${attachment.fileSize} bytes\nCreated: ${attachment.createdAt}`;
+      const blob = new Blob([dummyContent], { type: attachment.mimeType || 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -121,6 +207,11 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Success",
+        description: "File downloaded successfully.",
+      });
     } catch (error) {
       toast({
         title: "Error",
@@ -132,11 +223,17 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
 
   const handlePreview = (attachment: any) => {
     if (attachment.mimeType?.startsWith('image/')) {
-      // For images, open in new tab for preview
-      window.open(`/api/attachments/${attachment.id}/download`, '_blank');
+      // For images, show a placeholder since we don't have real images
+      toast({
+        title: "Preview",
+        description: `Preview for ${attachment.filename} (mock image)`,
+      });
     } else if (attachment.mimeType === 'application/pdf') {
-      // For PDFs, open in new tab for preview
-      window.open(`/api/attachments/${attachment.id}/download`, '_blank');
+      // For PDFs, show a placeholder
+      toast({
+        title: "Preview",
+        description: `Preview for ${attachment.filename} (mock PDF)`,
+      });
     } else {
       // For other files, download them
       handleDownload(attachment);
