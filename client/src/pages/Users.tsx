@@ -18,6 +18,7 @@ import { UserAvatar } from "@/components/ui/user-avatar";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Upload, Download, Edit, Trash2, Plus, Search, Mail, Phone } from "lucide-react";
+import { z } from "zod";
 
 export default function Users() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -74,9 +75,18 @@ export default function Users() {
   });
 
   const editMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> & { locationIds?: number[] } }) => {
+    mutationFn: async ({ id, data }: { id: number; data: Partial<InsertUser> & { locationIds?: number[]; newPassword?: string } }) => {
       // Include location IDs in the user update request
       const userData = { ...data, locationIds: editSelectedLocations };
+      
+      // If new password is provided, include it in the update
+      if (data.newPassword && data.newPassword.trim()) {
+        userData.password = data.newPassword;
+      }
+      
+      // Remove newPassword from the data sent to API
+      delete userData.newPassword;
+      
       return await apiRequest("PUT", `/api/users/${id}`, userData);
     },
     onSuccess: () => {
@@ -131,8 +141,10 @@ export default function Users() {
     },
   });
 
-  const editForm = useForm<InsertUser>({
-    resolver: zodResolver(insertUserSchema.omit({ password: true })),
+  const editForm = useForm<InsertUser & { newPassword?: string }>({
+    resolver: zodResolver(insertUserSchema.omit({ password: true }).extend({
+      newPassword: z.string().optional(),
+    })),
     defaultValues: {
       username: "",
       email: "",
@@ -141,6 +153,7 @@ export default function Users() {
       lastName: "",
       role: "operator",
       isActive: true,
+      newPassword: "",
     },
   });
 
@@ -164,6 +177,7 @@ export default function Users() {
       lastName: user.lastName || "",
       role: user.role || "operator",
       isActive: user.isActive ?? true,
+      newPassword: "",
     });
     
     // Load user's current location assignments
@@ -702,6 +716,20 @@ export default function Users() {
                     </FormLabel>
                     <FormControl>
                       <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={editForm.control}
+                name="newPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">New Password (leave empty to keep current)</FormLabel>
+                    <FormControl>
+                      <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter new password" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

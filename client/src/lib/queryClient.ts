@@ -807,6 +807,10 @@ let mockDataStore: Record<string, any[]> = {
   legalDocuments: [...mockLegalDocuments],
   onjnReports: [...mockOnjnReports],
   rentAgreements: [...mockRentAgreements],
+  userLocations: [
+    { id: 1, userId: 2, locationId: 1, createdAt: new Date().toISOString() }, // manager1 -> Royal Gaming București
+    { id: 2, userId: 3, locationId: 2, createdAt: new Date().toISOString() }, // operator1 -> Diamond Club Timișoara
+  ],
 };
 
 // Load mock data from localStorage on startup
@@ -832,6 +836,102 @@ const saveMockData = () => {
 
 // Initialize mock data
 loadMockData();
+
+// Function to get user's assigned location IDs
+const getUserLocationIds = (userId: number): number[] => {
+  const userLocations = mockDataStore.userLocations || [];
+  return userLocations
+    .filter((ul: any) => ul.userId === userId)
+    .map((ul: any) => ul.locationId);
+};
+
+// Function to filter data based on user permissions
+const filterDataByUserPermissions = (data: any[], entityType: string, currentUser: any): any[] => {
+  if (!currentUser || currentUser.role === 'admin') {
+    return data; // Admin sees everything
+  }
+
+  if (currentUser.role === 'manager') {
+    const userLocationIds = getUserLocationIds(currentUser.id);
+    
+    switch (entityType) {
+      case 'locations':
+        return data.filter((location: any) => userLocationIds.includes(location.id));
+      
+      case 'cabinets':
+        return data.filter((cabinet: any) => userLocationIds.includes(cabinet.locationId));
+      
+      case 'slots':
+        return data.filter((slot: any) => userLocationIds.includes(slot.locationId));
+      
+      case 'invoices':
+        return data.filter((invoice: any) => {
+          const locationIds = invoice.locationIds ? 
+            invoice.locationIds.split(',').map((id: string) => parseInt(id.trim())) : [];
+          return locationIds.some((id: number) => userLocationIds.includes(id));
+        });
+      
+      case 'legalDocuments':
+        return data.filter((doc: any) => {
+          const locationIds = doc.locationIds ? 
+            doc.locationIds.split(',').map((id: string) => parseInt(id.trim())) : [];
+          return locationIds.some((id: number) => userLocationIds.includes(id));
+        });
+      
+      case 'onjnReports':
+        return data.filter((report: any) => userLocationIds.includes(report.locationId));
+      
+      case 'rentAgreements':
+        return data.filter((agreement: any) => userLocationIds.includes(agreement.locationId));
+      
+      case 'gameMixes':
+        // Managers can see game mixes used in their locations
+        const managerCabinetIds = mockDataStore.cabinets
+          .filter((cabinet: any) => userLocationIds.includes(cabinet.locationId))
+          .map((cabinet: any) => cabinet.id);
+        
+        const managerSlotIds = mockDataStore.slots
+          .filter((slot: any) => userLocationIds.includes(slot.locationId))
+          .map((slot: any) => slot.id);
+        
+        return data.filter((gameMix: any) => {
+          // Check if this game mix is used in any cabinet or slot in manager's locations
+          const usedInCabinets = mockDataStore.cabinets.some((cabinet: any) => 
+            managerCabinetIds.includes(cabinet.id) && cabinet.gameMixId === gameMix.id
+          );
+          const usedInSlots = mockDataStore.slots.some((slot: any) => 
+            managerSlotIds.includes(slot.id) && slot.gameMixId === gameMix.id
+          );
+          return usedInCabinets || usedInSlots;
+        });
+      
+      case 'providers':
+        // Managers can see providers used in their locations
+        const managerProviderIds = new Set();
+        
+        // Get providers from cabinets in manager's locations
+        mockDataStore.cabinets
+          .filter((cabinet: any) => userLocationIds.includes(cabinet.locationId))
+          .forEach((cabinet: any) => {
+            if (cabinet.providerId) managerProviderIds.add(cabinet.providerId);
+          });
+        
+        // Get providers from slots in manager's locations
+        mockDataStore.slots
+          .filter((slot: any) => userLocationIds.includes(slot.locationId))
+          .forEach((slot: any) => {
+            if (slot.providerId) managerProviderIds.add(slot.providerId);
+          });
+        
+        return data.filter((provider: any) => managerProviderIds.has(provider.id));
+      
+      default:
+        return data; // For other entity types, return all data
+    }
+  }
+
+  return data; // For other roles, return all data
+};
 
 // Funcție pentru paginare
 function paginateData(data: any[], page: number, limit: number, search?: string) {
@@ -1029,7 +1129,14 @@ export async function apiRequest(
     // Use updated mock data from store
     const entityType = baseKey.split('/')[2];
     if (entityType && mockDataStore[entityType]) {
-      responseData = { [entityType]: mockDataStore[entityType], total: mockDataStore[entityType].length };
+      let filteredData = mockDataStore[entityType];
+      
+      // Apply permission filtering for managers
+      if (mockAuthState.currentUser) {
+        filteredData = filterDataByUserPermissions(filteredData, entityType, mockAuthState.currentUser);
+      }
+      
+      responseData = { [entityType]: filteredData, total: filteredData.length };
     }
     
     // Aplică paginarea dacă este necesar

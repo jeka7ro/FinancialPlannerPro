@@ -20,18 +20,39 @@ npm run dev
 ### 3. Accesează Aplicația
 Deschide browser-ul și navighează la: `http://localhost:5173`
 
-## 🔐 Autentificare
-- **Username:** admin
-- **Password:** admin123
+## 🔐 Autentificare și Roluri
+
+### Utilizatori Predefiniți:
+- **Admin:** `admin` / `admin123` - Acces complet la toate funcționalitățile
+- **Manager:** `manager1` / `manager123` - Acces limitat la locațiile atribuite
+- **Operator:** `operator1` / `operator123` - Acces limitat la locațiile atribuite
+
+### Sistemul de Permisiuni:
+
+#### 👑 **Admin**
+- ✅ Acces complet la toate datele și funcționalitățile
+- ✅ Poate crea, edita, șterge orice tip de date
+- ✅ Poate gestiona toți utilizatorii și rolurile
+
+#### 🏢 **Manager**
+- ✅ Poate vedea doar locațiile atribuite
+- ✅ Poate gestiona cabinele, sloturile și game mix-urile din locațiile sale
+- ✅ Poate vedea facturile și documentele legale pentru locațiile sale
+- ✅ Poate vedea rapoartele ONJN pentru locațiile sale
+- ✅ Poate vedea furnizorii folosiți în locațiile sale
+- ❌ Nu poate accesa datele altor locații
+
+#### 👨‍💼 **Operator**
+- ✅ Acces similar cu managerul, dar cu permisiuni limitate
+- ✅ Poate vedea și gestiona datele din locațiile atribuite
 
 ## 💾 Persistența Datelor
 Aplicația folosește date mock (simulate) care se salvează în localStorage-ul browser-ului. Aceasta înseamnă că:
 
 ✅ **Datele se salvează** între sesiuni  
-✅ **Poți adăuga** companii noi, locații, utilizatori, etc.  
-✅ **Poți edita** datele existente  
-✅ **Poți șterge** înregistrări  
-✅ **Datele persistă** după refresh-ul paginii  
+✅ **Poți adăuga, edita, șterge** toate tipurile de date  
+✅ **Modificările persistă** după refresh-ul paginii  
+✅ **Fiecare browser** are propriile date  
 
 ## 📋 Funcționalități Disponibile
 
@@ -168,3 +189,129 @@ Pentru a conecta aplicația la o bază de date reală:
 **Versiunea curentă:** Mock Data cu Persistență Local  
 **Ultima actualizare:** Decembrie 2024  
 **Status:** Funcțional pentru demo și testare 
+
+## 👥 Gestionarea Utilizatorilor
+
+### Crearea Utilizatorilor Noi:
+1. Navighează la pagina **Users**
+2. Apasă butonul **"Create User"**
+3. Completează toate câmpurile obligatorii:
+   - **Username** (obligatoriu)
+   - **Email** (obligatoriu)
+   - **Password** (obligatoriu)
+   - **Telephone** (opțional)
+   - **First Name** (opțional)
+   - **Last Name** (opțional)
+   - **Role** (obligatoriu)
+   - **Assigned Locations** (obligatoriu - cel puțin o locație)
+
+### Editarea Utilizatorilor:
+1. Apasă butonul **Edit** lângă utilizatorul dorit
+2. Modifică câmpurile necesare
+3. **Pentru parolă:** Completează câmpul "New Password" doar dacă vrei să schimbi parola
+4. **Locații:** Selectează/deselectează locațiile atribuite
+5. Apasă **"Update User"**
+
+### Rolurile Disponibile:
+- **Admin:** Acces complet
+- **Manager:** Acces la locațiile atribuite
+- **Operator:** Acces limitat la locațiile atribuite
+- **Viewer:** Acces doar pentru vizualizare
+
+## 🏢 Gestionarea Locațiilor
+
+### Atribuirea Managerilor:
+1. Creează un utilizator cu rolul **Manager**
+2. În formularul de creare, selectează locațiile pe care managerul le va gestiona
+3. Managerul va vedea doar datele legate de acele locații
+
+### Ce Vede un Manager:
+- ✅ **Locațiile atribuite** și informațiile lor
+- ✅ **Cabinele** din locațiile sale
+- ✅ **Sloturile** din locațiile sale
+- ✅ **Game Mix-urile** folosite în locațiile sale
+- ✅ **Facturile** pentru locațiile sale
+- ✅ **Documentele legale** pentru locațiile sale
+- ✅ **Rapoartele ONJN** pentru locațiile sale
+- ✅ **Furnizorii** folosiți în locațiile sale
+- ❌ **Nu vede** datele altor locații
+
+## 🔧 Funcționalități Principale
+
+### Dashboard
+- Vizualizare generală a performanței
+- Statistici și metrici importante
+- Harta locațiilor cu filtrare
+
+### Gestionarea Datelor
+- **Companies:** Gestionarea companiilor
+- **Locations:** Gestionarea locațiilor
+- **Cabinets:** Gestionarea cabinelor
+- **Slots:** Gestionarea sloturilor
+- **Game Mixes:** Gestionarea game mix-urilor
+- **Providers:** Gestionarea furnizorilor
+- **Users:** Gestionarea utilizatorilor
+
+### Documente și Rapoarte
+- **Invoices:** Gestionarea facturilor
+- **Legal Documents:** Documente legale
+- **ONJN Reports:** Rapoarte ONJN
+- **Rent Management:** Gestionarea închirierilor
+
+## 🎨 Interfața
+
+### Design Modern
+- Interfață cu temă gaming
+- Efecte vizuale și animații
+- Layout responsive pentru toate dispozitivele
+
+### Navigare Intuitivă
+- Meniu lateral cu toate secțiunile
+- Breadcrumbs pentru navigare
+- Căutare și filtrare avansată
+
+## 🔍 Căutare și Filtrare
+
+### Căutare Globală
+- Caută în toate câmpurile text
+- Rezultate în timp real
+- Filtrare după status și tip
+
+### Paginare
+- Navigare prin pagini
+- Setarea numărului de rezultate per pagină
+- Informații despre totalul de rezultate
+
+## 📱 Responsive Design
+- Funcționează pe desktop, tablet și mobil
+- Meniu adaptiv pentru ecrane mici
+- Tabele cu scroll orizontal pe mobile
+
+## 🚨 Notificări și Feedback
+- Toast notifications pentru acțiuni
+- Mesaje de confirmare pentru operații critice
+- Indicatori de loading pentru operații
+
+## 🔒 Securitate
+- Autentificare obligatorie
+- Roluri și permisiuni
+- Filtrare automată a datelor în funcție de rol
+
+## 📊 Export și Import
+- Export de date în format CSV
+- Import de date din fișiere
+- Backup și restore al datelor
+
+## 🆘 Suport
+Pentru probleme sau întrebări:
+1. Verifică consola browser-ului pentru erori
+2. Asigură-te că ești autentificat
+3. Verifică permisiunile rolului tău
+4. Încearcă să refresh-ezi pagina
+
+## 🔄 Actualizări Recente
+- ✅ Sistem de permisiuni pentru manageri
+- ✅ Câmp pentru parolă în editarea utilizatorilor
+- ✅ Filtrare automată a datelor în funcție de rol
+- ✅ Persistența datelor în localStorage
+- ✅ Interfață îmbunătățită și responsive 
