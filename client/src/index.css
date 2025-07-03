@@ -744,4 +744,46 @@ body {
 .avatar-sm { width: 24px; height: 24px; }
 .avatar-md { width: 32px; height: 32px; }
 .avatar-lg { width: 40px; height: 40px; }
-.avatar-xl { width: 48px; height: 48px; } 
+.avatar-xl { width: 48px; height: 48px; }
+
+/* --- Îmbunătățiri vizibilitate dropdown/select pe dark/Monterey --- */
+.dark .select-content, [data-theme="monterey"] .select-content {
+  background: #23272f !important;
+  color: #fff !important;
+  border: 1px solid #3b82f6 !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+}
+
+.dark .select-item, [data-theme="monterey"] .select-item {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+.dark .select-item[aria-selected="true"],
+[data-theme="monterey"] .select-item[aria-selected="true"] {
+  background: #3b82f6 !important;
+  color: #fff !important;
+}
+
+.dark .select-item:hover,
+[data-theme="monterey"] .select-item:hover {
+  background: #2563eb !important;
+  color: #fff !important;
+}
+
+/* Pentru light, păstrăm stilul implicit sau îl facem mai contrastant dacă e nevoie */
+.light .select-content {
+  background: #fff !important;
+  color: #1e293b !important;
+}
+.light .select-item {
+  color: #1e293b !important;
+}
+.light .select-item[aria-selected="true"] {
+  background: #e0e7ef !important;
+  color: #2563eb !important;
+}
+.light .select-item:hover {
+  background: #e0e7ef !important;
+  color: #2563eb !important;
+} 

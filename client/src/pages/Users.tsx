@@ -499,16 +499,16 @@ export default function Users() {
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="username"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white">Username *</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Enter username" />
+                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="Enter username" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -518,13 +518,13 @@ export default function Users() {
                   control={form.control}
                   name="email"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white flex items-center gap-2">
                         <Mail className="h-4 w-4 text-blue-400" />
                         Email *
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} type="email" className="form-input" placeholder="user@email.com" />
+                        <Input {...field} value={field.value || ""} type="email" className="form-input w-full" placeholder="user@email.com" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -532,15 +532,15 @@ export default function Users() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="firstName"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white">First Name</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="First name" />
+                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="First name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -550,10 +550,10 @@ export default function Users() {
                   control={form.control}
                   name="lastName"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white">Last Name</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
+                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="Last name" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -561,15 +561,15 @@ export default function Users() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white">Password *</FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter password" />
+                        <Input {...field} value={field.value || ""} type="password" className="form-input w-full" placeholder="Enter password" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -579,13 +579,13 @@ export default function Users() {
                   control={form.control}
                   name="telephone"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="w-full">
                       <FormLabel className="text-white flex items-center gap-2">
                         <Phone className="h-4 w-4 text-green-400" />
                         Telephone
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                        <Input {...field} value={field.value || ""} type="tel" className="form-input w-full" placeholder="Enter telephone number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
