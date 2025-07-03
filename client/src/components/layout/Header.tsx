@@ -111,19 +111,6 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         <ThemeToggle />
         <div className="flex items-center gap-2">
           <UserAvatar user={currentUser || null} size="lg" className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200" />
-          {/* User select dropdown (dev only) */}
-          {userList.length > 0 && (
-            <Select value={selectedUserId?.toString() ?? ""} onValueChange={handleUserChange}>
-              <SelectTrigger className="w-40 bg-slate-700 text-white border-white/20">
-                <SelectValue placeholder="Schimbă user..." />
-              </SelectTrigger>
-              <SelectContent>
-                {userList.map(u => (
-                  <SelectItem key={u.id} value={u.id.toString()}>{u.firstName} {u.lastName} ({u.username})</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          )}
           {currentUser && (
             <span className="hidden sm:inline text-base font-semibold text-white truncate max-w-xs">
               {currentUser.firstName && currentUser.lastName
