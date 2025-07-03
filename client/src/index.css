@@ -100,6 +100,179 @@ body {
     #0a0a0a 100%);
 }
 
+/* Monterey Theme Specific Enhancements */
+[data-theme="monterey"] html {
+  background: linear-gradient(135deg, 
+    #0a0a0a 0%, 
+    #1a1a1a 25%, 
+    #2a2a2a 50%, 
+    #1a1a1a 75%, 
+    #0a0a0a 100%);
+}
+
+[data-theme="monterey"] body {
+  background: linear-gradient(135deg, 
+    #0a0a0a 0%, 
+    #1a1a1a 25%, 
+    #2a2a2a 50%, 
+    #1a1a1a 75%, 
+    #0a0a0a 100%);
+}
+
+/* Enhanced Monterey Glass Effects */
+[data-theme="monterey"] .glass-card {
+  background: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.5),
+    0 12px 24px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="monterey"] .glass-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 
+    0 35px 70px rgba(0, 0, 0, 0.6),
+    0 16px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: rgba(0, 122, 255, 0.4);
+}
+
+/* Monterey Enhanced Sidebar */
+[data-theme="monterey"] .sidebar-glass {
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(40px) saturate(200%);
+  border-right: 1px solid rgba(0, 122, 255, 0.2);
+  box-shadow: 
+    6px 0 25px rgba(0, 0, 0, 0.5),
+    inset -1px 0 0 rgba(0, 122, 255, 0.1);
+}
+
+/* Monterey Enhanced Header */
+[data-theme="monterey"] .header {
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(40px) saturate(200%);
+  border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Monterey Enhanced Buttons */
+[data-theme="monterey"] .btn-gaming {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  box-shadow: 
+    0 6px 16px rgba(0, 122, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="monterey"] .btn-gaming:hover {
+  background: linear-gradient(135deg, #0056CC, #4A47B8);
+  transform: translateY(-3px);
+  box-shadow: 
+    0 10px 24px rgba(0, 122, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-color: rgba(0, 122, 255, 0.5);
+}
+
+/* Monterey Enhanced Navigation */
+[data-theme="monterey"] .nav-item:hover {
+  background: rgba(0, 122, 255, 0.15);
+  color: #007AFF;
+  transform: translateX(6px);
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2);
+}
+
+[data-theme="monterey"] .nav-item.active {
+  background: rgba(0, 122, 255, 0.25);
+  color: #007AFF;
+  box-shadow: 0 0 0 2px rgba(0, 122, 255, 0.4);
+}
+
+/* Monterey Enhanced Tables */
+[data-theme="monterey"] .enhanced-table {
+  background: rgba(26, 26, 26, 0.9);
+  backdrop-filter: blur(25px) saturate(200%);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+}
+
+[data-theme="monterey"] .enhanced-table th {
+  background: rgba(42, 42, 42, 0.95);
+  border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+  color: #ffffff;
+}
+
+[data-theme="monterey"] .enhanced-table tbody tr:hover {
+  background: rgba(0, 122, 255, 0.15);
+  box-shadow: inset 0 0 0 1px rgba(0, 122, 255, 0.1);
+}
+
+/* Monterey Enhanced Form Inputs */
+[data-theme="monterey"] .form-input {
+  background: rgba(42, 42, 42, 0.9);
+  border: 1px solid rgba(0, 122, 255, 0.2);
+  backdrop-filter: blur(15px);
+}
+
+[data-theme="monterey"] .form-input:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.3);
+  background: rgba(42, 42, 42, 1);
+}
+
+/* Monterey Enhanced Status Badges */
+[data-theme="monterey"] .status-active {
+  background: rgba(52, 199, 89, 0.25);
+  color: #34C759;
+  border: 1px solid rgba(52, 199, 89, 0.4);
+  box-shadow: 0 2px 8px rgba(52, 199, 89, 0.2);
+}
+
+[data-theme="monterey"] .status-maintenance {
+  background: rgba(255, 149, 0, 0.25);
+  color: #FF9500;
+  border: 1px solid rgba(255, 149, 0, 0.4);
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.2);
+}
+
+[data-theme="monterey"] .status-inactive {
+  background: rgba(255, 59, 48, 0.25);
+  color: #FF3B30;
+  border: 1px solid rgba(255, 59, 48, 0.4);
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.2);
+}
+
+/* Monterey Enhanced Floating Action */
+[data-theme="monterey"] .floating-action {
+  background: linear-gradient(135deg, #007AFF, #5856D6);
+  box-shadow: 
+    0 10px 30px rgba(0, 122, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 122, 255, 0.3);
+}
+
+[data-theme="monterey"] .floating-action:hover {
+  transform: scale(1.15) translateY(-3px);
+  box-shadow: 
+    0 15px 40px rgba(0, 122, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-color: rgba(0, 122, 255, 0.5);
+}
+
+/* Monterey Enhanced Scrollbar */
+[data-theme="monterey"] ::-webkit-scrollbar-track {
+  background: rgba(26, 26, 26, 0.6);
+}
+
+[data-theme="monterey"] ::-webkit-scrollbar-thumb {
+  background: rgba(0, 122, 255, 0.3);
+  border-radius: 6px;
+}
+
+[data-theme="monterey"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 122, 255, 0.5);
+}
+
 /* Light theme specific styles */
 .light html {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 
-type Theme = 'dark' | 'light';
+type Theme = 'dark' | 'light' | 'monterey';
 
 interface ThemeContextType {
   theme: Theme;
@@ -24,31 +24,43 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setThemeState] = useState<Theme>('dark');
+  const [theme, setThemeState] = useState<Theme>('monterey');
 
   useEffect(() => {
     // Încarcă tema din localStorage
     const savedTheme = localStorage.getItem('cashpot-theme') as Theme;
-    if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light')) {
+    if (savedTheme && (savedTheme === 'dark' || savedTheme === 'light' || savedTheme === 'monterey')) {
       setThemeState(savedTheme);
     } else {
       // Verifică preferința sistemului
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setThemeState(prefersDark ? 'dark' : 'light');
+      setThemeState(prefersDark ? 'monterey' : 'light');
     }
   }, []);
 
   useEffect(() => {
     // Aplică tema la document
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
+    document.documentElement.classList.remove('light', 'dark', 'monterey');
+    
+    // Monterey folosește clasa 'dark' pentru stilizare
+    if (theme === 'monterey') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'monterey');
+    } else {
+      document.documentElement.classList.add(theme);
+      document.documentElement.removeAttribute('data-theme');
+    }
     
     // Salvează în localStorage
     localStorage.setItem('cashpot-theme', theme);
   }, [theme]);
 
   const toggleTheme = () => {
-    setThemeState(prev => prev === 'dark' ? 'light' : 'dark');
+    setThemeState(prev => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'monterey';
+      return 'light';
+    });
   };
 
   const setTheme = (newTheme: Theme) => {
