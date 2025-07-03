@@ -728,7 +728,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Company *</FormLabel>
-                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ""}>
+                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select a company" />
@@ -754,7 +754,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Seller Company *</FormLabel>
-                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ""}>
+                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select seller company" />
@@ -820,7 +820,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select status" />
@@ -845,7 +845,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Currency *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select currency" />
@@ -869,7 +869,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Property Type *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select property type" />
@@ -1100,7 +1100,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Company *</FormLabel>
-                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ""}>
+                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select a company" />
@@ -1126,7 +1126,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Seller Company *</FormLabel>
-                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() || ""}>
+                      <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select seller company" />
@@ -1192,7 +1192,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select status" />
@@ -1217,7 +1217,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Currency *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select currency" />
@@ -1241,7 +1241,7 @@ export default function Invoices() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Property Type *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select property type" />

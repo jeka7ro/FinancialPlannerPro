@@ -542,7 +542,7 @@ export default function Cabinets() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />
@@ -566,7 +566,7 @@ export default function Cabinets() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Provider</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                       <FormControl>
                         <SelectTrigger className="form-input">
                           <SelectValue placeholder="Select provider" />
@@ -666,7 +666,7 @@ export default function Cabinets() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />
@@ -690,7 +690,7 @@ export default function Cabinets() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Provider</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString()}>
+                    <Select onValueChange={(value) => field.onChange(parseInt(value))} value={field.value?.toString() ?? ""}>
                       <FormControl>
                         <SelectTrigger className="form-input">
                           <SelectValue placeholder="Select provider" />

@@ -325,7 +325,7 @@ export default function ONJNEnhanced() {
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Authority</FormLabel>
                         <Select 
-                          value={field.value || ""} 
+                          value={field.value ?? ""} 
                           onValueChange={(value) => {
                             field.onChange(value);
                             setNotificationAuthority(value);
@@ -353,7 +353,7 @@ export default function ONJNEnhanced() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-slate-300">Notification Type</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <Select value={field.value ?? ""} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger className="glass-card border-white/20 text-slate-300">
                                 <SelectValue placeholder="Select notification type" />
@@ -380,7 +380,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Commission Data (from existing commissions)</FormLabel>
-                        <Select value={field.value?.toString() || ""} onValueChange={field.onChange}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select commission data (optional)" />
@@ -433,7 +433,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Company</FormLabel>
-                        <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select company" />
@@ -456,7 +456,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Status</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select status" />
@@ -485,7 +485,7 @@ export default function ONJNEnhanced() {
                           <Textarea 
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -572,7 +572,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Company</FormLabel>
-                        <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select company" />
@@ -595,7 +595,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Status</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select status" />
@@ -780,7 +780,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Authority</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select authority" />
@@ -802,7 +802,7 @@ export default function ONJNEnhanced() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Type</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select notification type" />
@@ -889,7 +889,7 @@ export default function ONJNEnhanced() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Company</FormLabel>
-                    <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                    <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select company" />
@@ -912,7 +912,7 @@ export default function ONJNEnhanced() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Status</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select status" />

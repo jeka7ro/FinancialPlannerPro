@@ -598,7 +598,7 @@ export default function Slots() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Provider</FormLabel>
-                    <Select value={field.value?.toString()} onValueChange={(value) => {
+                    <Select value={field.value?.toString() ?? ""} onValueChange={(value) => {
                       field.onChange(parseInt(value));
                       handleProviderChange(value, false);
                     }}>
@@ -628,7 +628,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Cabinet</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                         disabled={!selectedProviderIdForCreate}
                       >
@@ -656,7 +656,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Game Mix</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                         disabled={!selectedProviderIdForCreate}
                       >
@@ -684,7 +684,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Location</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                       >
                         <FormControl>
@@ -736,7 +736,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Invoice Number</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                       >
                         <FormControl>
@@ -778,7 +778,7 @@ export default function Slots() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Property Type</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select property type" />
@@ -983,7 +983,7 @@ export default function Slots() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Provider</FormLabel>
-                    <Select value={field.value?.toString()} onValueChange={(value) => {
+                    <Select value={field.value?.toString() ?? ""} onValueChange={(value) => {
                       field.onChange(parseInt(value));
                       handleProviderChange(value, true);
                     }}>
@@ -1013,7 +1013,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Cabinet</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                         disabled={!selectedProviderIdForEdit}
                       >
@@ -1041,7 +1041,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Game Mix</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                         disabled={!selectedProviderIdForEdit}
                       >
@@ -1069,7 +1069,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Location</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                       >
                         <FormControl>
@@ -1121,7 +1121,7 @@ export default function Slots() {
                     <FormItem>
                       <FormLabel className="text-white">Invoice Number</FormLabel>
                       <Select 
-                        value={field.value?.toString()} 
+                        value={field.value?.toString() ?? ""} 
                         onValueChange={(value) => field.onChange(parseInt(value))}
                       >
                         <FormControl>
@@ -1163,7 +1163,7 @@ export default function Slots() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Property Type</FormLabel>
-                      <Select value={field.value || ""} onValueChange={field.onChange}>
+                      <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select property type" />

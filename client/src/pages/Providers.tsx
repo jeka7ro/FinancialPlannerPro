@@ -786,7 +786,7 @@ export default function Providers() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Country</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select a country" />
@@ -1022,7 +1022,7 @@ export default function Providers() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Country</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || ""}>
+                      <Select onValueChange={field.onChange} value={field.value ?? ""}>
                         <FormControl>
                           <SelectTrigger className="enhanced-input">
                             <SelectValue placeholder="Select a country" />

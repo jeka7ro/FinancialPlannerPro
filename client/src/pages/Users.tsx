@@ -582,7 +582,7 @@ export default function Users() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Role *</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="form-input">
                           <SelectValue placeholder="Select role" />
@@ -751,7 +751,7 @@ export default function Users() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Role</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="form-input">
                           <SelectValue placeholder="Select role" />

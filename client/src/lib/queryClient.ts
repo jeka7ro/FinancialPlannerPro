@@ -794,6 +794,45 @@ const mockRentAgreements = [
   }
 ];
 
+// Mock data storage with persistence
+let mockDataStore: Record<string, any[]> = {
+  companies: [...mockCompanies],
+  locations: [...mockLocations],
+  providers: [...mockProviders],
+  cabinets: [...mockCabinets],
+  gameMixes: [...mockGameMixes],
+  slots: [...mockSlots],
+  users: [...mockUsers],
+  invoices: [...mockInvoices],
+  legalDocuments: [...mockLegalDocuments],
+  onjnReports: [...mockOnjnReports],
+  rentAgreements: [...mockRentAgreements],
+};
+
+// Load mock data from localStorage on startup
+const loadMockData = () => {
+  try {
+    const saved = localStorage.getItem('mockDataStore');
+    if (saved) {
+      mockDataStore = JSON.parse(saved);
+    }
+  } catch (error) {
+    console.warn('Failed to load mock data from localStorage:', error);
+  }
+};
+
+// Save mock data to localStorage
+const saveMockData = () => {
+  try {
+    localStorage.setItem('mockDataStore', JSON.stringify(mockDataStore));
+  } catch (error) {
+    console.warn('Failed to save mock data to localStorage:', error);
+  }
+};
+
+// Initialize mock data
+loadMockData();
+
 // Funcție pentru paginare
 function paginateData(data: any[], page: number, limit: number, search?: string) {
   let filteredData = data;
@@ -913,13 +952,84 @@ export async function apiRequest(
       });
     }
   }
+
+  // Handle CRUD operations for mock data
+  if (method === "POST" || method === "PUT" || method === "DELETE") {
+    const entityType = baseKey.split('/')[2]; // Extract entity type from URL
+    const entityId = baseKey.split('/')[3]; // Extract ID for PUT/DELETE
+    
+    if (method === "POST") {
+      // Create new entity
+      const newId = Math.max(...mockDataStore[entityType]?.map((item: any) => item.id) || [0]) + 1;
+      const newEntity = {
+        id: newId,
+        ...(data as object),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      if (mockDataStore[entityType]) {
+        mockDataStore[entityType].push(newEntity);
+        saveMockData();
+        
+        return new Response(JSON.stringify(newEntity), {
+          status: 201,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+    
+    if (method === "PUT" && entityId) {
+      // Update existing entity
+      const entityIndex = mockDataStore[entityType]?.findIndex((item: any) => item.id === parseInt(entityId));
+      
+      if (entityIndex !== -1 && mockDataStore[entityType]) {
+        const updatedEntity = {
+          ...mockDataStore[entityType][entityIndex],
+          ...(data as object),
+          id: parseInt(entityId),
+          updatedAt: new Date().toISOString(),
+        };
+        
+        mockDataStore[entityType][entityIndex] = updatedEntity;
+        saveMockData();
+        
+        return new Response(JSON.stringify(updatedEntity), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+    
+    if (method === "DELETE" && entityId) {
+      // Delete entity
+      const entityIndex = mockDataStore[entityType]?.findIndex((item: any) => item.id === parseInt(entityId));
+      
+      if (entityIndex !== -1 && mockDataStore[entityType]) {
+        mockDataStore[entityType].splice(entityIndex, 1);
+        saveMockData();
+        
+        return new Response(JSON.stringify({ success: true }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+  }
   
-  if (mockApiResponses[baseKey]) {
+  // Handle GET requests with updated mock data
+  if (method === "GET" && mockApiResponses[baseKey]) {
     let responseData = mockApiResponses[baseKey];
     
     // Handle function responses
     if (typeof responseData === 'function') {
       responseData = responseData();
+    }
+    
+    // Use updated mock data from store
+    const entityType = baseKey.split('/')[2];
+    if (entityType && mockDataStore[entityType]) {
+      responseData = { [entityType]: mockDataStore[entityType], total: mockDataStore[entityType].length };
     }
     
     // Aplică paginarea dacă este necesar

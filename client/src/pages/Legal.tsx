@@ -289,7 +289,7 @@ export default function Legal() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Status</FormLabel>
-                          <Select onValueChange={field.onChange} value={field.value}>
+                          <Select onValueChange={field.onChange} value={field.value ?? ""}>
                             <FormControl>
                               <SelectTrigger className="form-input">
                                 <SelectValue placeholder="Select status" />

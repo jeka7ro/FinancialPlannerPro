@@ -337,7 +337,7 @@ export default function ONJNClean() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Authority</FormLabel>
-                        <Select value={field.value || ""} onValueChange={(value) => {
+                        <Select value={field.value ?? ""} onValueChange={(value) => {
                           field.onChange(value);
                           setNotificationAuthority(value);
                         }}>
@@ -364,7 +364,7 @@ export default function ONJNClean() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Notification Type</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <Select value={field.value ?? ""} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger className="glass-card border-white/20 text-white">
                                 <SelectValue placeholder="Select notification type" />
@@ -493,7 +493,7 @@ export default function ONJNClean() {
                         <FormControl>
                           <Textarea 
                             {...field} 
-                            value={field.value || ""} 
+                            value={field.value ?? ""} 
                             className="glass-card border-white/20 text-white min-h-20" 
                             placeholder="Enter serial numbers separated by spaces or commas" 
                           />
@@ -513,7 +513,7 @@ export default function ONJNClean() {
                         <FormControl>
                           <Textarea 
                             {...field} 
-                            value={field.value || ""} 
+                            value={field.value ?? ""} 
                             className="glass-card border-white/20 text-white min-h-20" 
                             placeholder="Additional notes and comments" 
                           />
@@ -534,7 +534,7 @@ export default function ONJNClean() {
                             className="glass-card border-white/20 text-white"
                             placeholder="Enter file path or upload document"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -549,7 +549,7 @@ export default function ONJNClean() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value || "draft"} onValueChange={field.onChange}>
+                        <Select value={field.value ?? "draft"} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-white">
                               <SelectValue placeholder="Select status" />
@@ -619,7 +619,7 @@ export default function ONJNClean() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Commission Type</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-white">
                               <SelectValue placeholder="Select commission type" />
@@ -648,7 +648,7 @@ export default function ONJNClean() {
                         <FormControl>
                           <Textarea 
                             {...field} 
-                            value={field.value || ""} 
+                            value={field.value ?? ""} 
                             className="glass-card border-white/20 text-white min-h-20" 
                             placeholder="Enter serial numbers separated by spaces or commas" 
                           />
@@ -669,7 +669,7 @@ export default function ONJNClean() {
                             className="glass-card border-white/20 text-white"
                             placeholder="Enter file path or upload document"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -686,7 +686,7 @@ export default function ONJNClean() {
                         <FormControl>
                           <Textarea 
                             {...field} 
-                            value={field.value || ""} 
+                            value={field.value ?? ""} 
                             className="glass-card border-white/20 text-white min-h-20" 
                             placeholder="Additional notes and comments" 
                           />
@@ -727,7 +727,7 @@ export default function ONJNClean() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value} onValueChange={field.onChange}>
+                        <Select value={field.value ?? "draft"} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-white">
                               <SelectValue placeholder="Select status" />
@@ -938,7 +938,7 @@ export default function ONJNClean() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Commission Type</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-white">
                           <SelectValue placeholder="Select commission type" />
@@ -967,7 +967,7 @@ export default function ONJNClean() {
                     <FormControl>
                       <Textarea 
                         {...field} 
-                        value={field.value || ""} 
+                        value={field.value ?? ""} 
                         className="glass-card border-white/20 text-white min-h-20" 
                         placeholder="Enter serial numbers separated by spaces or commas" 
                       />
@@ -988,7 +988,7 @@ export default function ONJNClean() {
                         className="glass-card border-white/20 text-white"
                         placeholder="Enter file path or upload document"
                         {...field}
-                        value={field.value || ""}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -1002,7 +1002,7 @@ export default function ONJNClean() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-white">Status</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
+                    <Select value={field.value ?? "draft"} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-white">
                           <SelectValue placeholder="Select status" />
@@ -1029,7 +1029,7 @@ export default function ONJNClean() {
                     <FormControl>
                       <Textarea 
                         {...field} 
-                        value={field.value || ""} 
+                        value={field.value ?? ""} 
                         className="glass-card border-white/20 text-white min-h-20" 
                         placeholder="Additional notes and comments" 
                       />

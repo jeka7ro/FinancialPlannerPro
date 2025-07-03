@@ -534,7 +534,7 @@ export default function ONJNWorking() {
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Authority</FormLabel>
                         <Select 
-                          value={field.value || ""} 
+                          value={field.value ?? ""} 
                           onValueChange={(value) => {
                             field.onChange(value);
                             setNotificationAuthority(value);
@@ -562,7 +562,7 @@ export default function ONJNWorking() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-slate-300">Notification Type</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <Select value={field.value ?? ""} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger className="glass-card border-white/20 text-slate-300">
                                 <SelectValue placeholder="Select notification type" />
@@ -617,7 +617,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Company</FormLabel>
-                        <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select company" />
@@ -640,7 +640,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Status</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select status" />
@@ -669,7 +669,7 @@ export default function ONJNWorking() {
                           <Textarea 
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -745,7 +745,7 @@ export default function ONJNWorking() {
                             className="glass-card border-white/20 text-slate-300"
                             placeholder="Enter serial numbers separated by spaces"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -759,7 +759,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Company</FormLabel>
-                        <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select company" />
@@ -782,7 +782,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Status</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select status" />
@@ -811,7 +811,7 @@ export default function ONJNWorking() {
                           <Textarea 
                             className="glass-card border-white/20 text-slate-300"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -970,7 +970,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Authority</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select authority" />
@@ -992,7 +992,7 @@ export default function ONJNWorking() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-slate-300">Notification Type</FormLabel>
-                        <Select value={field.value || ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="glass-card border-white/20 text-slate-300">
                               <SelectValue placeholder="Select notification type" />
@@ -1063,7 +1063,7 @@ export default function ONJNWorking() {
                             className="glass-card border-white/20 text-slate-300"
                             placeholder="Enter serial numbers separated by spaces"
                             {...field}
-                            value={field.value || ""}
+                            value={field.value ?? ""}
                           />
                         </FormControl>
                         <FormMessage />
@@ -1079,7 +1079,7 @@ export default function ONJNWorking() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Company</FormLabel>
-                    <Select value={field.value?.toString() || ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                    <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select company" />
@@ -1102,7 +1102,7 @@ export default function ONJNWorking() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="text-slate-300">Status</FormLabel>
-                    <Select value={field.value || ""} onValueChange={field.onChange}>
+                    <Select value={field.value ?? ""} onValueChange={field.onChange}>
                       <FormControl>
                         <SelectTrigger className="glass-card border-white/20 text-slate-300">
                           <SelectValue placeholder="Select status" />
@@ -1131,7 +1131,7 @@ export default function ONJNWorking() {
                       <Textarea 
                         className="glass-card border-white/20 text-slate-300"
                         {...field}
-                        value={field.value || ""}
+                        value={field.value ?? ""}
                       />
                     </FormControl>
                     <FormMessage />

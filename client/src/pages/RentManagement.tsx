@@ -305,7 +305,7 @@ export default function RentManagement() {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel className="text-white">Status</FormLabel>
-                          <Select value={field.value || ""} onValueChange={field.onChange}>
+                          <Select value={field.value ?? ""} onValueChange={field.onChange}>
                             <FormControl>
                               <SelectTrigger className="form-input">
                                 <SelectValue placeholder="Select status" />
