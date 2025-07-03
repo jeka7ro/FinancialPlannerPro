@@ -32,32 +32,34 @@ export default function Sidebar({ className }: SidebarProps) {
     <div
       className={clsx(
         'sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0',
-        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : '',
         className
       )}
-      style={theme.theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
     >
-      <div className="flex items-center justify-center h-28 px-6 border-b border-white/10 min-h-[7rem]">
-        <div className="flex items-center justify-center w-full">
-          <img 
-            src={cashpotLogo} 
-            alt="CASHPOT" 
-            className="h-12 w-auto object-contain filter brightness-110"
-            onLoad={() => console.log('Logo loaded successfully')}
-            onError={(e) => {
-              console.log('Logo failed to load, showing fallback');
-              const target = e.currentTarget;
-              target.style.display = 'none';
-              const fallback = document.createElement('div');
-              fallback.className = 'text-white font-bold text-xl';
-              fallback.textContent = 'CASHPOT';
-              target.parentNode?.appendChild(fallback);
-            }}
-          />
+      {/* Top section with same gradient as header */}
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900/80 dark:to-slate-800/80 border-b border-blue-200 dark:border-slate-700">
+        <div className="flex items-center justify-center h-28 px-6 min-h-[7rem]">
+          <div className="flex items-center justify-center w-full">
+            <img 
+              src={cashpotLogo} 
+              alt="CASHPOT" 
+              className="h-12 w-auto object-contain filter brightness-110"
+              onLoad={() => console.log('Logo loaded successfully')}
+              onError={(e) => {
+                console.log('Logo failed to load, showing fallback');
+                const target = e.currentTarget;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'text-blue-700 dark:text-blue-300 font-bold text-xl';
+                fallback.textContent = 'CASHPOT';
+                target.parentNode?.appendChild(fallback);
+              }}
+            />
+          </div>
         </div>
       </div>
       
-      <nav className="mt-8 px-2">
+      {/* Navigation section with original styling */}
+      <nav className="mt-8 px-2 bg-white dark:bg-slate-900/80">
         <ul className="flex flex-col gap-2">
           {navigation.map((item) => {
             const isActive = location === item.href;
