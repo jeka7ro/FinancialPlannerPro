@@ -498,7 +498,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Company</FormLabel>
-                        <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select company" />
@@ -568,7 +568,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select status" />
@@ -820,7 +820,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Company</FormLabel>
-                      <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select company" />
@@ -890,7 +890,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />
