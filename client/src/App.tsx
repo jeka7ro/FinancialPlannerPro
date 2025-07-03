@@ -3,7 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider, useTheme } from "next-themes";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import NotFound from "@/pages/not-found";
@@ -286,36 +286,6 @@ function Router() {
   return <AuthenticatedApp />;
 }
 
-// Component pentru gestionarea temei
-function ThemeManager() {
-  const { theme, setTheme } = useTheme();
-
-  useEffect(() => {
-    // Listează toate temele posibile
-    const themeClasses = [
-      "windows11",
-      "monterey", 
-      "icloud",
-      "dark",
-      "light"
-    ];
-    
-    // Elimină toate clasele de temă de pe body
-    themeClasses.forEach(cls => document.body.classList.remove(cls));
-    
-    // Adaugă doar clasa temei curente dacă există
-    if (theme && themeClasses.includes(theme)) {
-      document.body.classList.add(theme);
-    } else if (theme === 'system') {
-      // Pentru system, verifică preferința sistemului
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      document.body.classList.add(systemTheme);
-    }
-  }, [theme]);
-
-  return null; // Acest component nu renderizează nimic
-}
-
 function App() {
   const { isAuthenticated, isLoading, user, setIsAuthenticated, setUser } = useAuth();
 
@@ -338,14 +308,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider 
-        attribute="class" 
-        defaultTheme="dark" 
-        themes={['system', 'light', 'dark', 'monterey', 'icloud', 'windows11']}
-        enableSystem={true}
-        disableTransitionOnChange={false}
-      >
-        <ThemeManager />
+      <ThemeProvider>
         <TooltipProvider>
           <Toaster />
           <Router />

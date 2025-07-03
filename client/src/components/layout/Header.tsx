@@ -2,12 +2,10 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
-import { ThemeSelector } from "@/components/ui/theme-selector";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "../../../shared/schema";
 import { Power } from "lucide-react";
-import { useTheme } from "next-themes";
-import clsx from "clsx";
 
 interface HeaderProps {
   title: string;
@@ -17,7 +15,6 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   const { toast } = useToast();
-  const { theme } = useTheme();
   
   const { data: currentUser } = useQuery<User>({
     queryKey: ["/api/auth/user"],
@@ -45,13 +42,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   };
 
   return (
-    <header
-      className={clsx(
-        'w-full h-28 min-h-[7rem] bg-white dark:bg-slate-900/80 shadow flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-700',
-        theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : ''
-      )}
-      style={theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
-    >
+    <header className="w-full h-28 min-h-[7rem] bg-white dark:bg-slate-900/80 shadow flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-700">
       <div className="flex items-center gap-2">
         <Button
           variant="ghost"
@@ -75,7 +66,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
             3
           </span>
         </Button>
-        <ThemeSelector />
+        <ThemeToggle />
         <div className="flex items-center gap-2">
           <UserAvatar user={currentUser || null} size="lg" className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200" />
           {currentUser && (
