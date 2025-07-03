@@ -151,6 +151,8 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       onLogin(data.user);
     } catch (error) {
       setLoginError("Parolă sau utilizator incorect!");
+      setUsername("");
+      setPassword("");
       toast({
         title: "Login Failed",
         description: "Invalid credentials. Please try again.",
