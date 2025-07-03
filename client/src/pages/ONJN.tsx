@@ -522,7 +522,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select location" />
@@ -694,7 +694,7 @@ export default function ONJN() {
                           <SerialNumbersDisplay serialNumbers={report.serialNumbers} />
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {companies?.companies?.find((c: any) => c.id === report.companyId)?.name || 'N/A'}
+                          {Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === report.companyId)?.name || 'N/A' : 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
                           {Array.isArray(locations?.locations) ? locations.locations.find((l: any) => l.id === report.locationId)?.name || 'N/A' : 'N/A'}
@@ -844,7 +844,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Location</FormLabel>
-                      <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select location" />
