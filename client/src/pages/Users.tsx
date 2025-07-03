@@ -228,13 +228,26 @@ export default function Users() {
   };
 
   const handleBulkDelete = () => {
-    if (selectedUsers.length === 0) return;
-    
-    toast({
-      title: "Bulk Delete",
-      description: `Deleting ${selectedUsers.length} users`,
-      variant: "destructive",
-    });
+    if (window.confirm(`Are you sure you want to delete ${selectedUsers.length} users?`)) {
+      selectedUsers.forEach(id => deleteMutation.mutate(id));
+      setSelectedUsers([]);
+    }
+  };
+
+  const handleSelectAllLocations = () => {
+    if (selectedLocations.length === locations?.locations?.length) {
+      setSelectedLocations([]);
+    } else {
+      setSelectedLocations(locations?.locations?.map((loc: any) => loc.id) || []);
+    }
+  };
+
+  const handleSelectAllEditLocations = () => {
+    if (editSelectedLocations.length === locations?.locations?.length) {
+      setEditSelectedLocations([]);
+    } else {
+      setEditSelectedLocations(locations?.locations?.map((loc: any) => loc.id) || []);
+    }
   };
 
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
@@ -530,37 +543,6 @@ export default function Users() {
                 />
               </div>
 
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">Password *</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="telephone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-green-400" />
-                      Telephone
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
@@ -583,6 +565,38 @@ export default function Users() {
                       <FormLabel className="text-white">Last Name</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">Password *</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter password" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="telephone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-green-400" />
+                        Telephone
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -615,8 +629,17 @@ export default function Users() {
               />
 
               <div className="space-y-2">
-                <label className="text-white text-sm font-medium">Assigned Locations *</label>
-                <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-white text-sm font-medium">Assigned Locations *</label>
+                  <button
+                    type="button"
+                    onClick={handleSelectAllLocations}
+                    className="text-xs text-blue-400 hover:text-blue-300 underline"
+                  >
+                    {selectedLocations.length === locations?.locations?.length ? "Deselect All" : "Select All"}
+                  </button>
+                </div>
+                <div className="space-y-2 max-h-40 overflow-y-auto border border-white/10 rounded-md p-3">
                   {locations?.locations?.map((location: any) => (
                     <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
                       <input
@@ -705,45 +728,6 @@ export default function Users() {
                 />
               </div>
 
-              <FormField
-                control={editForm.control}
-                name="telephone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-green-400" />
-                      Telephone
-                    </FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={editForm.control}
-                name="newPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white">New Password (leave empty to keep current)</FormLabel>
-                    <FormControl>
-                      <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Enter new password" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <label className="text-white text-sm font-medium">User Photo</label>
-                <AttachmentButton
-                  entityType="users"
-                  entityId={editingUser?.id}
-                />
-              </div>
-
               <div className="grid grid-cols-2 gap-4">
                 <FormField
                   control={editForm.control}
@@ -766,6 +750,38 @@ export default function Users() {
                       <FormLabel className="text-white">Last Name</FormLabel>
                       <FormControl>
                         <Input {...field} value={field.value || ""} className="form-input" placeholder="Last name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={editForm.control}
+                  name="telephone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-green-400" />
+                        Telephone
+                      </FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="tel" className="form-input" placeholder="Enter telephone number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={editForm.control}
+                  name="newPassword"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white">New Password</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Leave empty to keep current" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -798,8 +814,25 @@ export default function Users() {
               />
 
               <div className="space-y-2">
-                <label className="text-white text-sm font-medium">Assigned Locations *</label>
-                <div className="space-y-2">
+                <label className="text-white text-sm font-medium">User Photo</label>
+                <AttachmentButton
+                  entityType="users"
+                  entityId={editingUser?.id}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-white text-sm font-medium">Assigned Locations *</label>
+                  <button
+                    type="button"
+                    onClick={handleSelectAllEditLocations}
+                    className="text-xs text-blue-400 hover:text-blue-300 underline"
+                  >
+                    {editSelectedLocations.length === locations?.locations?.length ? "Deselect All" : "Select All"}
+                  </button>
+                </div>
+                <div className="space-y-2 max-h-40 overflow-y-auto border border-white/10 rounded-md p-3">
                   {locations?.locations?.map((location: any) => (
                     <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
                       <input
