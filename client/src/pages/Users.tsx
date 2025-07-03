@@ -17,7 +17,7 @@ import { AttachmentButton } from "@/components/ui/attachment-button";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { BulkOperations } from "@/components/ui/bulk-operations";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Upload, Download, Edit, Trash2, Plus, Search, Mail, Phone } from "lucide-react";
+import { Upload, Download, Edit, Trash2, Plus, Search, Mail, Phone, Eye, EyeOff } from "lucide-react";
 import { z } from "zod";
 
 export default function Users() {
@@ -31,6 +31,9 @@ export default function Users() {
   const [selectedUsers, setSelectedUsers] = useState<number[]>([]);
   const { toast } = useToast();
   const limit = 10;
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['/api/users', currentPage, limit, searchTerm],
@@ -141,9 +144,10 @@ export default function Users() {
     },
   });
 
-  const editForm = useForm<InsertUser & { newPassword?: string }>({
+  const editForm = useForm<InsertUser & { newPassword?: string, confirmPassword?: string }>({
     resolver: zodResolver(insertUserSchema.omit({ password: true }).extend({
       newPassword: z.string().optional(),
+      confirmPassword: z.string().optional(),
     })),
     defaultValues: {
       username: "",
@@ -154,6 +158,7 @@ export default function Users() {
       role: "operator",
       isActive: true,
       newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -161,7 +166,12 @@ export default function Users() {
     createMutation.mutate(data);
   };
 
-  const onEditSubmit = (data: Partial<InsertUser>) => {
+  const onEditSubmit = (data: Partial<InsertUser> & { newPassword?: string, confirmPassword?: string }) => {
+    setPasswordError("");
+    if (data.newPassword && data.newPassword !== data.confirmPassword) {
+      setPasswordError("Parolele nu coincid!");
+      return;
+    }
     if (editingUser) {
       editMutation.mutate({ id: editingUser.id, data });
     }
@@ -178,6 +188,7 @@ export default function Users() {
       role: user.role || "operator",
       isActive: user.isActive ?? true,
       newPassword: "",
+      confirmPassword: "",
     });
     
     // Load user's current location assignments
@@ -769,14 +780,62 @@ export default function Users() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">New Password</FormLabel>
-                      <FormControl>
-                        <Input {...field} value={field.value || ""} type="password" className="form-input" placeholder="Leave empty to keep current" />
-                      </FormControl>
+                      <div className="relative">
+                        <Input
+                          {...field}
+                          value={field.value || ""}
+                          type={showNewPassword ? "text" : "password"}
+                          className="form-input pr-10"
+                          placeholder="Leave empty to keep current"
+                        />
+                        <button
+                          type="button"
+                          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400"
+                          tabIndex={-1}
+                          onClick={() => setShowNewPassword((v) => !v)}
+                        >
+                          {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <FormField
+                control={editForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Confirm New Password</FormLabel>
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        value={field.value || ""}
+                        type={showConfirmPassword ? "text" : "password"}
+                        className="form-input pr-10"
+                        placeholder="Re-enter new password"
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400"
+                        tabIndex={-1}
+                        onClick={() => setShowConfirmPassword((v) => !v)}
+                      >
+                        {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {passwordError && (
+                <div className="text-red-400 text-sm font-semibold text-center -mt-2 mb-2">
+                  {passwordError}
+                </div>
+              )}
 
               <FormField
                 control={editForm.control}
