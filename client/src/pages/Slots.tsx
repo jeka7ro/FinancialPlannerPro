@@ -458,7 +458,7 @@ export default function Slots() {
                           )}
                           <div>
                             <div className="table-cell-primary">
-                              {providers?.providers?.find((p: any) => p.id === slot.providerId)?.name || 'No provider'}
+                              {Array.isArray(providers?.providers) ? providers.providers.find((p: any) => p.id === slot.providerId)?.name || 'No provider' : 'No provider'}
                             </div>
                           </div>
                         </div>
@@ -470,7 +470,7 @@ export default function Slots() {
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {locations?.locations?.find((l: any) => l.id === slot.locationId)?.name || 'No location'}
+                          {Array.isArray(locations?.locations) ? locations.locations.find((l: any) => l.id === slot.locationId)?.name || 'No location' : 'No location'}
                         </div>
                       </td>
                       <td>

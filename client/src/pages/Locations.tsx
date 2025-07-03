@@ -698,9 +698,7 @@ export default function Locations() {
                       </td>
                       <td>
                         <span className="table-cell-accent">
-                          {location.companyId ? 
-                            companies?.companies?.find((c: any) => c.id === location.companyId)?.name || 'Unknown Company' 
-                            : 'No company'}
+                          {companies && Array.isArray(companies.companies) ? companies.companies.find((c: any) => c.id === location.companyId)?.name || 'Unknown Company' : 'Unknown Company'}
                         </span>
                       </td>
                       <td>

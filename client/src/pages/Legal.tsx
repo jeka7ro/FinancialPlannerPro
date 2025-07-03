@@ -503,7 +503,7 @@ export default function Legal() {
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {companies?.companies?.find((c: any) => c.id === document.companyId)?.name || 'No company'}
+                          {Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === document.companyId)?.name || 'No company' : 'No company'}
                         </div>
                       </td>
                       <td>

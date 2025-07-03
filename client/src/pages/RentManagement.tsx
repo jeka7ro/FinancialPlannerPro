@@ -520,12 +520,12 @@ export default function RentManagement() {
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {companies?.companies?.find((c: any) => c.id === agreement.companyId)?.name || 'No company'}
+                          {Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === agreement.companyId)?.name || 'No company' : 'No company'}
                         </div>
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {locations?.locations?.find((l: any) => l.id === agreement.locationId)?.name || 'No location'}
+                          {Array.isArray(locations?.locations) ? locations.locations.find((l: any) => l.id === agreement.locationId)?.name || 'No location' : 'No location'}
                         </div>
                       </td>
                       <td>

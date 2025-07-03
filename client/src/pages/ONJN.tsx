@@ -498,7 +498,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Company</FormLabel>
-                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select company" />
@@ -522,7 +522,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Location</FormLabel>
-                        <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                        <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select location" />
@@ -568,7 +568,7 @@ export default function ONJN() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-white">Status</FormLabel>
-                        <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
                           <FormControl>
                             <SelectTrigger className="form-input">
                               <SelectValue placeholder="Select status" />
@@ -697,7 +697,7 @@ export default function ONJN() {
                           {companies?.companies?.find((c: any) => c.id === report.companyId)?.name || 'N/A'}
                         </td>
                         <td className="py-4 px-4 text-sm text-slate-300">
-                          {locations?.locations?.find((l: any) => l.id === report.locationId)?.name || 'N/A'}
+                          {Array.isArray(locations?.locations) ? locations.locations.find((l: any) => l.id === report.locationId)?.name || 'N/A' : 'N/A'}
                         </td>
                         <td className="py-4 px-4">
                           <Badge className={`${getStatusColor(report.status)} border`}>
@@ -820,7 +820,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Company</FormLabel>
-                      <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select company" />
@@ -844,7 +844,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Location</FormLabel>
-                      <Select value={field.value?.toString() ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
+                      <Select value={field.value ?? ""} onValueChange={(value) => field.onChange(parseInt(value))}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select location" />
@@ -890,7 +890,7 @@ export default function ONJN() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-white">Status</FormLabel>
-                      <Select value={field.value?.toString() ?? ""} onValueChange={field.onChange}>
+                      <Select value={field.value ?? ""} onValueChange={field.onChange}>
                         <FormControl>
                           <SelectTrigger className="form-input">
                             <SelectValue placeholder="Select status" />

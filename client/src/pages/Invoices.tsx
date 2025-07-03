@@ -498,8 +498,8 @@ export default function Invoices() {
                 </thead>
                 <tbody>
                   {data.invoices.map((invoice: any, index: number) => {
-                    const buyer = companies?.companies?.find((c: any) => c.id === invoice.companyId);
-                    const seller = companies?.companies?.find((c: any) => c.id === invoice.sellerCompanyId);
+                    const buyer = Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === invoice.companyId) : undefined;
+                    const seller = Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === invoice.sellerCompanyId) : undefined;
                     return (
                       <tr key={invoice.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                         <td className="px-4 py-4">

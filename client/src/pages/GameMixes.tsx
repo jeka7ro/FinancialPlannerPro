@@ -390,7 +390,7 @@ export default function GameMixes() {
                               <DialogContent className="glass-dialog max-w-md">
                                 <DialogHeader>
                                   <DialogTitle className="text-white flex items-center justify-between">
-                                    <span>{providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'Provider'} Logo</span>
+                                    <span>{Array.isArray(providers?.providers) ? providers.providers.find((p: any) => p.id === gameMix.providerId)?.name || 'Provider' : 'Provider'} Logo</span>
                                     <X className="h-4 w-4 cursor-pointer hover:text-slate-400 transition-colors" />
                                   </DialogTitle>
                                 </DialogHeader>
@@ -404,7 +404,7 @@ export default function GameMixes() {
                           )}
                           <div className="min-w-0 flex-1">
                             <div className="table-cell-primary font-medium truncate">
-                              {providers?.providers?.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider'}
+                              {Array.isArray(providers?.providers) ? providers.providers.find((p: any) => p.id === gameMix.providerId)?.name || 'No provider' : 'No provider'}
                             </div>
                           </div>
                         </div>

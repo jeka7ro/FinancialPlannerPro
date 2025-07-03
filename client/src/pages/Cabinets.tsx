@@ -208,7 +208,7 @@ export default function Cabinets() {
   };
 
   const getProviderName = (providerId: number) => {
-    const provider = providers?.providers?.find((p: any) => p.id === providerId);
+    const provider = Array.isArray(providers?.providers) ? providers.providers.find((p: any) => p.id === providerId) : undefined;
     return provider ? provider.name : "Unknown Provider";
   };
 
