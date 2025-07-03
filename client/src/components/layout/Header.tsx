@@ -6,7 +6,6 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useQuery } from "@tanstack/react-query";
 import type { User } from "../../../shared/schema";
 import { Power } from "lucide-react";
-import cashpotLogo from '@/assets/cashpot-logo.png';
 
 interface HeaderProps {
   title: string;
@@ -54,29 +53,9 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
           <span className="text-lg">☰</span>
         </Button>
         
-        {/* Cashpot Logo */}
-        <div className="flex items-center gap-3">
-          <div className="bg-white dark:bg-slate-800 rounded-lg p-2 shadow-md border border-blue-100 dark:border-slate-600">
-            <img 
-              src={cashpotLogo} 
-              alt="CASHPOT" 
-              className="h-10 w-auto object-contain filter brightness-110 dark:brightness-100"
-              onLoad={() => console.log('Header logo loaded successfully')}
-              onError={(e) => {
-                console.log('Header logo failed to load, showing fallback');
-                const target = e.currentTarget;
-                target.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.className = 'text-blue-700 dark:text-blue-300 font-bold text-lg';
-                fallback.textContent = 'CASHPOT';
-                target.parentNode?.appendChild(fallback);
-              }}
-            />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold text-blue-700 dark:text-blue-300">{title}</span>
-            {subtitle && <span className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</span>}
-          </div>
+        <div className="flex flex-col">
+          <span className="text-xl font-bold text-blue-700 dark:text-blue-300">{title}</span>
+          {subtitle && <span className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</span>}
         </div>
       </div>
       
