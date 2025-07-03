@@ -105,6 +105,7 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState("");
   const { toast } = useToast();
 
   // Load saved credentials on component mount
@@ -125,16 +126,14 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
+    setLoginError("");
     try {
       const response = await apiRequest("POST", "/api/auth/login", {
         username,
         password,
         rememberMe,
       });
-
       const data = await response.json();
-      
       // Save credentials if remember me is checked
       if (rememberMe) {
         localStorage.setItem('cashpot_credentials', JSON.stringify({
@@ -145,13 +144,13 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       } else {
         localStorage.removeItem('cashpot_credentials');
       }
-      
       toast({
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName || data.user.username}!`,
       });
       onLogin(data.user);
     } catch (error) {
+      setLoginError("Parolă sau utilizator incorect!");
       toast({
         title: "Login Failed",
         description: "Invalid credentials. Please try again.",
@@ -205,7 +204,11 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
                   required
                 />
               </div>
-              
+              {loginError && (
+                <div className="text-red-400 text-sm font-semibold text-center -mt-2 mb-2">
+                  {loginError}
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <input
@@ -223,7 +226,6 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
                   Stay logged in for 30 days
                 </div>
               </div>
-              
               <Button
                 type="submit"
                 className="w-full btn-gaming"
