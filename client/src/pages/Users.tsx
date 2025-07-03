@@ -268,7 +268,7 @@ export default function Users() {
   };
 
   return (
-    <div className="space-y-6 w-full max-w-none">
+    <div className="space-y-4 w-full max-w-none">
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -287,18 +287,7 @@ export default function Users() {
         </div>
       </div>
 
-      {/* Title and Total - SUS */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold heading-gradient">System Users</h2>
-          <p className="text-slate-400 mt-1">User accounts and access management</p>
-        </div>
-        <div className="text-sm text-slate-400">
-          {data?.total || 0} total users
-        </div>
-      </div>
-
-      {/* Search Bar and Actions - SUS */}
+      {/* Search Bar and Actions */}
       <div className="search-card">
         <div className="flex items-center justify-between w-full">
           <div className="relative" style={{ width: '10cm' }}>

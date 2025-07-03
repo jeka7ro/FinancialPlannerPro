@@ -288,7 +288,7 @@ function Router() {
 
 // Component pentru gestionarea temei
 function ThemeManager() {
-  const theme = useTheme();
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     // Listează toate temele posibile
@@ -304,10 +304,14 @@ function ThemeManager() {
     themeClasses.forEach(cls => document.body.classList.remove(cls));
     
     // Adaugă doar clasa temei curente dacă există
-    if (theme.theme && themeClasses.includes(theme.theme)) {
-      document.body.classList.add(theme.theme);
+    if (theme && themeClasses.includes(theme)) {
+      document.body.classList.add(theme);
+    } else if (theme === 'system') {
+      // Pentru system, verifică preferința sistemului
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.body.classList.add(systemTheme);
     }
-  }, [theme.theme]);
+  }, [theme]);
 
   return null; // Acest component nu renderizează nimic
 }
@@ -336,9 +340,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider 
         attribute="class" 
-        defaultTheme="light" 
+        defaultTheme="dark" 
         themes={['system', 'light', 'dark', 'monterey', 'icloud', 'windows11']}
         enableSystem={true}
+        disableTransitionOnChange={false}
       >
         <ThemeManager />
         <TooltipProvider>

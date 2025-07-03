@@ -17,7 +17,7 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   const { toast } = useToast();
-  const theme = useTheme();
+  const { theme } = useTheme();
   
   const { data: currentUser } = useQuery<User>({
     queryKey: ["/api/auth/user"],
@@ -48,9 +48,9 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
     <header
       className={clsx(
         'w-full h-28 min-h-[7rem] bg-white dark:bg-slate-900/80 shadow flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-700',
-        theme.theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : ''
+        theme === 'windows11' ? '[background:var(--sidebar-top-bar)]' : ''
       )}
-      style={theme.theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
+      style={theme === "windows11" ? { background: "var(--sidebar-top-bar)" } : undefined}
     >
       <div className="flex items-center gap-2">
         <Button

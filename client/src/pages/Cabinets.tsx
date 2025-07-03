@@ -222,8 +222,8 @@ export default function Cabinets() {
   }, [limit, queryClient]);
 
   return (
-    <div className="space-y-6 p-6 w-full max-w-none">
-      {/* Bulk Operations */}
+    <div className="space-y-4 w-full max-w-none">
+      {/* Actions */}
       <div className="flex items-center justify-between">
         <BulkOperations 
           selectedCount={selectedCabinets.length}
@@ -236,17 +236,6 @@ export default function Cabinets() {
               {selectedCabinets.length} selected
             </span>
           )}
-        </div>
-      </div>
-
-      {/* Title and Total */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold heading-gradient">Cabinets</h2>
-          <p className="text-slate-400 mt-1">Gaming cabinet and equipment management</p>
-        </div>
-        <div className="text-sm text-slate-400">
-          {data?.total || 0} total cabinets
         </div>
       </div>
 

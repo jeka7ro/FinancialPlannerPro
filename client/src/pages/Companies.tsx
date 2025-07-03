@@ -204,7 +204,7 @@ export default function Companies() {
   const totalPages = data ? Math.ceil(data.total / limit) : 0;
 
   return (
-    <div className="space-y-6 w-full max-w-none">
+    <div className="space-y-4 w-full max-w-none">
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -223,18 +223,7 @@ export default function Companies() {
         </div>
       </div>
 
-      {/* Title and Total - SUS */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold heading-gradient">Companies</h2>
-          <p className="text-slate-400 mt-1">Company and legal entity management</p>
-        </div>
-        <div className="text-sm text-slate-400">
-          {data?.total || 0} total companies
-        </div>
-      </div>
-
-      {/* Search Bar and Actions - SUS */}
+      {/* Search Bar and Actions */}
       <div className="search-card">
         <div className="flex items-center justify-between w-full">
           <div className="relative" style={{ width: '10cm' }}>

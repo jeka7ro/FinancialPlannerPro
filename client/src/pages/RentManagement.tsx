@@ -449,16 +449,6 @@ export default function RentManagement() {
 
       {/* Enhanced Rent Agreements Table */}
       <div className="search-card">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold heading-gradient">Rent Agreements</h2>
-            <p className="text-slate-400 mt-1">Property rental and lease management</p>
-          </div>
-          <div className="text-sm text-slate-400">
-            {data?.total || 0} total agreements
-          </div>
-        </div>
-
         {isLoading ? (
           <div className="loading-container">
             {[...Array(5)].map((_, i) => (
