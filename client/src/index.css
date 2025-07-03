@@ -771,25 +771,34 @@ body {
   color: #fff !important;
 }
 
-/* --- Îmbunătățiri vizibilitate dropdown/select pe light (inclusiv selectorul de teme) --- */
-.light .select-content {
+/* --- Forțez vizibilitatea textului și fundalului pentru orice dropdown/select pe light (inclusiv Radix UI) --- */
+.light .select-content,
+.light [role="listbox"],
+.light .select-dropdown,
+.light .dropdown-content {
   background: #fff !important;
   color: #1e293b !important;
   border: 1px solid #cbd5e1 !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.08);
 }
 
-.light .select-item {
+.light .select-item,
+.light [role="option"],
+.light .dropdown-item {
   color: #1e293b !important;
   background: transparent !important;
 }
 
-.light .select-item[aria-selected="true"] {
+.light .select-item[aria-selected="true"],
+.light [role="option"][aria-selected="true"],
+.light .dropdown-item.selected {
   background: #e0e7ef !important;
   color: #2563eb !important;
 }
 
-.light .select-item:hover {
+.light .select-item:hover,
+.light [role="option"]:hover,
+.light .dropdown-item:hover {
   background: #e0e7ef !important;
   color: #2563eb !important;
 } 
