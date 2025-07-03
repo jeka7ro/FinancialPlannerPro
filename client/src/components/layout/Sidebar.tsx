@@ -1,8 +1,11 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 import clsx from "clsx";
 import cashpotLogo from '@/assets/cashpot-logo.png';
+
+interface SidebarProps {
+  className?: string;
+}
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: "📊" },
@@ -19,12 +22,14 @@ const navigation = [
   { name: "Legal", href: "/legal", icon: "📋" },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ className }: SidebarProps) {
   const [location] = useLocation();
-  const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-slate-900/80 border-r border-slate-200 dark:border-slate-700">
+    <div className={cn(
+      "flex flex-col h-full bg-white dark:bg-slate-900/80 border-r border-slate-200 dark:border-slate-700 fixed lg:static inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out",
+      className
+    )}>
       {/* Logo Section - Same color as header */}
       <div className="flex items-center justify-center h-28 min-h-[7rem] bg-blue-800 dark:bg-slate-800 border-b border-blue-700 dark:border-slate-600 px-4">
         <div className="flex items-center gap-3">
