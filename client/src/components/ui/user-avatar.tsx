@@ -46,7 +46,7 @@ export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProp
       return;
     }
 
-    const imageAttachment = attachments.find(att => att.mimeType.startsWith('image/'));
+    const imageAttachment = Array.isArray(attachments) ? attachments.find(att => att.mimeType.startsWith('image/')) : undefined;
     if (imageAttachment) {
       setImageUrl(imageAttachment.url);
       setHasError(false);

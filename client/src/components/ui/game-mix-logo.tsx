@@ -34,9 +34,9 @@ export function GameMixLogo({ gameMixId, size = "md", className }: GameMixLogoPr
   });
 
   // Find the first image attachment to use as logo
-  const logoAttachment = attachments?.find((att: any) => 
+  const logoAttachment = Array.isArray(attachments) ? attachments.find((att: any) => 
     att.mimeType?.startsWith('image/')
-  );
+  ) : undefined;
 
   return (
     <div className={cn(

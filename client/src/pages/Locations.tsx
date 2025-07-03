@@ -568,7 +568,7 @@ export default function Locations() {
 
   const getManagerName = (managerId: number) => {
     if (!managerId) return "No Manager";
-    const manager = users?.users?.find((user: any) => user.id === managerId);
+    const manager = Array.isArray(users?.users) ? users.users.find((user: any) => user.id === managerId) : undefined;
     return manager ? `${manager.firstName} ${manager.lastName}` : "Unknown Manager";
   };
 
@@ -947,7 +947,7 @@ export default function Locations() {
                       field.onChange(userId);
                       
                       // Auto-fill phone and email from selected manager
-                      if (userId && users?.users) {
+                      if (userId && Array.isArray(users?.users)) {
                         const selectedUser = users.users.find((user: any) => user.id === userId);
                         if (selectedUser) {
                           form.setValue('phone', selectedUser.telephone || '');
@@ -1187,7 +1187,7 @@ export default function Locations() {
                       field.onChange(userId);
                       
                       // Auto-fill phone and email from selected manager
-                      if (userId && users?.users) {
+                      if (userId && Array.isArray(users?.users)) {
                         const selectedUser = users.users.find((user: any) => user.id === userId);
                         if (selectedUser) {
                           editForm.setValue('phone', selectedUser.telephone || '');

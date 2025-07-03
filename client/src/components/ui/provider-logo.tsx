@@ -36,7 +36,7 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
       return;
     }
 
-    const imageAttachment = attachments.find(att => att.mimeType.startsWith('image/'));
+    const imageAttachment = Array.isArray(attachments) ? attachments.find(att => att.mimeType.startsWith('image/')) : undefined;
     if (imageAttachment) {
       setLogoUrl(imageAttachment.url);
       setLogoError(false);

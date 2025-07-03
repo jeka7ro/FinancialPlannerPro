@@ -213,13 +213,10 @@ export default function Slots() {
 
   // Function to find invoice by serial number
   const findInvoiceBySerialNumber = (serialNumber: string) => {
-    if (!serialNumber || !invoices?.invoices) return null;
-    
-    return invoices.invoices.find((invoice: any) => {
-      if (!invoice.serialNumbers) return false;
-      const serialNumbers = invoice.serialNumbers.split('\n').map((sn: string) => sn.trim());
-      return serialNumbers.includes(serialNumber.trim());
-    });
+    if (!invoices?.invoices) return null;
+    return Array.isArray(invoices.invoices) ? invoices.invoices.find((invoice: any) => {
+      return invoice.serialNumbers && invoice.serialNumbers.includes(serialNumber);
+    }) : null;
   };
 
   // Function to handle serial number change and auto-fill invoice
@@ -465,7 +462,7 @@ export default function Slots() {
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {cabinets?.cabinets?.find((c: any) => c.id === slot.cabinetId)?.model || 'No cabinet'}
+                          {Array.isArray(cabinets?.cabinets) ? cabinets.cabinets.find((c: any) => c.id === slot.cabinetId)?.model || 'No cabinet' : 'No cabinet'}
                         </div>
                       </td>
                       <td>
@@ -475,7 +472,7 @@ export default function Slots() {
                       </td>
                       <td>
                         <div className="table-cell-primary">
-                          {gameMixes?.gameMixes?.find((g: any) => g.id === slot.gameMixId)?.name || 'No game mix'}
+                          {Array.isArray(gameMixes?.gameMixes) ? gameMixes.gameMixes.find((g: any) => g.id === slot.gameMixId)?.name || 'No game mix' : 'No game mix'}
                         </div>
                       </td>
                       <td>

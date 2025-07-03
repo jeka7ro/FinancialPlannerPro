@@ -29,10 +29,10 @@ export function CabinetLogo({ cabinetId, model = 'Unknown', size = 'md' }: Cabin
   useEffect(() => {
     if (attachments && attachments.length > 0) {
       // Look for logo files
-      const logoFile = attachments.find(attachment => 
+      const logoFile = Array.isArray(attachments) ? attachments.find(attachment => 
         attachment.filename.toLowerCase().includes('logo') ||
         /\.(png|jpg|jpeg|svg|gif)$/i.test(attachment.filename)
-      );
+      ) : undefined;
       
       if (logoFile) {
         setLogoUrl(`/api/attachments/${logoFile.id}/download`);

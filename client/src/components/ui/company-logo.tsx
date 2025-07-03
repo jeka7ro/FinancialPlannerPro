@@ -32,7 +32,7 @@ export function CompanyLogo({ companyId, companyName, size = "md", className = "
       try {
         const response = await apiRequest('GET', `/api/companies/${companyId}/attachments`);
         const attachments = await response.json();
-        const imageAttachment = attachments.find((att: any) => att.mimeType && att.mimeType.startsWith('image/'));
+        const imageAttachment = Array.isArray(attachments) ? attachments.find((att: any) => att.mimeType && att.mimeType.startsWith('image/')) : undefined;
         if (imageAttachment) {
           setLogoUrl(`/api/attachments/${imageAttachment.id}/download`);
           return;
