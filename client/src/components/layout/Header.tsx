@@ -42,7 +42,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   };
 
   return (
-    <header className="w-full h-28 min-h-[7rem] bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900/80 dark:to-slate-800/80 shadow-lg flex items-center justify-between px-6 border-b border-blue-200 dark:border-slate-700">
+    <header className="w-full h-28 min-h-[7rem] bg-gradient-to-r from-blue-100 to-indigo-200 dark:from-slate-800 dark:to-slate-700 shadow-lg flex items-center justify-between px-6 border-b border-blue-300 dark:border-slate-600">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
@@ -54,8 +54,8 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         </Button>
         
         <div className="flex flex-col">
-          <span className="text-xl font-bold text-blue-700 dark:text-blue-300">{title}</span>
-          {subtitle && <span className="text-sm text-slate-600 dark:text-slate-400">{subtitle}</span>}
+          <span className="text-xl font-bold text-blue-800 dark:text-blue-200">{title}</span>
+          {subtitle && <span className="text-sm text-slate-700 dark:text-slate-300">{subtitle}</span>}
         </div>
       </div>
       

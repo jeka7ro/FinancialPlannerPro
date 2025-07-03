@@ -35,8 +35,8 @@ export default function Sidebar({ className }: SidebarProps) {
         className
       )}
     >
-      {/* Top section with same gradient as header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-900/80 dark:to-slate-800/80 border-b border-blue-200 dark:border-slate-700">
+      {/* Top section with same darker gradient as header */}
+      <div className="bg-gradient-to-r from-blue-100 to-indigo-200 dark:from-slate-800 dark:to-slate-700 border-b border-blue-300 dark:border-slate-600">
         <div className="flex items-center justify-center h-28 px-6 min-h-[7rem]">
           <div className="flex items-center justify-center w-full">
             <img 
@@ -49,7 +49,7 @@ export default function Sidebar({ className }: SidebarProps) {
                 const target = e.currentTarget;
                 target.style.display = 'none';
                 const fallback = document.createElement('div');
-                fallback.className = 'text-blue-700 dark:text-blue-300 font-bold text-xl';
+                fallback.className = 'text-blue-800 dark:text-blue-200 font-bold text-xl';
                 fallback.textContent = 'CASHPOT';
                 target.parentNode?.appendChild(fallback);
               }}
