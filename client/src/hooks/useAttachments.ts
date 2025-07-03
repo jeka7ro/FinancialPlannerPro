@@ -6,7 +6,6 @@ export type EntityType =
   | 'providers' 
   | 'companies' 
   | 'locations'
-  | 'provider'
   | 'cabinets'
   | 'invoices'
   | 'legal-documents'

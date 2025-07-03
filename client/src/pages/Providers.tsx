@@ -578,7 +578,7 @@ export default function Providers() {
                       </td>
                       <td>
                         <AttachmentButton 
-                          entityType="provider" 
+                          entityType="providers" 
                           entityId={provider.id}
                         />
                       </td>
