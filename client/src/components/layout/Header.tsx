@@ -42,20 +42,20 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
   };
 
   return (
-    <header className="w-full h-28 min-h-[7rem] bg-gradient-to-r from-blue-100 to-indigo-200 dark:from-slate-800 dark:to-slate-700 shadow-lg flex items-center justify-between px-6 border-b border-blue-300 dark:border-slate-600">
+    <header className="w-full h-28 min-h-[7rem] bg-blue-800 dark:bg-slate-800 shadow-lg flex items-center justify-between px-6 border-b border-blue-700 dark:border-slate-600">
       <div className="flex items-center gap-4">
         <Button
           variant="ghost"
           size="sm"
-          className="lg:hidden p-2 text-slate-400 hover:text-blue-600"
+          className="lg:hidden p-2 text-slate-300 hover:text-white"
           onClick={onMenuToggle}
         >
           <span className="text-lg">☰</span>
         </Button>
         
         <div className="flex flex-col">
-          <span className="text-xl font-bold text-blue-800 dark:text-blue-200">{title}</span>
-          {subtitle && <span className="text-sm text-slate-700 dark:text-slate-300">{subtitle}</span>}
+          <span className="text-xl font-bold text-white">{title}</span>
+          {subtitle && <span className="text-sm text-blue-100">{subtitle}</span>}
         </div>
       </div>
       
@@ -63,7 +63,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="relative p-2 text-slate-400 hover:text-blue-600"
+          className="relative p-2 text-slate-300 hover:text-white"
         >
           <span className="text-lg">🔔</span>
           <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -74,7 +74,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         <div className="flex items-center gap-2">
           <UserAvatar user={currentUser || null} size="lg" className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200" />
           {currentUser && (
-            <span className="hidden sm:inline text-base font-semibold text-slate-900 dark:text-white truncate max-w-xs">
+            <span className="hidden sm:inline text-base font-semibold text-white truncate max-w-xs">
               {currentUser.firstName && currentUser.lastName
                 ? `${currentUser.firstName} ${currentUser.lastName}`
                 : currentUser.username}
@@ -84,7 +84,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="text-red-500 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
+            className="text-red-400 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
             title="Logout"
           >
             <Power className="h-5 w-5" />
