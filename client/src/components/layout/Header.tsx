@@ -47,7 +47,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="lg:hidden p-2 text-slate-300 hover:text-white"
+          className="lg:hidden p-2 text-slate-200 hover:text-white"
           onClick={onMenuToggle}
         >
           <span className="text-lg">☰</span>
@@ -55,7 +55,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         
         <div className="flex flex-col">
           <span className="text-xl font-bold text-white">{title}</span>
-          {subtitle && <span className="text-sm text-blue-100">{subtitle}</span>}
+          {subtitle && <span className="text-sm text-blue-200">{subtitle}</span>}
         </div>
       </div>
       
@@ -63,7 +63,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         <Button
           variant="ghost"
           size="sm"
-          className="relative p-2 text-slate-300 hover:text-white"
+          className="relative p-2 text-slate-200 hover:text-white"
         >
           <span className="text-lg">🔔</span>
           <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -84,7 +84,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
             variant="ghost"
             size="sm"
             onClick={handleLogout}
-            className="text-red-400 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
+            className="text-red-300 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
             title="Logout"
           >
             <Power className="h-5 w-5" />
