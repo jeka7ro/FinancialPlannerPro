@@ -41,8 +41,8 @@ import {
   type InsertActivityLog,
   type Attachment,
   type InsertAttachment,
-} from "../client/shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq, desc, and, like, count, or } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
@@ -123,7 +123,7 @@ export interface IStorage {
   getOnjnReport(id: number): Promise<OnjnReport | undefined>;
   getOnjnReports(page?: number, limit?: number, search?: string): Promise<{ onjnReports: OnjnReport[]; total: number }>;
   createOnjnReport(onjnReport: InsertOnjnReport): Promise<OnjnReport>;
-  updateOnjnReport(id: number, onjnReport: Partial<InsertOnjnReport>): Promise<OnjnReport>;
+  updateOnjnReport(id: number, update: Partial<InsertOnjnReport>): Promise<OnjnReport>;
   deleteOnjnReport(id: number): Promise<void>;
 
   // Activity Log operations
@@ -818,20 +818,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOnjnReport(insertOnjnReport: InsertOnjnReport): Promise<OnjnReport> {
+    const { commissionDate, ...insertOnjnReportClean } = insertOnjnReport;
     const [onjnReport] = await db
       .insert(onjnReports)
-      .values(insertOnjnReport)
+      .values(insertOnjnReportClean)
       .returning();
     return onjnReport;
   }
 
-  async updateOnjnReport(id: number, updateOnjnReport: Partial<InsertOnjnReport>): Promise<OnjnReport> {
-    const [onjnReport] = await db
+  async updateOnjnReport(id: number, update: Partial<InsertOnjnReport>): Promise<OnjnReport> {
+    const { commissionDate: cd, ...updateOnjnReportClean } = update;
+    const [updatedReport] = await db
       .update(onjnReports)
-      .set({ ...updateOnjnReport, updatedAt: new Date() })
+      .set({ ...updateOnjnReportClean, updatedAt: new Date() })
       .where(eq(onjnReports.id, id))
       .returning();
-    return onjnReport;
+    return updatedReport;
   }
 
   async deleteOnjnReport(id: number): Promise<void> {

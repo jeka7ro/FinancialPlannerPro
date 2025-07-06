@@ -2,20 +2,20 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "../components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import { useToast } from "../hooks/use-toast";
 import { Search, Plus, Edit, Trash2, Bell } from "lucide-react";
-import { insertOnjnReportSchema } from "../../shared/schema";
-import type { InsertOnjnReport } from "../../shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { GroupedSerialNumbers } from "@/components/GroupedSerialNumbers";
-import { AttachmentButton } from "@/components/ui/attachment-button";
+import { insertOnjnReportSchema } from "@/shared/schema";
+import type { InsertOnjnReport } from "@/shared/schema";
+import { apiRequest } from "../lib/queryClient";
+import { GroupedSerialNumbers } from "../components/GroupedSerialNumbers";
+import { AttachmentButton } from "../components/ui/attachment-button";
 
 // Notification types for ONJN system
 const notificationTypes = [

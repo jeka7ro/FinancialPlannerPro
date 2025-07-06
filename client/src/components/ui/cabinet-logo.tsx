@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
+import { apiRequest } from '../../lib/queryClient';
 
 interface CabinetLogoProps {
   cabinetId: number;
@@ -101,7 +101,7 @@ export function CabinetLogo({ cabinetId, model = 'Unknown', size = 'md' }: Cabin
               top: `${popupPosition.y}px`
             }}
           >
-            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 shadow-2xl">
+            <div className="bg-black/80 rounded-lg p-4 shadow-2xl" style={{ backdropFilter: 'blur(4px)' }}>
               <div className="w-80 h-80 bg-white rounded-lg overflow-hidden">
                 <img 
                   src={logoUrl} 
@@ -162,7 +162,7 @@ export function CabinetLogo({ cabinetId, model = 'Unknown', size = 'md' }: Cabin
             top: `${popupPosition.y}px`
           }}
         >
-          <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 shadow-2xl">
+          <div className="bg-black/80 rounded-lg p-4 shadow-2xl" style={{ backdropFilter: 'blur(4px)' }}>
             <div className="w-80 h-96 bg-white rounded-lg overflow-hidden flex flex-col items-center justify-center relative shadow-lg">
               {/* Top-left A - enlarged */}
               <div className="absolute top-4 left-4 text-red-600 font-bold text-2xl leading-none">

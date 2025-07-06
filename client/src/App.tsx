@@ -1,39 +1,39 @@
+import React, { useState, useEffect } from 'react';
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { useState, useEffect } from "react";
+import { Toaster } from "./components/ui/toaster";
+import { TooltipProvider } from "./components/ui/tooltip";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { useQuery } from "@tanstack/react-query";
-import NotFound from "@/pages/not-found";
-import Dashboard from "@/pages/Dashboard";
-import Companies from "@/pages/Companies";
-import Locations from "@/pages/Locations";
-import Providers from "@/pages/Providers";
-import Cabinets from "@/pages/Cabinets";
-import GameMixes from "@/pages/GameMixes";
-import Slots from "@/pages/Slots";
-import Invoices from "@/pages/Invoices";
-import RentManagement from "@/pages/RentManagement";
-import Users from "@/pages/Users";
-import Legal from "@/pages/LegalEnhanced";
-import ONJNClean from "@/pages/ONJNClean";
-import Settings from "@/pages/Settings";
-import IconDemo from "@/pages/IconDemo";
+import NotFound from "./pages/not-found";
+import Dashboard from "./pages/Dashboard";
+import Companies from "./pages/Companies";
+import Locations from "./pages/Locations";
+import Providers from "./pages/Providers";
+import Cabinets from "./pages/Cabinets";
+import GameMixes from "./pages/GameMixes";
+import Slots from "./pages/Slots";
+import Invoices from "./pages/Invoices";
+import RentManagement from "./pages/RentManagement";
+import Users from "./pages/Users";
+import Legal from "./pages/LegalEnhanced";
+import ONJNClean from "./pages/ONJNClean";
+import Settings from "./pages/Settings";
+import IconDemo from "./pages/IconDemo";
 
-import MainLayout from "@/components/layout/MainLayout";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import MainLayout from "./components/layout/MainLayout";
+import { Button } from "./components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
+import { Input } from "./components/ui/input";
+import { Label } from "./components/ui/label";
+import { useToast } from "./hooks/use-toast";
+import { apiRequest } from "./lib/queryClient";
 import { mockAttachments } from "./lib/mockAttachments";
 import { Eye, EyeOff } from "lucide-react";
 
 // Logo path for CASHPOT branding
-import cashpotLogo from '@/assets/cashpot-logo.png';
+import cashpotLogo from './assets/cashpot-logo.png';
 import "./App.css";
 
 // Initialize provider logos in localStorage from mock data
@@ -63,19 +63,7 @@ function useAuth() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // First check if we have saved auth state in localStorage
-        const savedAuthState = localStorage.getItem('cashpot_auth_state');
-        if (savedAuthState) {
-          const parsedState = JSON.parse(savedAuthState);
-          if (parsedState.isAuthenticated && parsedState.currentUser) {
-            setUser(parsedState.currentUser);
-            setIsAuthenticated(true);
-            setIsLoading(false);
-            return;
-          }
-        }
-
-        // If no saved state, check with API
+        // Always check with API first for real authentication
         const response = await apiRequest("GET", "/api/auth/user");
         if (response.ok) {
           const userData = await response.json();
@@ -89,6 +77,7 @@ function useAuth() {
           setIsAuthenticated(false);
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
@@ -130,12 +119,19 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
     setIsLoading(true);
     setLoginError("");
     try {
+      console.log('Attempting login with:', { username, password: '***', rememberMe });
+      
       const response = await apiRequest("POST", "/api/auth/login", {
         username,
         password,
         rememberMe,
       });
+      
+      console.log('Login response received:', response);
+      
       const data = await response.json();
+      console.log('Login data:', data);
+      
       // Save credentials if remember me is checked
       if (rememberMe) {
         localStorage.setItem('cashpot_credentials', JSON.stringify({
@@ -146,12 +142,14 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
       } else {
         localStorage.removeItem('cashpot_credentials');
       }
+      
       toast({
         title: "Login Successful",
         description: `Welcome back, ${data.user.firstName || data.user.username}!`,
       });
       onLogin(data.user);
     } catch (error) {
+      console.error('Login error:', error);
       setLoginError("Parolă sau utilizator incorect!");
       setPassword("");
       toast({
@@ -255,27 +253,27 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
 }
 
 function AuthenticatedApp() {
-  return (
-    <MainLayout>
-      <Switch>
-        <Route path="/" component={Dashboard} />
-        <Route path="/companies" component={Companies} />
-        <Route path="/locations" component={Locations} />
-        <Route path="/providers" component={Providers} />
-        <Route path="/cabinets" component={Cabinets} />
-        <Route path="/game-mixes" component={GameMixes} />
-        <Route path="/slots" component={Slots} />
-        <Route path="/invoices" component={Invoices} />
-        <Route path="/rent-management" component={RentManagement} />
-        <Route path="/users" component={Users} />
-        <Route path="/legal" component={Legal} />
-        <Route path="/onjn" component={ONJNClean} />
-        <Route path="/settings" component={Settings} />
-        <Route path="/icon-demo" component={IconDemo} />
-        <Route component={NotFound} />
-      </Switch>
-    </MainLayout>
-  );
+      return (
+      <MainLayout>
+        <Switch>
+          <Route path="/" component={Dashboard} />
+          <Route path="/companies" component={Companies} />
+          <Route path="/locations" component={Locations} />
+          <Route path="/providers" component={Providers} />
+          <Route path="/cabinets" component={Cabinets} />
+          <Route path="/game-mixes" component={GameMixes} />
+          <Route path="/slots" component={Slots} />
+          <Route path="/invoices" component={Invoices} />
+          <Route path="/rent-management" component={RentManagement} />
+          <Route path="/users" component={Users} />
+          <Route path="/legal" component={Legal} />
+          <Route path="/onjn" component={ONJNClean} />
+          <Route path="/settings" component={Settings} />
+          <Route path="/icon-demo" component={IconDemo} />
+          <Route component={NotFound} />
+        </Switch>
+      </MainLayout>
+    );
 }
 
 function Router() {

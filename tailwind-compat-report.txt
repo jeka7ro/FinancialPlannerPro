@@ -1,0 +1,996 @@
+src/App.tsx:    <div className="dark min-h-screen w-full bg-slate-900 flex items-center justify-center p-4">
+src/App.tsx:      <div className="w-full max-w-md">
+src/App.tsx:            <div className="flex justify-center mb-8">
+src/App.tsx:                    className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400"
+src/App.tsx:              <div className="flex items-center justify-between">
+src/App.tsx:                <div className="flex items-center space-x-2">
+src/App.tsx:                className="w-full btn-gaming"
+src/App.tsx:      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+src/App.tsx:        <div className="loading-shimmer w-32 h-32 rounded-xl"></div>
+src/App.tsx:      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+src/App.tsx:        <div className="loading-shimmer w-32 h-32 rounded-xl"></div>
+src/App.css:  overflow-x: hidden;
+src/App.css:  transition: filter 300ms;
+src/App.css:    transform: rotate(0deg);
+src/App.css:    transform: rotate(360deg);
+src/index.css:  transform: translateY(-6px) scale(1.03);
+src/index.css:  transform: translateY(-3px);
+src/index.css:  transform: translateX(6px);
+src/index.css:  transform: scale(1.15) translateY(-3px);
+src/index.css:  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+src/index.css:  transform: translateY(-4px) scale(1.02);
+src/index.css:  transition: all 0.3s ease;
+src/index.css:  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+src/index.css:  transform: translateY(-2px);
+src/index.css:  transition: all 0.3s ease;
+src/index.css:  text-transform: uppercase;
+src/index.css:  transition: all 0.3s ease;
+src/index.css:  transform: translateX(4px);
+src/index.css:  transition: all 0.3s ease;
+src/index.css:  transform: translateY(-1px);
+src/index.css:.content-card {
+src/index.css:.light .content-card {
+src/index.css:  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+src/index.css:  transform: scale(1.1) translateY(-2px);
+src/index.css:  transition: all 0.3s ease;
+src/index.css:  transform: translateY(-4px);
+src/index.css:    transform: translateX(0);
+src/index.css:  .content-card {
+src/components/ui/user-avatar.tsx:      <div className={`${sizeClasses[size]} rounded-full bg-gray-300 flex items-center justify-center ${className}`}>
+src/components/ui/user-avatar.tsx:      <div className={`${sizeClasses[size]} rounded-full overflow-hidden border-2 border-gray-200 ${className}`}>
+src/components/ui/user-avatar.tsx:          className="w-full h-full object-cover"
+src/components/ui/user-avatar.tsx:      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${className}`}
+src/components/ui/user-avatar.tsx:      <div className={`flex items-center space-x-3 ${className}`}>
+src/components/ui/user-avatar.tsx:    <div className={`flex items-center space-x-3 ${className}`}>
+src/components/ui/user-avatar.tsx:      <div className="min-w-0 flex-1">
+src/components/ui/aspect-ratio.tsx:import * as AspectRatioPrimitive from "@radix-ui/react-aspect-ratio"
+src/components/ui/file-attachments.tsx:        <div className="flex items-center justify-between">
+src/components/ui/file-attachments.tsx:                <div className="flex justify-end space-x-2">
+src/components/ui/file-attachments.tsx:                className="flex items-center justify-between p-3 rounded-lg bg-white/5 border border-white/10"
+src/components/ui/file-attachments.tsx:                <div className="flex items-center space-x-3">
+src/components/ui/file-attachments.tsx:                <div className="flex items-center space-x-2">
+src/components/ui/alert-dialog.tsx:      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+src/components/ui/alert-dialog.tsx:        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+src/components/ui/alert-dialog.tsx:      "flex flex-col space-y-2 text-center sm:text-left",
+src/components/ui/alert-dialog.tsx:      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+src/components/ui/pagination.tsx:    className={cn("mx-auto flex w-full justify-center", className)}
+src/components/ui/pagination.tsx:    className={cn("flex flex-row items-center gap-1", className)}
+src/components/ui/pagination.tsx:    className={cn("gap-1 pl-2.5", className)}
+src/components/ui/pagination.tsx:    className={cn("gap-1 pr-2.5", className)}
+src/components/ui/pagination.tsx:    className={cn("flex h-9 w-9 items-center justify-center", className)}
+src/components/ui/provider-logo.tsx:      <div className={`${sizeClasses[size]} rounded-md overflow-hidden bg-white/5 flex items-center justify-center ${className}`}>
+src/components/ui/provider-logo.tsx:          className="w-full h-full object-contain"
+src/components/ui/provider-logo.tsx:    <div className={`${sizeClasses[size]} rounded-md bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center ${className}`}>
+src/components/ui/game-mix-logo.tsx:      "rounded-lg flex items-center justify-center bg-orange-500/20",
+src/components/ui/game-mix-logo.tsx:          className={cn("object-cover rounded-lg", sizeClasses[size])}
+src/components/ui/tabs.tsx:      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+src/components/ui/tabs.tsx:      "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+src/components/ui/card.tsx:      "rounded-lg border bg-card text-card-foreground shadow-sm",
+src/components/ui/card.tsx:    className={cn("flex flex-col space-y-1.5 p-6", className)}
+src/components/ui/card.tsx:    className={cn("flex items-center p-6 pt-0", className)}
+src/components/ui/slider.tsx:      "relative flex w-full touch-none select-none items-center",
+src/components/ui/slider.tsx:    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
+src/components/ui/slider.tsx:      <SliderPrimitive.Range className="absolute h-full bg-primary" />
+src/components/ui/slider.tsx:    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
+src/components/ui/popover.tsx:        "z-[9999] w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+src/components/ui/cabinet-logo.tsx:          className={`${sizeClasses[size]} rounded-md overflow-hidden bg-white/80 border border-white/20 flex items-center justify-center transition-all duration-500 ease-in-out hover:scale-150 hover:shadow-2xl hover:brightness-110 cursor-pointer`}
+src/components/ui/cabinet-logo.tsx:            transform: 'scale(1)',
+src/components/ui/cabinet-logo.tsx:            transition: 'transform 0.3s ease-in-out'
+src/components/ui/cabinet-logo.tsx:            e.currentTarget.style.transform = 'scale(2.5)';
+src/components/ui/cabinet-logo.tsx:            e.currentTarget.style.transform = 'scale(1)';
+src/components/ui/cabinet-logo.tsx:            className="w-full h-full object-cover rounded-md"
+src/components/ui/cabinet-logo.tsx:            className="fixed z-50 pointer-events-none"
+src/components/ui/cabinet-logo.tsx:            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 shadow-2xl">
+src/components/ui/cabinet-logo.tsx:              <div className="w-80 h-80 bg-white rounded-lg overflow-hidden">
+src/components/ui/cabinet-logo.tsx:                  className="w-full h-full object-cover"
+src/components/ui/cabinet-logo.tsx:        className={`${sizeClasses[size]} rounded-lg overflow-hidden bg-white border-2 border-gray-300 flex flex-col items-center justify-center transition-all duration-500 ease-in-out hover:scale-150 hover:shadow-2xl hover:brightness-110 cursor-pointer relative shadow-md`}
+src/components/ui/cabinet-logo.tsx:          transform: 'scale(1)',
+src/components/ui/cabinet-logo.tsx:          transition: 'transform 0.3s ease-in-out',
+src/components/ui/cabinet-logo.tsx:          e.currentTarget.style.transform = 'scale(2.5)';
+src/components/ui/cabinet-logo.tsx:          e.currentTarget.style.transform = 'scale(1)';
+src/components/ui/cabinet-logo.tsx:        <div className="flex-1 flex items-center justify-center">
+src/components/ui/cabinet-logo.tsx:        <div className="absolute bottom-1 right-1 text-red-600 font-bold text-sm leading-none transform rotate-180">
+src/components/ui/cabinet-logo.tsx:          className="fixed z-50 pointer-events-none"
+src/components/ui/cabinet-logo.tsx:          <div className="bg-black/80 backdrop-blur-sm rounded-lg p-4 shadow-2xl">
+src/components/ui/cabinet-logo.tsx:            <div className="w-80 h-96 bg-white rounded-lg overflow-hidden flex flex-col items-center justify-center relative shadow-lg">
+src/components/ui/cabinet-logo.tsx:              <div className="flex-1 flex items-center justify-center">
+src/components/ui/cabinet-logo.tsx:              <div className="absolute bottom-4 right-4 text-red-600 font-bold text-2xl leading-none transform rotate-180">
+src/components/ui/progress.tsx:      "relative h-4 w-full overflow-hidden rounded-full bg-secondary",
+src/components/ui/progress.tsx:      className="h-full w-full flex-1 bg-primary transition-all"
+src/components/ui/progress.tsx:      style={{ transform: `translateX(-${100 - (value || 0)}%)` }}
+src/components/ui/Windows11Button.tsx:      transition: 'transform 0.1s, box-shadow 0.1s',
+src/components/ui/Windows11Button.tsx:      e.currentTarget.style.transform = 'translateY(-2px)';
+src/components/ui/Windows11Button.tsx:      e.currentTarget.style.transform = 'translateY(0)';
+src/components/ui/Windows11Button.tsx:      e.currentTarget.style.transform = 'translateY(0)';
+src/components/ui/Windows11Button.tsx:      e.currentTarget.style.transform = 'translateY(-2px)';
+src/components/ui/toaster.tsx:            <div className="grid gap-1">
+src/components/ui/input-otp.tsx:      "flex items-center gap-2 has-[:disabled]:opacity-50",
+src/components/ui/input-otp.tsx:  <div ref={ref} className={cn("flex items-center", className)} {...props} />
+src/components/ui/input-otp.tsx:        "relative flex h-10 w-10 items-center justify-center border-y border-r border-input text-sm transition-all first:rounded-l-md first:border-l last:rounded-r-md",
+src/components/ui/input-otp.tsx:        isActive && "z-10 ring-2 ring-ring ring-offset-background",
+src/components/ui/input-otp.tsx:        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+src/components/ui/input-otp.tsx:          <div className="h-4 w-px animate-caret-blink bg-foreground duration-1000" />
+src/components/ui/chart.tsx:          "flex aspect-video justify-center text-xs [&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-none [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-sector]:outline-none [&_.recharts-surface]:outline-none",
+src/components/ui/chart.tsx:          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl",
+src/components/ui/chart.tsx:        <div className="grid gap-1.5">
+src/components/ui/chart.tsx:                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground",
+src/components/ui/chart.tsx:                  indicator === "dot" && "items-center"
+src/components/ui/chart.tsx:                            "shrink-0 rounded-[2px] border-[--color-border] bg-[--color-bg]",
+src/components/ui/chart.tsx:                        "flex flex-1 justify-between leading-none",
+src/components/ui/chart.tsx:                        nestLabel ? "items-end" : "items-center"
+src/components/ui/chart.tsx:                      <div className="grid gap-1.5">
+src/components/ui/chart.tsx:          "flex items-center justify-center gap-4",
+src/components/ui/chart.tsx:                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+src/components/ui/chart.tsx:                  className="h-2 w-2 shrink-0 rounded-[2px]"
+src/components/ui/hover-card.tsx:      "z-50 w-64 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-hover-card-content-transform-origin]",
+src/components/ui/sheet.tsx:      "fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+src/components/ui/sheet.tsx:  "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+src/components/ui/sheet.tsx:        left: "inset-y-0 left-0 h-full w-3/4 border-r data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left sm:max-w-sm",
+src/components/ui/sheet.tsx:          "inset-y-0 right-0 h-full w-3/4  border-l data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm",
+src/components/ui/sheet.tsx:      <SheetPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
+src/components/ui/sheet.tsx:      "flex flex-col space-y-2 text-center sm:text-left",
+src/components/ui/sheet.tsx:      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+src/components/ui/scroll-area.tsx:    className={cn("relative overflow-hidden", className)}
+src/components/ui/scroll-area.tsx:    <ScrollAreaPrimitive.Viewport className="h-full w-full rounded-[inherit]">
+src/components/ui/scroll-area.tsx:      "flex touch-none select-none transition-colors",
+src/components/ui/scroll-area.tsx:        "h-full w-2.5 border-l border-l-transparent p-[1px]",
+src/components/ui/scroll-area.tsx:    <ScrollAreaPrimitive.ScrollAreaThumb className="relative flex-1 rounded-full bg-border" />
+src/components/ui/resizable.tsx:      "flex h-full w-full data-[panel-group-direction=vertical]:flex-col",
+src/components/ui/resizable.tsx:      "relative flex w-px items-center justify-center bg-border after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 data-[panel-group-direction=vertical]:h-px data-[panel-group-direction=vertical]:w-full data-[panel-group-direction=vertical]:after:left-0 data-[panel-group-direction=vertical]:after:h-1 data-[panel-group-direction=vertical]:after:w-full data-[panel-group-direction=vertical]:after:-translate-y-1/2 data-[panel-group-direction=vertical]:after:translate-x-0 [&[data-panel-group-direction=vertical]>div]:rotate-90",
+src/components/ui/resizable.tsx:      <div className="z-10 flex h-4 w-3 items-center justify-center rounded-sm border bg-border">
+src/components/ui/navigation-menu.tsx:      "relative z-10 flex max-w-max flex-1 items-center justify-center",
+src/components/ui/navigation-menu.tsx:      "group flex flex-1 list-none items-center justify-center space-x-1",
+src/components/ui/navigation-menu.tsx:  "group inline-flex h-10 w-max items-center justify-center rounded-md bg-background px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[state=open]:text-accent-foreground data-[state=open]:bg-accent/50 data-[state=open]:hover:bg-accent data-[state=open]:focus:bg-accent"
+src/components/ui/navigation-menu.tsx:      className="relative top-[1px] ml-1 h-3 w-3 transition duration-200 group-data-[state=open]:rotate-180"
+src/components/ui/navigation-menu.tsx:      "left-0 top-0 w-full data-[motion^=from-]:animate-in data-[motion^=to-]:animate-out data-[motion^=from-]:fade-in data-[motion^=to-]:fade-out data-[motion=from-end]:slide-in-from-right-52 data-[motion=from-start]:slide-in-from-left-52 data-[motion=to-end]:slide-out-to-right-52 data-[motion=to-start]:slide-out-to-left-52 md:absolute md:w-auto ",
+src/components/ui/navigation-menu.tsx:  <div className={cn("absolute left-0 top-full flex justify-center")}>
+src/components/ui/navigation-menu.tsx:        "origin-top-center relative mt-1.5 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-90 md:w-[var(--radix-navigation-menu-viewport-width)]",
+src/components/ui/navigation-menu.tsx:      "top-full z-[1] flex h-1.5 items-end justify-center overflow-hidden data-[state=visible]:animate-in data-[state=hidden]:animate-out data-[state=hidden]:fade-out data-[state=visible]:fade-in",
+src/components/ui/navigation-menu.tsx:    <div className="relative top-[60%] h-2 w-2 rotate-45 rounded-tl-sm bg-border shadow-md" />
+src/components/ui/accordion.tsx:        "flex flex-1 items-center justify-between py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-180",
+src/components/ui/accordion.tsx:      <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200" />
+src/components/ui/accordion.tsx:    className="overflow-hidden text-sm transition-all data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+src/components/ui/drawer.tsx:    className={cn("fixed inset-0 z-50 bg-black/80", className)}
+src/components/ui/drawer.tsx:        "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+src/components/ui/drawer.tsx:      <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
+src/components/ui/drawer.tsx:    className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
+src/components/ui/drawer.tsx:    className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+src/components/ui/tooltip.tsx:      "z-50 overflow-hidden rounded-md border bg-popover px-3 py-1.5 text-sm text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]",
+src/components/ui/alert.tsx:  "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+src/components/ui/switch.tsx:      "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=unchecked]:bg-input",
+src/components/ui/switch.tsx:        "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform data-[state=checked]:translate-x-5 data-[state=unchecked]:translate-x-0"
+src/components/ui/calendar.tsx:        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+src/components/ui/calendar.tsx:        caption: "flex justify-center pt-1 relative items-center",
+src/components/ui/calendar.tsx:        nav: "space-x-1 flex items-center",
+src/components/ui/calendar.tsx:        table: "w-full border-collapse space-y-1",
+src/components/ui/calendar.tsx:          "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+src/components/ui/calendar.tsx:        row: "flex w-full mt-2",
+src/components/ui/calendar.tsx:        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+src/components/ui/breadcrumb.tsx:      "flex flex-wrap items-center gap-1.5 break-words text-sm text-muted-foreground sm:gap-2.5",
+src/components/ui/breadcrumb.tsx:    className={cn("inline-flex items-center gap-1.5", className)}
+src/components/ui/breadcrumb.tsx:      className={cn("transition-colors hover:text-foreground", className)}
+src/components/ui/breadcrumb.tsx:    className={cn("flex h-9 w-9 items-center justify-center", className)}
+src/components/ui/radio-group.tsx:      className={cn("grid gap-2", className)}
+src/components/ui/radio-group.tsx:        "aspect-square h-4 w-4 rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+src/components/ui/radio-group.tsx:      <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
+src/components/ui/company-logo.tsx:      <div className={`rounded-full overflow-hidden border-2 border-gray-200 bg-white flex items-center justify-center ${sizeClasses[size]} ${className}`}>
+src/components/ui/company-logo.tsx:          className="w-full h-full object-cover"
+src/components/ui/company-logo.tsx:    <div className={`rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold ${sizeClasses[size]} ${className}`}>
+src/components/ui/command.tsx:      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground",
+src/components/ui/command.tsx:      <DialogContent className="overflow-hidden p-0 shadow-lg">
+src/components/ui/command.tsx:  <div className="flex items-center border-b px-3" cmdk-input-wrapper="">
+src/components/ui/command.tsx:        "flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+src/components/ui/command.tsx:    className={cn("max-h-[300px] overflow-y-auto overflow-x-hidden", className)}
+src/components/ui/command.tsx:      "overflow-hidden p-1 text-foreground [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground",
+src/components/ui/command.tsx:      "relative flex cursor-default gap-2 select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none data-[disabled=true]:pointer-events-none data-[selected='true']:bg-accent data-[selected=true]:text-accent-foreground data-[disabled=true]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+src/components/ui/toggle-group.tsx:    className={cn("flex items-center justify-center gap-1", className)}
+src/components/ui/avatar.tsx:      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+src/components/ui/avatar.tsx:    className={cn("aspect-square h-full w-full", className)}
+src/components/ui/avatar.tsx:      "flex h-full w-full items-center justify-center rounded-full bg-muted",
+src/components/ui/attachment-button.tsx:          <DialogTitle className="text-white flex items-center gap-3">
+src/components/ui/attachment-button.tsx:            <Label className="text-white flex items-center gap-2">
+src/components/ui/attachment-button.tsx:            <div className="flex flex-col gap-3">
+src/components/ui/attachment-button.tsx:              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-white/40 transition-colors">
+src/components/ui/attachment-button.tsx:                  <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
+src/components/ui/attachment-button.tsx:                    <div className="border border-white/10 rounded-lg p-2">
+src/components/ui/attachment-button.tsx:                        className="max-w-full max-h-48 object-contain mx-auto"
+src/components/ui/attachment-button.tsx:                  <div key={i} className="loading-shimmer h-16 rounded-lg"></div>
+src/components/ui/attachment-button.tsx:                    className="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-colors"
+src/components/ui/attachment-button.tsx:                    <div className="flex items-center space-x-3">
+src/components/ui/attachment-button.tsx:                      <div className="min-w-0 flex-1">
+src/components/ui/attachment-button.tsx:                    <div className="flex items-center space-x-2">
+src/components/ui/menubar.tsx:      "flex h-10 items-center space-x-1 rounded-md border bg-background p-1",
+src/components/ui/menubar.tsx:      "flex cursor-default select-none items-center rounded-sm px-3 py-1.5 text-sm font-medium outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+src/components/ui/menubar.tsx:      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+src/components/ui/menubar.tsx:      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-menubar-content-transform-origin]",
+src/components/ui/menubar.tsx:          "z-50 min-w-[12rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-menubar-content-transform-origin]",
+src/components/ui/menubar.tsx:      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/menubar.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/menubar.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/menubar.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/menubar.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/dialog.tsx:      "fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+src/components/ui/dialog.tsx:        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg",
+src/components/ui/dialog.tsx:      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+src/components/ui/dialog.tsx:      "flex flex-col space-y-1.5 text-center sm:text-left",
+src/components/ui/dialog.tsx:      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+src/components/ui/badge.tsx:  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+src/components/ui/sidebar.tsx:              "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+src/components/ui/sidebar.tsx:            "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
+src/components/ui/sidebar.tsx:            <div className="flex h-full w-full flex-col">{children}</div>
+src/components/ui/sidebar.tsx:            "relative w-[--sidebar-width] bg-transparent transition-[width] duration-200 ease-linear",
+src/components/ui/sidebar.tsx:            "fixed inset-y-0 z-10 hidden h-svh w-[--sidebar-width] transition-[left,right,width] duration-200 ease-linear md:flex",
+src/components/ui/sidebar.tsx:            className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
+src/components/ui/sidebar.tsx:        "absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2 transition-all ease-linear after:absolute after:inset-y-0 after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border group-data-[side=left]:-right-4 group-data-[side=right]:left-0 sm:flex",
+src/components/ui/sidebar.tsx:        "group-data-[collapsible=offcanvas]:translate-x-0 group-data-[collapsible=offcanvas]:after:left-full group-data-[collapsible=offcanvas]:hover:bg-sidebar",
+src/components/ui/sidebar.tsx:        "relative flex w-full flex-1 flex-col bg-background",
+src/components/ui/sidebar.tsx:        "md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+src/components/ui/sidebar.tsx:        "h-8 w-full bg-background shadow-none focus-visible:ring-2 focus-visible:ring-sidebar-ring",
+src/components/ui/sidebar.tsx:      className={cn("flex flex-col gap-2 p-2", className)}
+src/components/ui/sidebar.tsx:      className={cn("flex flex-col gap-2 p-2", className)}
+src/components/ui/sidebar.tsx:        "flex min-h-0 flex-1 flex-col gap-2 overflow-auto group-data-[collapsible=icon]:overflow-hidden",
+src/components/ui/sidebar.tsx:      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+src/components/ui/sidebar.tsx:        "flex h-8 shrink-0 items-center rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 outline-none ring-sidebar-ring transition-[margin,opacity] duration-200 ease-linear focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+src/components/ui/sidebar.tsx:        "absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+src/components/ui/sidebar.tsx:    className={cn("w-full text-sm", className)}
+src/components/ui/sidebar.tsx:    className={cn("flex w-full min-w-0 flex-col gap-1", className)}
+src/components/ui/sidebar.tsx:  "peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-medium data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+src/components/ui/sidebar.tsx:          "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
+src/components/ui/sidebar.tsx:        "absolute right-1 top-1.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0",
+src/components/ui/sidebar.tsx:      "pointer-events-none absolute right-1 flex h-5 min-w-5 select-none items-center justify-center rounded-md px-1 text-xs font-medium tabular-nums text-sidebar-foreground",
+src/components/ui/sidebar.tsx:      className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)}
+src/components/ui/sidebar.tsx:          className="size-4 rounded-md"
+src/components/ui/sidebar.tsx:        className="h-4 max-w-[--skeleton-width] flex-1"
+src/components/ui/sidebar.tsx:      "mx-3.5 flex min-w-0 translate-x-px flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5",
+src/components/ui/sidebar.tsx:        "flex h-7 min-w-0 -translate-x-px items-center gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground outline-none ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0 [&>svg]:text-sidebar-accent-foreground",
+src/components/ui/table.tsx:  <div className="relative w-full overflow-auto" style={{ textAlign: 'left', marginLeft: 0, maxWidth: 'none', width: '100%' }}>
+src/components/ui/table.tsx:      className={cn("w-full caption-bottom text-sm", className)}
+src/components/ui/table.tsx:      "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+src/components/ui/separator.tsx:        orientation === "horizontal" ? "h-[1px] w-full" : "h-full w-[1px]",
+src/components/ui/import-export-dialog.tsx:            <div className="flex items-center gap-2">
+src/components/ui/import-export-dialog.tsx:              <div className="flex gap-2">
+src/components/ui/import-export-dialog.tsx:                  className="flex items-center gap-2 border-blue-400/20 text-blue-400 hover:bg-blue-400/10"
+src/components/ui/import-export-dialog.tsx:                  className="flex items-center gap-2 border-green-400/20 text-green-400 hover:bg-green-400/10"
+src/components/ui/import-export-dialog.tsx:                className="w-full"
+src/components/ui/import-export-dialog.tsx:            <div className="flex items-center gap-2">
+src/components/ui/import-export-dialog.tsx:            <div className="grid grid-cols-2 gap-3">
+src/components/ui/import-export-dialog.tsx:                className="flex items-center gap-2"
+src/components/ui/import-export-dialog.tsx:                className="flex items-center gap-2"
+src/components/ui/button.tsx:  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+src/components/ui/button.tsx:        sm: "h-9 rounded-md px-3",
+src/components/ui/button.tsx:        lg: "h-11 rounded-md px-8",
+src/components/ui/toggle.tsx:  "inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors hover:bg-muted hover:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-accent data-[state=on]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 gap-2",
+src/components/ui/toast.tsx:      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+src/components/ui/toast.tsx:  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border p-6 pr-8 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+src/components/ui/toast.tsx:      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-muted/40 group-[.destructive]:hover:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive",
+src/components/ui/toast.tsx:      "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100 group-[.destructive]:text-red-300 group-[.destructive]:hover:text-red-50 group-[.destructive]:focus:ring-red-400 group-[.destructive]:focus:ring-offset-red-600",
+src/components/ui/provider-logo-manager.tsx:    <div className="flex items-center gap-2">
+src/components/ui/provider-logo-manager.tsx:        <div className="flex items-center gap-2">
+src/components/ui/provider-logo-manager.tsx:          <Tabs defaultValue="suggestions" className="w-full">
+src/components/ui/provider-logo-manager.tsx:            <TabsList className="grid w-full grid-cols-3 bg-white/5">
+src/components/ui/provider-logo-manager.tsx:                    <div className="flex items-center justify-between">
+src/components/ui/provider-logo-manager.tsx:                      <div className="flex items-center gap-3">
+src/components/ui/provider-logo-manager.tsx:                  <div className="grid grid-cols-2 gap-2 mt-2 max-h-48 overflow-y-auto">
+src/components/ui/provider-logo-manager.tsx:                        <div className="flex items-center justify-between">
+src/components/ui/provider-logo-manager.tsx:                          <div className="flex items-center gap-2">
+src/components/ui/provider-logo-manager.tsx:                <div className="flex justify-end space-x-2">
+src/components/ui/provider-logo-manager.tsx:                <div className="flex justify-end space-x-2">
+src/components/ui/theme-toggle.tsx:        <div className="flex items-center gap-2">
+src/components/ui/theme-toggle.tsx:          <div className="flex items-center gap-2">
+src/components/ui/theme-toggle.tsx:          <div className="flex items-center gap-2">
+src/components/ui/theme-toggle.tsx:          <div className="flex items-center gap-2">
+src/components/ui/checkbox.tsx:      "peer h-4 w-4 shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground",
+src/components/ui/checkbox.tsx:      className={cn("flex items-center justify-center text-current")}
+src/components/ui/dropdown-menu.tsx:      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent",
+src/components/ui/dropdown-menu.tsx:      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+src/components/ui/dropdown-menu.tsx:        "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+src/components/ui/dropdown-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/dropdown-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/dropdown-menu.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/dropdown-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/dropdown-menu.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/bulk-operations.tsx:    <div className="flex items-center gap-2">
+src/components/ui/select.tsx:      "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background data-[placeholder]:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1",
+src/components/ui/select.tsx:      "flex cursor-default items-center justify-center py-1",
+src/components/ui/select.tsx:      "flex cursor-default items-center justify-center py-1",
+src/components/ui/select.tsx:        "relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-select-content-transform-origin]",
+src/components/ui/select.tsx:          "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1",
+src/components/ui/select.tsx:            "h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)]"
+src/components/ui/select.tsx:      "relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/select.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/textarea.tsx:        "flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+src/components/ui/input.tsx:          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+src/components/ui/skeleton.tsx:      className={cn("animate-pulse rounded-md bg-muted", className)}
+src/components/ui/context-menu.tsx:      "flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground",
+src/components/ui/context-menu.tsx:      "z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-context-menu-content-transform-origin]",
+src/components/ui/context-menu.tsx:        "z-50 max-h-[--radix-context-menu-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md animate-in fade-in-80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-context-menu-content-transform-origin]",
+src/components/ui/context-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/context-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/context-menu.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/context-menu.tsx:      "relative flex cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+src/components/ui/context-menu.tsx:    <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+src/components/ui/carousel.tsx:    <div ref={carouselRef} className="overflow-hidden">
+src/components/ui/carousel.tsx:        "absolute  h-8 w-8 rounded-full",
+src/components/ui/carousel.tsx:          ? "-left-12 top-1/2 -translate-y-1/2"
+src/components/ui/carousel.tsx:          : "-top-12 left-1/2 -translate-x-1/2 rotate-90",
+src/components/ui/carousel.tsx:        "absolute h-8 w-8 rounded-full",
+src/components/ui/carousel.tsx:          ? "-right-12 top-1/2 -translate-y-1/2"
+src/components/ui/carousel.tsx:          : "-bottom-12 left-1/2 -translate-x-1/2 rotate-90",
+src/components/layout/MainLayout.tsx:    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-background">
+src/components/layout/MainLayout.tsx:      <Sidebar className={sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"} />
+src/components/layout/MainLayout.tsx:          className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+src/components/layout/MainLayout.tsx:      <div className="flex-1 flex flex-col min-h-screen w-full">
+src/components/layout/MainLayout.tsx:        <main className="flex-1 p-4 md:p-8 bg-background w-full max-w-none">
+src/components/layout/Header.tsx:    <header className="w-full h-28 min-h-[7rem] bg-blue-800 dark:bg-slate-800 shadow-lg flex items-center justify-between px-6 border-b border-blue-700 dark:border-slate-600">
+src/components/layout/Header.tsx:      <div className="flex items-center gap-4">
+src/components/layout/Header.tsx:        <div className="flex flex-col">
+src/components/layout/Header.tsx:      <div className="flex items-center gap-4">
+src/components/layout/Header.tsx:          <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+src/components/layout/Header.tsx:        <div className="flex items-center gap-2">
+src/components/layout/Header.tsx:          <UserAvatar user={currentUser || null} size="lg" className="h-16 w-16 rounded-full object-cover ring-2 ring-blue-200" />
+src/components/layout/Header.tsx:            className="text-red-300 hover:text-white hover:bg-red-500/80 focus:ring-2 focus:ring-red-400 shadow-lg shadow-red-500/50"
+src/components/layout/Sidebar.tsx:      "flex flex-col h-full bg-white dark:bg-slate-900/80 border-r border-slate-200 dark:border-slate-700 fixed lg:static inset-y-0 left-0 z-50 w-64 transition-transform duration-300 ease-in-out",
+src/components/layout/Sidebar.tsx:      <div className="flex items-center justify-center h-28 min-h-[7rem] bg-blue-800 dark:bg-slate-800 border-b border-blue-700 dark:border-slate-600 px-4">
+src/components/layout/Sidebar.tsx:        <div className="flex items-center gap-3">
+src/components/layout/Sidebar.tsx:            className="hidden flex-col items-center justify-center text-white font-bold text-lg"
+src/components/layout/Sidebar.tsx:      <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+src/components/layout/Sidebar.tsx:                "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+src/components/layout/Sidebar.tsx:        <div className="flex items-center gap-3 p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+src/components/layout/Sidebar.tsx:          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+src/components/layout/Sidebar.tsx:          <div className="flex-1 min-w-0">
+src/components/GroupedSerialNumbers.tsx:      <div className="flex items-center gap-2">
+src/components/GroupedSerialNumbers.tsx:    <div className="flex items-center gap-2">
+src/components/GroupedSerialNumbers.tsx:            <div className="flex items-center justify-between">
+src/components/GroupedSerialNumbers.tsx:            <div className="space-y-2 max-h-60 overflow-y-auto">
+src/components/LocationsDisplay.tsx:          <div className="flex flex-wrap gap-1">
+src/components/SerialNumbersDisplay.tsx:    <div className="flex flex-wrap gap-1">
+src/components/dashboard/LocationsMap.tsx:    html: `<div style="width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); background-color: #3b82f6; display: flex; align-items: center; justify-content: center;">
+src/components/dashboard/LocationsMap.tsx:          <div className="loading-shimmer h-64 rounded-lg"></div>
+src/components/dashboard/LocationsMap.tsx:                      className="mt-2 action-button w-full"
+src/components/dashboard/LocationsMap.tsx:      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+src/components/dashboard/SystemAlerts.tsx:    <Card className="glass-card rounded-2xl p-6">
+src/components/dashboard/SystemAlerts.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/SystemAlerts.tsx:              className={`flex items-start space-x-4 p-3 rounded-xl ${alertStyle.container}`}
+src/components/dashboard/SystemAlerts.tsx:              <div className={`w-8 h-8 ${alertStyle.iconBg} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5`}>
+src/components/dashboard/SystemAlerts.tsx:              <div className="flex-1">
+src/components/dashboard/FinancialMetrics.tsx:    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+src/components/dashboard/FinancialMetrics.tsx:      <Card className="glass-card border-green-500/20 hover:border-green-500/40 transition-all duration-300">
+src/components/dashboard/FinancialMetrics.tsx:        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/components/dashboard/FinancialMetrics.tsx:      <Card className="glass-card border-blue-500/20 hover:border-blue-500/40 transition-all duration-300">
+src/components/dashboard/FinancialMetrics.tsx:        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/components/dashboard/FinancialMetrics.tsx:      <Card className="glass-card border-purple-500/20 hover:border-purple-500/40 transition-all duration-300">
+src/components/dashboard/FinancialMetrics.tsx:        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/components/dashboard/FinancialMetrics.tsx:            <div className="flex items-center justify-between">
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex items-center space-x-2">
+src/components/dashboard/FinancialMetrics.tsx:            <div className="flex items-center justify-between">
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex items-center space-x-2">
+src/components/dashboard/FinancialMetrics.tsx:            <div className="flex items-center justify-between">
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex items-center space-x-2">
+src/components/dashboard/FinancialMetrics.tsx:      <Card className="glass-card border-orange-500/20 hover:border-orange-500/40 transition-all duration-300">
+src/components/dashboard/FinancialMetrics.tsx:        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex justify-between text-sm mb-1">
+src/components/dashboard/FinancialMetrics.tsx:                <div className="h-full bg-green-500 rounded-full transition-all duration-300" 
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex justify-between text-sm mb-1">
+src/components/dashboard/FinancialMetrics.tsx:                <div className="h-full bg-yellow-500 rounded-full transition-all duration-300" 
+src/components/dashboard/FinancialMetrics.tsx:              <div className="flex justify-between text-sm mb-1">
+src/components/dashboard/FinancialMetrics.tsx:                <div className="h-full bg-red-500 rounded-full transition-all duration-300" 
+src/components/dashboard/GamingStats.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/GamingStats.tsx:        <div className="flex items-center space-x-3">
+src/components/dashboard/GamingStats.tsx:          <div className="p-2 bg-purple-500/20 rounded-lg">
+src/components/dashboard/GamingStats.tsx:            <div key={i} className="loading-shimmer h-16 rounded-xl"></div>
+src/components/dashboard/GamingStats.tsx:          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+src/components/dashboard/GamingStats.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/GamingStats.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/GamingStats.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/GamingStats.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/GamingStats.tsx:          <div className="bg-gradient-to-r from-emerald-500/10 to-blue-500/10 rounded-xl p-4 border border-emerald-500/20">
+src/components/dashboard/GamingStats.tsx:            <div className="flex items-center justify-between mb-3">
+src/components/dashboard/GamingStats.tsx:            <div className="w-full bg-slate-700 rounded-full h-2">
+src/components/dashboard/GamingStats.tsx:                className="bg-gradient-to-r from-emerald-400 to-blue-400 h-2 rounded-full transition-all duration-500"
+src/components/dashboard/GamingStats.tsx:            <div className="flex items-center justify-between mt-2 text-xs text-slate-400">
+src/components/dashboard/GamingStats.tsx:            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center justify-between mb-3">
+src/components/dashboard/GamingStats.tsx:              <div className="flex items-center space-x-3">
+src/components/dashboard/GamingStats.tsx:                <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+src/components/dashboard/GamingStats.tsx:                <div className="flex-1">
+src/components/dashboard/GamingStats.tsx:          <div className="grid grid-cols-2 gap-3">
+src/components/dashboard/RecentActivity.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/RecentActivity.tsx:        <div className="flex items-center space-x-3">
+src/components/dashboard/RecentActivity.tsx:          <div className="p-2 bg-blue-500/20 rounded-lg">
+src/components/dashboard/RecentActivity.tsx:            <div key={i} className="loading-shimmer h-16 rounded-xl"></div>
+src/components/dashboard/RecentActivity.tsx:                className="flex items-center space-x-4 p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 cursor-pointer border border-slate-700/50"
+src/components/dashboard/RecentActivity.tsx:                <div className={`w-10 h-10 ${activityInfo.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+src/components/dashboard/RecentActivity.tsx:                <div className="flex-1">
+src/components/dashboard/RecentActivity.tsx:                  <p className="text-xs text-slate-400 flex items-center mt-1">
+src/components/dashboard/RecentActivity.tsx:                  <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+src/components/dashboard/MetricCard.tsx:    <Card className={cn("metric-card rounded-2xl p-6", className)}>
+src/components/dashboard/MetricCard.tsx:      <div className="flex items-center justify-between">
+src/components/dashboard/MetricCard.tsx:              "text-sm mt-1 flex items-center",
+src/components/dashboard/MetricCard.tsx:        <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl opacity-80">
+src/components/dashboard/TopLocations.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/TopLocations.tsx:        <div className="flex items-center space-x-3">
+src/components/dashboard/TopLocations.tsx:          <div className="p-2 bg-blue-500/20 rounded-lg">
+src/components/dashboard/TopLocations.tsx:            <div key={i} className="loading-shimmer h-16 rounded-xl"></div>
+src/components/dashboard/TopLocations.tsx:                className="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 hover:bg-slate-700/50 transition-all duration-200 cursor-pointer border border-slate-700/50"
+src/components/dashboard/TopLocations.tsx:                <div className="flex items-center space-x-3">
+src/components/dashboard/TopLocations.tsx:                  <div className={`w-10 h-10 ${rankInfo.color} rounded-lg flex items-center justify-center`}>
+src/components/dashboard/TopLocations.tsx:                    <p className="text-xs text-slate-400 flex items-center">
+src/components/dashboard/TopLocations.tsx:                  <div className="flex items-center space-x-2">
+src/components/dashboard/FinancialOverview.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/FinancialOverview.tsx:        <div className="flex items-center space-x-3">
+src/components/dashboard/FinancialOverview.tsx:          <div className="p-2 bg-emerald-500/20 rounded-lg">
+src/components/dashboard/FinancialOverview.tsx:            <div key={i} className="loading-shimmer h-16 rounded-xl"></div>
+src/components/dashboard/FinancialOverview.tsx:          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+src/components/dashboard/FinancialOverview.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/FinancialOverview.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/FinancialOverview.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/FinancialOverview.tsx:            <div className="text-center p-4 bg-slate-800/50 rounded-lg border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-center mb-2">
+src/components/dashboard/FinancialOverview.tsx:          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+src/components/dashboard/FinancialOverview.tsx:            <div className="bg-gradient-to-r from-emerald-500/10 to-green-500/10 rounded-xl p-4 border border-emerald-500/20">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-between mb-2">
+src/components/dashboard/FinancialOverview.tsx:            <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 rounded-xl p-4 border border-amber-500/20">
+src/components/dashboard/FinancialOverview.tsx:              <div className="flex items-center justify-between mb-2">
+src/components/dashboard/FinancialOverview.tsx:          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:                  <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg border border-slate-600/50">
+src/components/dashboard/FinancialOverview.tsx:                    <div className="flex items-center space-x-3">
+src/components/dashboard/FinancialOverview.tsx:                      <div className={`w-2 h-2 rounded-full ${
+src/components/dashboard/FinancialOverview.tsx:          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+src/components/dashboard/FinancialOverview.tsx:            <div className="flex items-center justify-between mb-3">
+src/components/dashboard/RevenueChart.tsx:    <Card className="glass-card rounded-2xl p-6 lg:col-span-2">
+src/components/dashboard/RevenueChart.tsx:      <div className="flex items-center justify-between mb-6">
+src/components/dashboard/RevenueChart.tsx:        <div className="flex space-x-2">
+src/components/dashboard/RevenueChart.tsx:      <div className="h-64 flex items-end justify-between space-x-2">
+src/components/dashboard/RevenueChart.tsx:            <div key={data.month} className="flex-1 flex flex-col items-center space-y-2 group">
+src/components/dashboard/RevenueChart.tsx:                className={`w-full ${data.color} rounded-t transition-all duration-300 group-hover:opacity-80 cursor-pointer relative`}
+src/components/dashboard/RevenueChart.tsx:                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+src/components/dashboard/EquipmentTable.tsx:        <div className="flex items-center justify-between mb-6">
+src/components/dashboard/EquipmentTable.tsx:          <div className="flex items-center space-x-3">
+src/components/dashboard/EquipmentTable.tsx:            <div className="p-2 bg-blue-500/20 rounded-lg">
+src/components/dashboard/EquipmentTable.tsx:          <div className="flex space-x-3">
+src/components/dashboard/EquipmentTable.tsx:              <div key={i} className="loading-shimmer h-16 rounded-xl"></div>
+src/components/dashboard/EquipmentTable.tsx:            <div className="overflow-x-auto">
+src/components/dashboard/EquipmentTable.tsx:                    <tr key={cabinet.id} className="hover:bg-slate-700/30 transition-colors">
+src/components/dashboard/EquipmentTable.tsx:                        <div className="flex items-center space-x-3">
+src/components/dashboard/EquipmentTable.tsx:                          <div className="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+src/components/dashboard/EquipmentTable.tsx:                        <div className="flex justify-end space-x-2">
+src/components/dashboard/EquipmentTable.tsx:        <div className="flex items-center justify-between mt-4 px-2 text-sm text-slate-400">
+src/components/dashboard/EquipmentTable.tsx:          <div className="flex items-center gap-2">
+src/components/dashboard/EquipmentTable.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/components/MultiLocationSelect.tsx:          className="w-full justify-between glass-card border-white/20 text-slate-300"
+src/components/MultiLocationSelect.tsx:          <div className="flex items-center gap-2">
+src/components/MultiLocationSelect.tsx:          <div className="flex items-center justify-between">
+src/components/MultiLocationSelect.tsx:          <div className="max-h-48 overflow-y-auto space-y-2">
+src/components/MultiLocationSelect.tsx:              <div key={location.id} className="flex items-center space-x-2">
+src/components/MultiLocationSelect.tsx:                  className="text-sm text-slate-300 cursor-pointer flex-1"
+src/components/MultiLocationSelect.tsx:              <div className="flex flex-wrap gap-1">
+src/index.css.backup:  transition: all 0.2s ease;
+src/index.css.backup:  transform: translateY(-1px);
+src/index.css.backup:  transition: all 0.2s ease;
+src/index.css.backup:  transition: all 0.2s ease;
+src/index.css.backup:  transition: all 0.2s ease;
+src/index.css.backup:  transform: translateY(-1px);
+src/index.css.backup:.content-card {
+src/index.css.backup:    transform: translateX(-100%);
+src/index.css.backup:    transition: transform 0.3s ease;
+src/index.css.backup:    transform: translateX(0);
+src/index.css.backup:  .content-card {
+src/pages/Settings.tsx:        <div className="loading-shimmer h-32 rounded-xl"></div>
+src/pages/Settings.tsx:        <div className="loading-shimmer h-96 rounded-xl"></div>
+src/pages/Settings.tsx:    <div className="space-y-6 w-full max-w-none">
+src/pages/Settings.tsx:          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+src/pages/Settings.tsx:            <TabsList className="grid w-full grid-cols-4 mb-8 bg-slate-800/50 p-1 rounded-xl">
+src/pages/Settings.tsx:                className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+src/pages/Settings.tsx:                className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+src/pages/Settings.tsx:                 className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+src/pages/Settings.tsx:                 className="flex items-center gap-2 text-slate-400 data-[state=active]:bg-blue-500/20 data-[state=active]:text-blue-400 rounded-lg transition-all duration-200"
+src/pages/Settings.tsx:                   <CardTitle className="text-white flex items-center gap-2">
+src/pages/Settings.tsx:                       <div className="grid grid-cols-2 gap-4">
+src/pages/Settings.tsx:                             <FormLabel className="text-white flex items-center gap-2">
+src/pages/Settings.tsx:                         <div className="grid grid-cols-2 gap-4">
+src/pages/Settings.tsx:                       <div className="flex justify-end">
+src/pages/Settings.tsx:                   <CardTitle className="text-white flex items-center gap-2">
+src/pages/Settings.tsx:                        <div className="grid grid-cols-2 gap-4">
+src/pages/Settings.tsx:                        <div className="grid grid-cols-3 gap-4">
+src/pages/Settings.tsx:                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+src/pages/Settings.tsx:                              <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+src/pages/Settings.tsx:                      <div className="flex justify-end">
+src/pages/Settings.tsx:                  <CardTitle className="text-white flex items-center gap-2">
+src/pages/Settings.tsx:                            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+src/pages/Settings.tsx:                            <FormItem className="flex flex-row items-center justify-between rounded-lg border border-white/10 p-4">
+src/pages/Settings.tsx:                      <div className="flex justify-end">
+src/pages/Settings.tsx:                  <CardTitle className="text-white flex items-center gap-2">
+src/pages/Settings.tsx:                  <div className="grid grid-cols-2 gap-6">
+src/pages/GameMixes.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/GameMixes.tsx:      <div className="flex items-center justify-between">
+src/pages/GameMixes.tsx:        <div className="flex items-center gap-4">
+src/pages/GameMixes.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/GameMixes.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/GameMixes.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/GameMixes.tsx:          <div className="flex items-center gap-4">
+src/pages/GameMixes.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/GameMixes.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/GameMixes.tsx:              <table className="enhanced-table w-full">
+src/pages/GameMixes.tsx:                    <tr key={gameMix.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+src/pages/GameMixes.tsx:                        <div className="flex items-center gap-3">
+src/pages/GameMixes.tsx:                              <button className="cursor-pointer hover:scale-105 transition-transform duration-200">
+src/pages/GameMixes.tsx:                                <DialogTitle className="text-white flex items-center justify-between">
+src/pages/GameMixes.tsx:                                  <X className="h-4 w-4 cursor-pointer hover:text-slate-400 transition-colors" />
+src/pages/GameMixes.tsx:                              <div className="flex justify-center p-6">
+src/pages/GameMixes.tsx:                                <div className="transform scale-150 transition-transform duration-300">
+src/pages/GameMixes.tsx:                          <div className="min-w-0 flex-1">
+src/pages/GameMixes.tsx:                        <div className="flex items-center gap-3">
+src/pages/GameMixes.tsx:                                <button className="cursor-pointer hover:scale-105 transition-transform duration-200">
+src/pages/GameMixes.tsx:                                  <DialogTitle className="text-white flex items-center justify-between">
+src/pages/GameMixes.tsx:                                    <X className="h-4 w-4 cursor-pointer hover:text-slate-400 transition-colors" />
+src/pages/GameMixes.tsx:                                <div className="flex justify-center p-6">
+src/pages/GameMixes.tsx:                                  <div className="transform scale-150 transition-transform duration-300">
+src/pages/GameMixes.tsx:                          <div className="min-w-0 flex-1">
+src/pages/GameMixes.tsx:                            <button className="table-cell-primary cursor-pointer inline-flex items-center gap-2 hover:text-orange-300 transition-colors">
+src/pages/GameMixes.tsx:                              <DialogTitle className="text-white flex items-center gap-2">
+src/pages/GameMixes.tsx:                            <div className="max-h-96 overflow-y-auto">
+src/pages/GameMixes.tsx:                                  <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+src/pages/GameMixes.tsx:                                      <div key={idx} className="bg-white/5 rounded-lg p-2 flex items-center gap-2 border border-white/10 hover:bg-white/10 transition-colors">
+src/pages/GameMixes.tsx:                            className="text-blue-400 hover:text-blue-300 underline decoration-dotted underline-offset-2 transition-colors inline-flex items-center gap-1"
+src/pages/GameMixes.tsx:                        <div className="action-button-group justify-end gap-2">
+src/pages/GameMixes.tsx:                            className="action-button text-green-500 hover:text-green-400 p-2 rounded-lg hover:bg-white/10 transition-all"
+src/pages/GameMixes.tsx:                            className="action-button text-amber-500 hover:text-amber-400 p-2 rounded-lg hover:bg-white/10 transition-all"
+src/pages/GameMixes.tsx:                            className="action-button text-red-500 hover:text-red-400 p-2 rounded-lg hover:bg-white/10 transition-all"
+src/pages/GameMixes.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/GameMixes.tsx:          <div className="flex items-center gap-2">
+src/pages/GameMixes.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/GameMixes.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/GameMixes.tsx:              <div className="flex justify-end space-x-2 pt-4">
+src/pages/GameMixes.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/GameMixes.tsx:              <div className="flex justify-end space-x-2 pt-4">
+src/pages/Dashboard.tsx:    <div className="space-y-6 p-6 w-full max-w-none">
+src/pages/Dashboard.tsx:      <div className="flex items-center justify-between">
+src/pages/Dashboard.tsx:        <div className="flex items-center space-x-4">
+src/pages/Dashboard.tsx:      <div className="flex flex-wrap gap-2">
+src/pages/Dashboard.tsx:        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+src/pages/Dashboard.tsx:            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/pages/Dashboard.tsx:            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/pages/Dashboard.tsx:            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/pages/Dashboard.tsx:            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+src/pages/Dashboard.tsx:          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+src/pages/Dashboard.tsx:                    <div key={invoice.id} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
+src/pages/Dashboard.tsx:                <CardTitle className="text-white flex items-center">
+src/pages/ONJNEnhanced.tsx:        <div className="flex items-center justify-between">
+src/pages/ONJNEnhanced.tsx:        <div className="flex justify-center py-8">
+src/pages/ONJNEnhanced.tsx:        <div className="flex items-center justify-between">
+src/pages/ONJNEnhanced.tsx:        <div className="flex justify-center py-8">
+src/pages/ONJNEnhanced.tsx:      <div className="flex items-center justify-between">
+src/pages/ONJNEnhanced.tsx:        <div className="flex gap-2">
+src/pages/ONJNEnhanced.tsx:                  <div className="flex justify-end gap-2 pt-4">
+src/pages/ONJNEnhanced.tsx:                  <div className="flex justify-end gap-2 pt-4">
+src/pages/ONJNEnhanced.tsx:          <div className="flex items-center gap-4">
+src/pages/ONJNEnhanced.tsx:            <div className="relative flex-1">
+src/pages/ONJNEnhanced.tsx:              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+src/pages/ONJNEnhanced.tsx:          <div className="overflow-x-auto">
+src/pages/ONJNEnhanced.tsx:            <table className="w-full">
+src/pages/ONJNEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/ONJNEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/ONJNEnhanced.tsx:                      <div className="flex items-center justify-end gap-2">
+src/pages/ONJNEnhanced.tsx:              <div className="flex justify-end gap-2 pt-4">
+src/pages/LegalEnhanced.tsx:          <div className="flex flex-wrap gap-1">
+src/pages/LegalEnhanced.tsx:          className="w-full justify-between glass-card border-white/20 text-slate-300"
+src/pages/LegalEnhanced.tsx:          <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:          <div className="flex items-center justify-between">
+src/pages/LegalEnhanced.tsx:          <div className="max-h-48 overflow-y-auto space-y-2">
+src/pages/LegalEnhanced.tsx:              <div key={location.id} className="flex items-center space-x-2">
+src/pages/LegalEnhanced.tsx:                  className="text-sm text-slate-300 cursor-pointer flex-1"
+src/pages/LegalEnhanced.tsx:              <div className="flex flex-wrap gap-1">
+src/pages/LegalEnhanced.tsx:        <div className="flex items-center justify-between">
+src/pages/LegalEnhanced.tsx:        <div className="flex justify-center py-8">
+src/pages/LegalEnhanced.tsx:        <div className="flex items-center justify-between">
+src/pages/LegalEnhanced.tsx:        <div className="flex justify-center py-8">
+src/pages/LegalEnhanced.tsx:      <div className="flex items-center justify-between">
+src/pages/LegalEnhanced.tsx:        <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:          <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/LegalEnhanced.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/LegalEnhanced.tsx:            <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
+src/pages/LegalEnhanced.tsx:                <div className="flex justify-end gap-2 pt-4">
+src/pages/LegalEnhanced.tsx:          <div className="flex items-center gap-4">
+src/pages/LegalEnhanced.tsx:            <div className="relative flex-1">
+src/pages/LegalEnhanced.tsx:              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+src/pages/LegalEnhanced.tsx:          <div className="overflow-x-auto -mx-6">
+src/pages/LegalEnhanced.tsx:            <table className="w-full min-w-max">
+src/pages/LegalEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:                      <div className="flex items-center gap-2">
+src/pages/LegalEnhanced.tsx:                      <div className="flex items-center justify-end gap-2">
+src/pages/LegalEnhanced.tsx:        <DialogContent className="glass-card border-white/20 max-w-2xl max-h-[90vh] overflow-y-auto">
+src/pages/LegalEnhanced.tsx:              <div className="flex justify-end gap-2 pt-4">
+src/pages/Slots.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Slots.tsx:      <div className="flex items-center justify-between">
+src/pages/Slots.tsx:        <div className="flex items-center gap-4">
+src/pages/Slots.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Slots.tsx:      <div className="flex items-center justify-between">
+src/pages/Slots.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Slots.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Slots.tsx:          <div className="flex items-center gap-4">
+src/pages/Slots.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Slots.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Slots.tsx:                        <div className="flex items-center gap-3">
+src/pages/Slots.tsx:                          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+src/pages/Slots.tsx:                        <div className="flex items-center gap-3">
+src/pages/Slots.tsx:                        <div className="action-button-group justify-end">
+src/pages/Slots.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Slots.tsx:          <div className="flex items-center gap-2">
+src/pages/Slots.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-1 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-1 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Slots.tsx:              <div className="flex justify-end space-x-2 pt-4">
+src/pages/ONJN.tsx:          <div className="flex flex-wrap gap-1">
+src/pages/ONJN.tsx:      <div className="flex items-center justify-between">
+src/pages/ONJN.tsx:        <div className="flex items-center gap-2">
+src/pages/ONJN.tsx:        <div className="flex items-center gap-2">
+src/pages/ONJN.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:                      className="form-input w-full"
+src/pages/ONJN.tsx:                    <select className="form-input w-full">
+src/pages/ONJN.tsx:                  <select className="form-input w-full">
+src/pages/ONJN.tsx:                      <label key={location.id} className="flex items-center space-x-2">
+src/pages/ONJN.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:                      className="form-input w-full"
+src/pages/ONJN.tsx:                      className="form-input w-full"
+src/pages/ONJN.tsx:                    className="form-input w-full h-24" 
+src/pages/ONJN.tsx:                    className="form-input w-full"
+src/pages/ONJN.tsx:                <div className="flex justify-end gap-2 mt-6">
+src/pages/ONJN.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:                <div className="flex justify-end space-x-4">
+src/pages/ONJN.tsx:                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+src/pages/ONJN.tsx:              <div className="overflow-x-auto -mx-6">
+src/pages/ONJN.tsx:                <table className="w-full min-w-max">
+src/pages/ONJN.tsx:                          <div className="flex items-center gap-2">
+src/pages/ONJN.tsx:                          <div className="flex justify-end space-x-2">
+src/pages/ONJN.tsx:                <div className="flex items-center justify-center space-x-2 mt-6">
+src/pages/ONJN.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/ONJN.tsx:              <div className="flex justify-end space-x-4">
+src/pages/IconDemo.tsx:        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+src/pages/IconDemo.tsx:            <div key={name} className="flex flex-col items-center p-4 border rounded-lg shadow bg-white/80 dark:bg-slate-900/80">
+src/pages/Locations.tsx:  "Sângeorz-Băi",
+src/pages/Locations.tsx:  "Sângeorz-Băi": "Bistrița-Năsăud",
+src/pages/Locations.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Locations.tsx:      <div className="flex items-center justify-between">
+src/pages/Locations.tsx:        <div className="flex items-center gap-4">
+src/pages/Locations.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Locations.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Locations.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Locations.tsx:          <div className="flex items-center gap-4">
+src/pages/Locations.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Locations.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Locations.tsx:                            <div className="flex items-center gap-2">
+src/pages/Locations.tsx:                            <div className="flex items-center gap-2">
+src/pages/Locations.tsx:                        <div className="action-button-group justify-end">
+src/pages/Locations.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Locations.tsx:          <div className="flex items-center gap-2">
+src/pages/Locations.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Locations.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Locations.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Locations.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Locations.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Locations.tsx:              <div className="flex justify-end gap-4 pt-6">
+src/pages/Locations.tsx:                  className="px-6 py-2.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+src/pages/Locations.tsx:                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+src/pages/Locations.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Locations.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Locations.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Locations.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Locations.tsx:              <div className="flex justify-end gap-4 pt-6">
+src/pages/Locations.tsx:                  className="px-6 py-2.5 text-slate-400 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-200"
+src/pages/Locations.tsx:                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105"
+src/pages/RentManagement.tsx:    const transformedData = {
+src/pages/RentManagement.tsx:    createMutation.mutate(transformedData);
+src/pages/RentManagement.tsx:      const transformedData = {
+src/pages/RentManagement.tsx:      updateMutation.mutate({ id: editingAgreement.id, data: transformedData });
+src/pages/RentManagement.tsx:      <div className="flex items-center justify-between">
+src/pages/RentManagement.tsx:        <div className="flex items-center gap-4">
+src/pages/RentManagement.tsx:        <div className="flex items-center gap-2">
+src/pages/RentManagement.tsx:            <div className="flex items-center justify-between w-full">
+src/pages/RentManagement.tsx:                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/RentManagement.tsx:              <div className="flex items-center gap-4">
+src/pages/RentManagement.tsx:                  className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/RentManagement.tsx:                  <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/RentManagement.tsx:                  <div className="grid grid-cols-2 gap-4">
+src/pages/RentManagement.tsx:                  <div className="grid grid-cols-2 gap-4">
+src/pages/RentManagement.tsx:                  <div className="flex justify-end space-x-2 pt-4">
+src/pages/RentManagement.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/RentManagement.tsx:              <div className="flex justify-end space-x-2 pt-4">
+src/pages/RentManagement.tsx:                        <div className="flex items-center gap-3">
+src/pages/RentManagement.tsx:                          <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+src/pages/RentManagement.tsx:                        <div className="action-button-group justify-end">
+src/pages/RentManagement.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/RentManagement.tsx:          <div className="flex items-center gap-2">
+src/pages/RentManagement.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Companies.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Companies.tsx:      <div className="flex items-center justify-between">
+src/pages/Companies.tsx:        <div className="flex items-center gap-4">
+src/pages/Companies.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Companies.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Companies.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Companies.tsx:          <div className="flex items-center gap-4">
+src/pages/Companies.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Companies.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Companies.tsx:                            <div className="flex items-center gap-2">
+src/pages/Companies.tsx:                            <div className="flex items-center gap-2">
+src/pages/Companies.tsx:                        <div className="action-button-group justify-end">
+src/pages/Companies.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Companies.tsx:          <div className="flex items-center gap-2">
+src/pages/Companies.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Companies.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Companies.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Companies.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Companies.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Companies.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Companies.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Companies.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Companies.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Companies.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Companies.tsx:              <div className="grid grid-cols-3 gap-4">
+src/pages/Companies.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Companies.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Users.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Users.tsx:      <div className="flex items-center justify-between">
+src/pages/Users.tsx:        <div className="flex items-center gap-4">
+src/pages/Users.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Users.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Users.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Users.tsx:          <div className="flex items-center gap-4">
+src/pages/Users.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Users.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Users.tsx:              <table className="enhanced-table w-full">
+src/pages/Users.tsx:                    <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+src/pages/Users.tsx:                        <div className="flex items-center gap-3">
+src/pages/Users.tsx:                          <div className="min-w-0 flex-1">
+src/pages/Users.tsx:                        <div className="flex items-center gap-2">
+src/pages/Users.tsx:                        <div className="flex items-center gap-2">
+src/pages/Users.tsx:                        <div className="flex items-center justify-end gap-2">
+src/pages/Users.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Users.tsx:          <div className="flex items-center gap-2">
+src/pages/Users.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-6">
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="Enter username" />
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} type="email" className="form-input w-full" placeholder="user@email.com" />
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-6">
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="First name" />
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} className="form-input w-full" placeholder="Last name" />
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-6">
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} type="password" className="form-input w-full" placeholder="Enter password" />
+src/pages/Users.tsx:                    <FormItem className="w-full">
+src/pages/Users.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Users.tsx:                        <Input {...field} value={field.value || ""} type="tel" className="form-input w-full" placeholder="Enter telephone number" />
+src/pages/Users.tsx:                <div className="flex items-center justify-between">
+src/pages/Users.tsx:                <div className="space-y-2 max-h-40 overflow-y-auto border border-white/10 rounded-md p-3">
+src/pages/Users.tsx:                    <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
+src/pages/Users.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Users.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Users.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Users.tsx:                      <FormLabel className="text-white flex items-center gap-2">
+src/pages/Users.tsx:                          className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400"
+src/pages/Users.tsx:                        className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-400"
+src/pages/Users.tsx:                <div className="flex items-center justify-between">
+src/pages/Users.tsx:                <div className="space-y-2 max-h-40 overflow-y-auto border border-white/10 rounded-md p-3">
+src/pages/Users.tsx:                    <label key={location.id} className="flex items-center space-x-2 cursor-pointer">
+src/pages/Users.tsx:              <div className="flex justify-end space-x-4">
+src/pages/ONJNClean.tsx:      <div className="flex items-center justify-between">
+src/pages/ONJNClean.tsx:        <div className="flex items-center gap-2">
+src/pages/ONJNClean.tsx:          <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/ONJNClean.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/ONJNClean.tsx:            <DialogContent className="glass-card border-white/10 max-w-4xl max-h-[90vh] overflow-y-auto">
+src/pages/ONJNClean.tsx:                    <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto glass-card border-white/10 p-3 rounded-md">
+src/pages/ONJNClean.tsx:                        <label key={location.id} className="flex items-center space-x-2 text-sm text-white">
+src/pages/ONJNClean.tsx:                            className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:                            className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:                  <div className="flex justify-end space-x-2 pt-4">
+src/pages/ONJNClean.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/ONJNClean.tsx:                            className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:                            className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:                  <div className="flex justify-end space-x-4">
+src/pages/ONJNClean.tsx:          <div className="flex items-center gap-4">
+src/pages/ONJNClean.tsx:            <div className="relative flex-1">
+src/pages/ONJNClean.tsx:              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+src/pages/ONJNClean.tsx:                <div key={i} className="loading-shimmer h-20 rounded-xl"></div>
+src/pages/ONJNClean.tsx:              <div className="overflow-x-auto -mx-6">
+src/pages/ONJNClean.tsx:                <table className="w-full min-w-max">
+src/pages/ONJNClean.tsx:                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+src/pages/ONJNClean.tsx:                          <div className="flex items-center justify-end gap-2">
+src/pages/ONJNClean.tsx:                        className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:                        className="glass-card border-white/20 text-white min-h-20" 
+src/pages/ONJNClean.tsx:              <div className="flex justify-end space-x-4">
+src/pages/ONJNWorking.tsx:          <div className="flex flex-wrap gap-1">
+src/pages/ONJNWorking.tsx:          <div className="flex flex-wrap gap-1">
+src/pages/ONJNWorking.tsx:          className="w-full justify-between glass-card border-white/20 text-slate-300"
+src/pages/ONJNWorking.tsx:          <div className="flex items-center gap-2">
+src/pages/ONJNWorking.tsx:          <div className="flex items-center justify-between">
+src/pages/ONJNWorking.tsx:          <div className="max-h-48 overflow-y-auto space-y-2">
+src/pages/ONJNWorking.tsx:              <div key={location.id} className="flex items-center space-x-2">
+src/pages/ONJNWorking.tsx:                  className="text-sm text-slate-300 cursor-pointer flex-1"
+src/pages/ONJNWorking.tsx:              <div className="flex flex-wrap gap-1">
+src/pages/ONJNWorking.tsx:        <div className="flex items-center justify-between">
+src/pages/ONJNWorking.tsx:        <div className="flex justify-center py-8">
+src/pages/ONJNWorking.tsx:        <div className="flex items-center justify-between">
+src/pages/ONJNWorking.tsx:        <div className="flex justify-center py-8">
+src/pages/ONJNWorking.tsx:      <div className="flex items-center justify-between">
+src/pages/ONJNWorking.tsx:        <div className="flex gap-2">
+src/pages/ONJNWorking.tsx:                  <div className="flex justify-end gap-2 pt-4">
+src/pages/ONJNWorking.tsx:                  <div className="flex justify-end gap-2 pt-4">
+src/pages/ONJNWorking.tsx:          <div className="flex items-center gap-4">
+src/pages/ONJNWorking.tsx:            <div className="relative flex-1">
+src/pages/ONJNWorking.tsx:              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" />
+src/pages/ONJNWorking.tsx:          <div className="overflow-x-auto">
+src/pages/ONJNWorking.tsx:            <table className="w-full">
+src/pages/ONJNWorking.tsx:                      <div className="flex items-center gap-2">
+src/pages/ONJNWorking.tsx:                      <div className="flex items-center gap-2">
+src/pages/ONJNWorking.tsx:                      <div className="flex items-center justify-end gap-2">
+src/pages/ONJNWorking.tsx:              <div className="flex justify-end gap-2 pt-4">
+src/pages/ONJNFixed.tsx:      <div className="flex items-center justify-between">
+src/pages/ONJNFixed.tsx:        <div className="flex items-center gap-2">
+src/pages/ONJNFixed.tsx:            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+src/pages/ONJNFixed.tsx:        <div className="flex items-center gap-2">
+src/pages/ONJNFixed.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJNFixed.tsx:                      className="form-input w-full"
+src/pages/ONJNFixed.tsx:                    <select className="form-input w-full">
+src/pages/ONJNFixed.tsx:                  <select className="form-input w-full">
+src/pages/ONJNFixed.tsx:                  <div className="space-y-2 max-h-32 overflow-y-auto">
+src/pages/ONJNFixed.tsx:                      <label key={location.id} className="flex items-center space-x-2">
+src/pages/ONJNFixed.tsx:                <div className="grid grid-cols-2 gap-4">
+src/pages/ONJNFixed.tsx:                      className="form-input w-full"
+src/pages/ONJNFixed.tsx:                      className="form-input w-full"
+src/pages/ONJNFixed.tsx:                    className="form-input w-full h-24" 
+src/pages/ONJNFixed.tsx:                <div className="flex justify-end gap-2 mt-6">
+src/pages/ONJNFixed.tsx:                  <div className="grid grid-cols-2 gap-4">
+src/pages/ONJNFixed.tsx:                  <div className="flex justify-end space-x-4">
+src/pages/ONJNFixed.tsx:          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+src/pages/ONJNFixed.tsx:        <div className="glass-card border-white/10 overflow-hidden">
+src/pages/ONJNFixed.tsx:                    <div className="flex items-center gap-2">
+src/pages/ONJNFixed.tsx:        <div className="flex items-center justify-center gap-2">
+src/pages/ONJNFixed.tsx:              <div className="flex justify-end space-x-4">
+src/pages/ONJNFixed.tsx:      <div className="glass-card rounded-lg overflow-hidden border border-white/10">
+src/pages/ONJNFixed.tsx:        <div className="overflow-x-auto" style={{ width: 'calc(100vw - 280px)', marginLeft: '-24px' }}>
+src/pages/ONJNFixed.tsx:          <Table className="w-full border-collapse">
+src/pages/ONJNFixed.tsx:                  className="text-left py-4 px-6 text-slate-300 font-semibold cursor-pointer hover:text-white transition-colors"
+src/pages/ONJNFixed.tsx:                  <TableRow key={report.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+src/pages/ONJNFixed.tsx:                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+src/pages/ONJNFixed.tsx:                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+src/pages/ONJNFixed.tsx:                      <div className="flex items-center space-x-2">
+src/pages/not-found.tsx:    <div className="min-h-screen w-full flex items-center justify-center bg-slate-900">
+src/pages/not-found.tsx:      <Card className="w-full max-w-md mx-4 glass-card border-white/10">
+src/pages/not-found.tsx:          <div className="flex mb-4 gap-2 items-center">
+src/pages/not-found.tsx:            <Button className="w-full btn-gaming">
+src/pages/Cabinets.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Cabinets.tsx:      <div className="flex items-center justify-between">
+src/pages/Cabinets.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Cabinets.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Cabinets.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Cabinets.tsx:          <div className="flex items-center gap-4">
+src/pages/Cabinets.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Cabinets.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Cabinets.tsx:          <div className="w-full overflow-x-auto">
+src/pages/Cabinets.tsx:            <table className="enhanced-table w-full">
+src/pages/Cabinets.tsx:                      <div className="flex items-center gap-3">
+src/pages/Cabinets.tsx:                      <div className="action-button-group justify-end">
+src/pages/Cabinets.tsx:          <div className="flex items-center justify-between px-4 py-2 bg-slate-800/30 rounded-lg">
+src/pages/Cabinets.tsx:            <div className="flex items-center gap-4 text-sm text-slate-400">
+src/pages/Cabinets.tsx:              <div className="flex items-center gap-2">
+src/pages/Cabinets.tsx:            <div className="flex items-center gap-3">
+src/pages/Cabinets.tsx:          <div className="flex items-center justify-center gap-2">
+src/pages/Cabinets.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Cabinets.tsx:                      <Textarea {...field} value={field.value || ""} className="form-input min-h-[100px]" placeholder="Enter technical specifications and details" />
+src/pages/Cabinets.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Cabinets.tsx:              <div className="grid grid-cols-2 gap-4">
+src/pages/Cabinets.tsx:                      <Textarea {...field} value={field.value || ""} className="form-input min-h-[100px]" placeholder="Enter technical specifications and details" />
+src/pages/Cabinets.tsx:              <div className="flex justify-end space-x-4">
+src/pages/Legal.tsx:      <div className="flex items-center justify-between">
+src/pages/Legal.tsx:        <div className="flex items-center gap-4">
+src/pages/Legal.tsx:        <div className="flex items-center gap-2">
+src/pages/Legal.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/Legal.tsx:                  <div className="grid grid-cols-2 gap-4">
+src/pages/Legal.tsx:                  <div className="flex justify-end space-x-2 pt-4">
+src/pages/Legal.tsx:                  <div className="grid grid-cols-2 gap-4">
+src/pages/Legal.tsx:                  <div className="flex justify-end space-x-2 pt-4">
+src/pages/Legal.tsx:          <div className="flex items-center gap-4">
+src/pages/Legal.tsx:              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Legal.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/Legal.tsx:              <Button className="bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium px-4 py-2 rounded-lg">
+src/pages/Legal.tsx:                        <div className="flex items-center gap-3">
+src/pages/Legal.tsx:                          <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+src/pages/Legal.tsx:                        <div className="action-button-group justify-end">
+src/pages/Legal.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Legal.tsx:          <div className="flex items-center gap-2">
+src/pages/Legal.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Providers.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Providers.tsx:      <div className="flex items-center justify-between">
+src/pages/Providers.tsx:        <div className="flex items-center gap-4">
+src/pages/Providers.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Providers.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Providers.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Providers.tsx:          <div className="flex items-center gap-4">
+src/pages/Providers.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Providers.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Providers.tsx:                        <div className="flex items-center gap-3">
+src/pages/Providers.tsx:                            <div className="flex items-center gap-2">
+src/pages/Providers.tsx:                            <div className="flex items-center gap-2">
+src/pages/Providers.tsx:                        <div className="action-button-group justify-end">
+src/pages/Providers.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Providers.tsx:          <div className="flex items-center gap-2">
+src/pages/Providers.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Providers.tsx:        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+src/pages/Providers.tsx:              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+src/pages/Providers.tsx:                        className="enhanced-input min-h-[80px]"
+src/pages/Providers.tsx:                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+src/pages/Providers.tsx:              <div className="flex justify-end space-x-3 pt-4">
+src/pages/Providers.tsx:        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+src/pages/Providers.tsx:              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+src/pages/Providers.tsx:                        className="enhanced-input min-h-[80px]"
+src/pages/Providers.tsx:                  <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+src/pages/Providers.tsx:              <div className="flex justify-end space-x-3 pt-4">
+src/pages/Invoices.tsx:    <div className="space-y-4 w-full max-w-none">
+src/pages/Invoices.tsx:      <div className="flex items-center justify-between">
+src/pages/Invoices.tsx:        <div className="flex items-center gap-4">
+src/pages/Invoices.tsx:            <span className="bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full">
+src/pages/Invoices.tsx:        <div className="flex items-center justify-between w-full">
+src/pages/Invoices.tsx:            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-400 h-5 w-5" />
+src/pages/Invoices.tsx:          <div className="flex items-center gap-4">
+src/pages/Invoices.tsx:              className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0"
+src/pages/Invoices.tsx:              <Button className="px-4 py-2 rounded-lg h-10 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-0">
+src/pages/Invoices.tsx:              <table className="enhanced-table w-full">
+src/pages/Invoices.tsx:                      <tr key={invoice.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+src/pages/Invoices.tsx:                          <div className="min-w-0 flex-1">
+src/pages/Invoices.tsx:                          <div className="flex items-center gap-2 min-w-0">
+src/pages/Invoices.tsx:                          <div className="flex items-center gap-2 min-w-0">
+src/pages/Invoices.tsx:                          <div className="flex items-center gap-2">
+src/pages/Invoices.tsx:                              <button className="table-cell-primary cursor-pointer inline-flex items-center gap-2 hover:text-blue-300 transition-colors">
+src/pages/Invoices.tsx:                                <DialogTitle className="text-white flex items-center gap-2">
+src/pages/Invoices.tsx:                              <div className="max-h-96 overflow-y-auto">
+src/pages/Invoices.tsx:                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-2">
+src/pages/Invoices.tsx:                                        <div key={idx} className="bg-white/5 rounded-lg p-2 flex items-center gap-2 border border-white/10 hover:bg-white/10 transition-colors">
+src/pages/Invoices.tsx:                                    <div className="mt-4 p-3 bg-slate-800/30 rounded-lg border border-white/10">
+src/pages/Invoices.tsx:                          <div className="flex items-center justify-end gap-2">
+src/pages/Invoices.tsx:        <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
+src/pages/Invoices.tsx:          <div className="flex items-center gap-2">
+src/pages/Invoices.tsx:              className="h-8 min-w-[40px] px-3 rounded-full bg-blue-500 text-white font-bold flex items-center justify-center"
+src/pages/Invoices.tsx:        <DialogContent className="glass-dialog max-w-4xl max-h-[90vh] overflow-y-auto">
+src/pages/Invoices.tsx:            <DialogTitle className="text-white flex items-center gap-2">
+src/pages/Invoices.tsx:              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+src/pages/Invoices.tsx:                        className="enhanced-input min-h-[100px]"
+src/pages/Invoices.tsx:                        className="enhanced-input min-h-[80px]"
+src/pages/Invoices.tsx:                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto p-3 bg-slate-800/30 rounded-lg border border-white/10">
+src/pages/Invoices.tsx:                    <div key={location.id} className="flex items-center space-x-2">
+src/pages/Invoices.tsx:              <div className="flex justify-end gap-3 pt-4">
+src/pages/Invoices.tsx:        <DialogContent className="glass-dialog max-w-4xl max-h-[90vh] overflow-y-auto">
+src/pages/Invoices.tsx:            <DialogTitle className="text-white flex items-center gap-2">
+src/pages/Invoices.tsx:              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+src/pages/Invoices.tsx:                        className="enhanced-input min-h-[100px]"
+src/pages/Invoices.tsx:                        className="enhanced-input min-h-[80px]"
+src/pages/Invoices.tsx:                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto p-3 bg-slate-800/30 rounded-lg border border-white/10">
+src/pages/Invoices.tsx:                    <div key={location.id} className="flex items-center space-x-2">
+src/pages/Invoices.tsx:              <div className="flex justify-end gap-3 pt-4">

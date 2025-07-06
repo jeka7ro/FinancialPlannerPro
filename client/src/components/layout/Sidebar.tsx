@@ -1,7 +1,7 @@
 import { Link, useLocation } from "wouter";
-import { cn } from "@/lib/utils";
+import { cn } from "../../lib/utils";
 import clsx from "clsx";
-import cashpotLogo from '@/assets/cashpot-logo.png';
+import cashpotLogo from '../../assets/cashpot-logo.png';
 
 interface SidebarProps {
   className?: string;

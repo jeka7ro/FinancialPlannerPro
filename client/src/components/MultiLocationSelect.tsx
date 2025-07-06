@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { Checkbox } from "../components/ui/checkbox";
+import { Badge } from "../components/ui/badge";
 import { ChevronDown, MapPin } from "lucide-react";
 
 interface MultiLocationSelectProps {

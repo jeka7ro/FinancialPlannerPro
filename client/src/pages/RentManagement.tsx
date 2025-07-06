@@ -1,23 +1,23 @@
 import { useState } from "react";
-import { ImportExportDialog } from "@/components/ui/import-export-dialog";
+import { ImportExportDialog } from "../components/ui/import-export-dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { queryClient, apiRequest } from "../lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertRentAgreementSchema, type InsertRentAgreement } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { insertRentAgreementSchema, type InsertRentAgreement } from "@/shared/schema";
+import { useToast } from "../hooks/use-toast";
+import { Badge } from "../components/ui/badge";
 import { Upload, Edit, Trash2, Plus, Search } from "lucide-react";
-import { AttachmentButton } from "@/components/ui/attachment-button";
-import { BulkOperations } from "@/components/ui/bulk-operations";
-import { Checkbox } from "@/components/ui/checkbox";
+import { AttachmentButton } from "../components/ui/attachment-button";
+import { BulkOperations } from "../components/ui/bulk-operations";
+import { Checkbox } from "../components/ui/checkbox";
 
 const getStatusColor = (status: string) => {
   switch (status?.toLowerCase()) {

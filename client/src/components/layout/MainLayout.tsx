@@ -43,7 +43,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div 
-          className="lg:hidden fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          style={{ backdropFilter: 'blur(4px)' }}
           onClick={toggleSidebar}
         />
       )}

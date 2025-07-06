@@ -132,3 +132,19 @@ docker-compose.override.yml
 # PM2
 .pm2/
 .vercel
+
+# Vite cache
+.vite/
+
+# Cookie files
+cookies*.txt
+new_cookies.txt
+final_test.txt
+
+# Test files
+test-*.txt
+debug-*.txt
+
+# Temporary files
+*.tmp
+*.temp

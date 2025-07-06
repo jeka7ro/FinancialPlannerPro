@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs/promises';
-import { storage } from '../storage';
-import type { InsertAttachment } from '../../client/shared/schema';
+import { storage } from '../storage.js';
+import type { InsertAttachment } from '../../shared/schema.js';
 
 export class FileService {
   private uploadDir = path.join(process.cwd(), 'uploads');

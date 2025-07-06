@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { UserAvatar, UserAvatarWithInfo } from "@/components/ui/user-avatar";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Button } from "../../components/ui/button";
+import { useToast } from "../../hooks/use-toast";
+import { apiRequest, queryClient } from "../../lib/queryClient";
+import { UserAvatar, UserAvatarWithInfo } from "../../components/ui/user-avatar";
+import { ThemeToggle } from "../../components/ui/theme-toggle";
 import { useQuery } from "@tanstack/react-query";
-import type { User } from "../../../shared/schema";
+import type { User } from "@/shared/schema";
 import { Power } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "../../components/ui/select";
 
 interface HeaderProps {
   title: string;
@@ -23,42 +23,6 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
     retry: false,
   });
 
-  const [userList, setUserList] = useState<any[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
-
-  useEffect(() => {
-    // Try to get users from localStorage mockDataStore
-    let users: any[] = [];
-    try {
-      const store = localStorage.getItem('mockDataStore');
-      if (store) {
-        const parsed = JSON.parse(store);
-        users = parsed.users || [];
-      } else if ((window as any).mockUsers) {
-        users = (window as any).mockUsers;
-      }
-    } catch {}
-    setUserList(users);
-    if (currentUser?.id) setSelectedUserId(currentUser.id);
-  }, [currentUser]);
-
-  const handleUserChange = async (userId: string) => {
-    const user = userList.find(u => u.id === parseInt(userId));
-    if (user) {
-      // Update mockAuthState in localStorage
-      const authState = localStorage.getItem('cashpot_auth_state');
-      let parsed = { isAuthenticated: true, currentUser: user, sessionToken: null };
-      if (authState) {
-        try { parsed = { ...JSON.parse(authState), isAuthenticated: true, currentUser: user }; } catch {}
-      }
-      localStorage.setItem('cashpot_auth_state', JSON.stringify(parsed));
-      setSelectedUserId(user.id);
-      // Invalidate query to force refetch
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      window.location.reload(); // For demo, force reload to update all state
-    }
-  };
-
   const handleLogout = async () => {
     try {
       await apiRequest("POST", "/api/auth/logout", {});
@@ -66,9 +30,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
-      // Instead of reloading, invalidate the auth query to trigger re-authentication
       queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
-      // Force a page reload to reset the entire app state
       window.location.reload();
     } catch (error) {
       toast({

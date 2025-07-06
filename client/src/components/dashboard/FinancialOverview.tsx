@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { FileText, Receipt, Shield, AlertTriangle, TrendingUp, DollarSign } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 
 export default function FinancialOverview() {
   const { data: invoicesData, isLoading: invoicesLoading } = useQuery({

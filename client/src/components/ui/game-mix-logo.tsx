@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { cn } from "@/lib/utils";
-import { apiRequest } from "@/lib/queryClient";
+import { cn } from "../../lib/utils";
+import { apiRequest } from "../../lib/queryClient";
 
 interface GameMixLogoProps {
   gameMixId: number | null | undefined;

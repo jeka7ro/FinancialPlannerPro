@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import { Moon, Sun, Sparkles } from "lucide-react";
-import { useTheme } from "@/contexts/ThemeContext";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useTheme } from "../../contexts/ThemeContext";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();

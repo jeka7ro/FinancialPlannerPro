@@ -1,9 +1,9 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { MapPin, Building2, Users, Activity, Navigation } from "lucide-react";
 import { useEffect, useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 
 // Regular imports for Leaflet
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';

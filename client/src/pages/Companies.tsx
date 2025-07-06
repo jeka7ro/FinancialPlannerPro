@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { queryClient, apiRequest } from "../lib/queryClient";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
 import { Plus, Edit, Trash2, Upload, Search, Mail, Phone } from "lucide-react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertCompanySchema, type InsertCompany } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
-import { Checkbox } from "@/components/ui/checkbox";
-import { BulkOperations } from "@/components/ui/bulk-operations";
-import { ImportExportDialog } from "@/components/ui/import-export-dialog";
-import { AttachmentButton } from "@/components/ui/attachment-button";
+import { insertCompanySchema, type InsertCompany } from "@/shared/schema";
+import { useToast } from "../hooks/use-toast";
+import { Checkbox } from "../components/ui/checkbox";
+import { BulkOperations } from "../components/ui/bulk-operations";
+import { ImportExportDialog } from "../components/ui/import-export-dialog";
+import { AttachmentButton } from "../components/ui/attachment-button";
 
 export default function Companies() {
   const [searchTerm, setSearchTerm] = useState("");

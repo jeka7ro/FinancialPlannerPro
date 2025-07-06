@@ -1,23 +1,23 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Textarea } from "../components/ui/textarea";
+import { Checkbox } from "../components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertOnjnReportSchema, type InsertOnjnReport } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
-import { useToast } from "@/hooks/use-toast";
+import { insertOnjnReportSchema, type InsertOnjnReport } from "@/shared/schema";
+import { apiRequest } from "../lib/queryClient";
+import { useToast } from "../hooks/use-toast";
 import { Search, Plus, Calendar, FileText, MapPin, Building, Edit, Trash2, Bell, ChevronDown } from "lucide-react";
-import { AttachmentButton } from "@/components/ui/attachment-button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { safeFormValue } from "@/utils/formUtils";
+import { AttachmentButton } from "../components/ui/attachment-button";
+import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover";
+import { safeFormValue } from "../utils/formUtils";
 
 // Serial Numbers Display Component
 const SerialNumbersDisplay = ({ serialNumbers }: { serialNumbers: string | null }) => {

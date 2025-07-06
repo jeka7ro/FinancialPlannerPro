@@ -1,24 +1,24 @@
 import { useState } from "react";
-import { ImportExportDialog } from "@/components/ui/import-export-dialog";
-import { AttachmentButton } from "@/components/ui/attachment-button";
-import { ProviderLogo } from "@/components/ui/provider-logo";
+import { ImportExportDialog } from "../components/ui/import-export-dialog";
+import { AttachmentButton } from "../components/ui/attachment-button";
+import { ProviderLogo } from "../components/ui/provider-logo";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { queryClient, apiRequest } from "../lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Input } from "../components/ui/input";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "../components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertSlotSchema, type InsertSlot } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
+import { insertSlotSchema, type InsertSlot } from "@/shared/schema";
+import { useToast } from "../hooks/use-toast";
+import { Badge } from "../components/ui/badge";
 import { Edit, Trash2, Upload, Plus, Search } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { BulkOperations } from "@/components/ui/bulk-operations";
-import { safeFormValue } from "@/utils/formUtils";
+import { Checkbox } from "../components/ui/checkbox";
+import { BulkOperations } from "../components/ui/bulk-operations";
+import { safeFormValue } from "../utils/formUtils";
 
 const getPropertyTypeColor = (propertyType: string) => {
   switch (propertyType?.toLowerCase()) {

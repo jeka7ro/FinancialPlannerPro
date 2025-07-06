@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { apiRequest } from "@/lib/queryClient";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { apiRequest } from "../lib/queryClient";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Progress } from "../components/ui/progress";
+import { Alert, AlertDescription } from "../components/ui/alert";
 import { 
   Building2, 
   Gamepad2, 
@@ -22,11 +22,11 @@ import {
   TrendingUp,
   Activity
 } from "lucide-react";
-import LocationsMap from "@/components/dashboard/LocationsMap";
-import FinancialMetrics from "@/components/dashboard/FinancialMetrics";
-import { ProviderLogo } from "@/components/ui/provider-logo";
+import LocationsMap from "../components/dashboard/LocationsMap";
+import FinancialMetrics from "../components/dashboard/FinancialMetrics";
+import { ProviderLogo } from "../components/ui/provider-logo";
 
-import cashpotLogo from '@/assets/cashpot-logo.png';
+import cashpotLogo from '../assets/cashpot-logo.png';
 
 interface DashboardStats {
   totalRevenue: number;

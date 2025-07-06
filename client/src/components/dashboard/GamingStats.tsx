@@ -1,8 +1,8 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { Gamepad2, Dice1, Trophy, TrendingUp, Activity } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 
 export default function GamingStats() {
   const { data: slotsData, isLoading: slotsLoading } = useQuery({

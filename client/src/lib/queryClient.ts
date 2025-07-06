@@ -982,182 +982,41 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Parse URL pentru a extrage query parameters
-  const urlObj = new URL(url, 'http://localhost');
-  const page = parseInt(urlObj.searchParams.get('page') || '1');
-  const limit = parseInt(urlObj.searchParams.get('limit') || '10');
-  const search = urlObj.searchParams.get('search') || '';
+  // Use Vite proxy for API requests
+  const fullUrl = url; // Vite proxy will handle the routing
   
-  // Găsește cheia de bază pentru mock data
-  const baseKey = urlObj.pathname;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
   
-  // Handle authentication endpoints
-  if (baseKey === "/api/auth/login" && method === "POST") {
-    const { username, password } = data as { username: string; password: string };
-    const user = mockAuthUsers.find(u => u.username === username && u.password === password);
-    
-    if (user) {
-      // Remove password from user object
-      const { password: _, ...userWithoutPassword } = user;
-      mockAuthState.isAuthenticated = true;
-      mockAuthState.currentUser = userWithoutPassword;
-      mockAuthState.sessionToken = `mock-token-${Date.now()}`;
-      
-      // Save authentication state to localStorage
-      saveAuthState();
-      
-      return new Response(JSON.stringify({ 
-        success: true, 
-        user: userWithoutPassword,
-        token: mockAuthState.sessionToken 
-      }), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    } else {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        message: "Invalid credentials" 
-      }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+  // Include credentials for session-based authentication
+  const requestOptions: RequestInit = {
+    method,
+    headers,
+    credentials: 'include', // This is important for cookies
+  };
+  
+  if (data && (method === 'POST' || method === 'PUT')) {
+    requestOptions.body = JSON.stringify(data);
   }
   
-  if (baseKey === "/api/auth/logout" && method === "POST") {
-    mockAuthState.isAuthenticated = false;
-    mockAuthState.currentUser = null;
-    mockAuthState.sessionToken = null;
-    
-    // Clear authentication state from localStorage
-    clearAuthState();
-    
-    return new Response(JSON.stringify({ success: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+  console.log(`Making ${method} request to: ${fullUrl}`, { data, requestOptions });
   
-  if (baseKey === "/api/auth/user" && method === "GET") {
-    if (mockAuthState.isAuthenticated && mockAuthState.currentUser) {
-      return new Response(JSON.stringify(mockAuthState.currentUser), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-    } else {
-      return new Response(JSON.stringify(null), {
-        status: 401,
-        headers: { "Content-Type": "application/json" },
-      });
+  try {
+    const response = await fetch(fullUrl, requestOptions);
+    console.log(`Response status: ${response.status} for ${fullUrl}`);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`API request failed with status ${response.status}:`, errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
+    
+    return response;
+  } catch (error) {
+    console.error('API request failed:', error);
+    throw error;
   }
-
-  // Handle CRUD operations for mock data
-  if (method === "POST" || method === "PUT" || method === "DELETE") {
-    const entityType = baseKey.split('/')[2]; // Extract entity type from URL
-    const entityId = baseKey.split('/')[3]; // Extract ID for PUT/DELETE
-    
-    if (method === "POST") {
-      // Create new entity
-      const newId = Math.max(...mockDataStore[entityType]?.map((item: any) => item.id) || [0]) + 1;
-      const newEntity = {
-        id: newId,
-        ...(data as object),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      
-      if (mockDataStore[entityType]) {
-        mockDataStore[entityType].push(newEntity);
-        saveMockData();
-        
-        return new Response(JSON.stringify(newEntity), {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-    }
-    
-    if (method === "PUT" && entityId) {
-      // Update existing entity
-      const entityIndex = mockDataStore[entityType]?.findIndex((item: any) => item.id === parseInt(entityId));
-      
-      if (entityIndex !== -1 && mockDataStore[entityType]) {
-        const updatedEntity = {
-          ...mockDataStore[entityType][entityIndex],
-          ...(data as object),
-          id: parseInt(entityId),
-          updatedAt: new Date().toISOString(),
-        };
-        
-        mockDataStore[entityType][entityIndex] = updatedEntity;
-        saveMockData();
-        
-        return new Response(JSON.stringify(updatedEntity), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-    }
-    
-    if (method === "DELETE" && entityId) {
-      // Delete entity
-      const entityIndex = mockDataStore[entityType]?.findIndex((item: any) => item.id === parseInt(entityId));
-      
-      if (entityIndex !== -1 && mockDataStore[entityType]) {
-        mockDataStore[entityType].splice(entityIndex, 1);
-        saveMockData();
-        
-        return new Response(JSON.stringify({ success: true }), {
-          status: 200,
-          headers: { "Content-Type": "application/json" },
-        });
-      }
-    }
-  }
-  
-  // Handle GET requests with updated mock data
-  if (method === "GET" && mockApiResponses[baseKey]) {
-    let responseData = mockApiResponses[baseKey];
-    
-    // Handle function responses
-    if (typeof responseData === 'function') {
-      responseData = responseData();
-    }
-    
-    // Use updated mock data from store
-    const entityType = baseKey.split('/')[2];
-    if (entityType && mockDataStore[entityType]) {
-      let filteredData = mockDataStore[entityType];
-      
-      // Apply permission filtering for managers
-      if (mockAuthState.currentUser) {
-        filteredData = filterDataByUserPermissions(filteredData, entityType, mockAuthState.currentUser);
-      }
-      
-      responseData = { [entityType]: filteredData, total: filteredData.length };
-    }
-    
-    // Aplică paginarea dacă este necesar
-    if (responseData && (responseData.data || Array.isArray(responseData))) {
-      const dataArray = responseData.data || responseData;
-      responseData = paginateData(dataArray, page, limit, search);
-    }
-    
-    const mockResponse = new Response(JSON.stringify(responseData), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-    return mockResponse;
-  }
-
-  // Fallback pentru request-uri necunoscute
-  const mockResponse = new Response(JSON.stringify({ success: true, data: [] }), {
-    status: 200,
-    headers: { "Content-Type": "application/json" },
-  });
-  return mockResponse;
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -1170,13 +1029,25 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const url = queryKey[0] as string;
     
-    // Pentru deploy frontend-only, returnăm mock data
-    if (mockApiResponses[url]) {
-      return mockApiResponses[url];
+    try {
+      const response = await apiRequest('GET', url);
+      
+      if (response.status === 401) {
+        if (unauthorizedBehavior === "throw") {
+          throw new Error("Unauthorized");
+        }
+        return null;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error('Query failed:', error);
+      throw error;
     }
-
-    // Fallback pentru query-uri necunoscute
-    return [];
   };
 
 export const queryClient = new QueryClient({

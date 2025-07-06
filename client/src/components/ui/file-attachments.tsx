@@ -1,15 +1,27 @@
 import React, { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Textarea } from "../../components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
+import { useToast } from "../../hooks/use-toast";
 import { Upload, Download, Eye, Trash2, FileText, Image, FileArchive } from "lucide-react";
-import type { Attachment } from "@shared/schema";
-import { apiRequest } from "@/lib/queryClient";
+// Define Attachment type locally since shared schema is not available in this context
+interface Attachment {
+  id: number;
+  originalName: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  fileSize: number; // alias for size
+  description?: string;
+  uploadedAt: string;
+  createdAt: string; // alias for uploadedAt
+  uploadedBy: number;
+}
+import { apiRequest } from "../../lib/queryClient";
 
 interface FileAttachmentsProps {
   entityType: string;

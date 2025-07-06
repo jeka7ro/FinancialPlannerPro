@@ -1,10 +1,10 @@
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Card } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { Badge } from "@/components/ui/badge";
+import { apiRequest } from "../../lib/queryClient";
+import { Badge } from "../../components/ui/badge";
 import { Search, Plus, Eye, Edit, MoreHorizontal, Gamepad2, Activity } from "lucide-react";
 
 interface Equipment {

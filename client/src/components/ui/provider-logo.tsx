@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAttachments } from "@/hooks/useAttachments";
+import { useAttachments } from "../../hooks/useAttachments";
 
 interface ProviderLogoProps {
   providerId: number;

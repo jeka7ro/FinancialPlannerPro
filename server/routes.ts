@@ -3,11 +3,11 @@ import { createServer, type Server } from "http";
 import session from "express-session";
 import multer from "multer";
 import path from "path";
-import { storage } from "./storage";
-import { importExportService } from "./services/importExportService";
-import { fileService } from "./services/fileService";
-import { exportTemplateService } from "./services/exportTemplateService";
-import { logoService } from "./services/logoService";
+import { storage } from "./storage.js";
+import { importExportService } from "./services/importExportService.js";
+import { fileService } from "./services/fileService.js";
+import { exportTemplateService } from "./services/exportTemplateService.js";
+import { logoService } from "./services/logoService.js";
 import { 
   insertUserSchema, 
   insertCompanySchema, 
@@ -20,9 +20,9 @@ import {
   insertRentAgreementSchema,
   insertLegalDocumentSchema,
   insertOnjnReportSchema
-} from "../client/shared/schema";
+} from "../shared/schema.js";
 import { ZodError } from "zod";
-import { geocodeAddress } from './services/geocodeService';
+import { geocodeAddress } from './services/geocodeService.js';
 
 // Session configuration optimized for deployment
 const sessionConfig = {
@@ -95,6 +95,23 @@ const requireAdmin = (req: any, res: any, next: any) => {
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // CORS configuration for development
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && (origin === 'http://localhost:5174' || origin === 'http://localhost:5173')) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(200);
+    } else {
+      next();
+    }
+  });
+
   // Session middleware
   app.use(session(sessionConfig));
 
@@ -770,13 +787,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         for (const serialNumber of serialNumbers) {
           try {
-            await storage.createOnjnReport({
-              commissionType: 'license_commission',
-              commissionDate: new Date(),
-              serialNumbers: serialNumber,
+            const onjnReport = await storage.createOnjnReport({
+              reportDate: new Date(),
+              status: 'pending',
               companyId: invoiceData.companyId,
-              locationIds: Array.isArray(invoiceData.locationIds) ? invoiceData.locationIds.join(',') : (invoiceData.locationIds || ''),
-              status: 'pending'
+              locationIds: invoiceData.locationIds,
+              serialNumbers: serialNumber,
+              notes: `Commission for invoice ${invoiceData.invoiceNumber}`,
             });
           } catch (onjnError) {
             console.error(`Failed to create ONJN report for serial ${serialNumber}:`, onjnError);
@@ -1205,13 +1222,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/onjn-reports", requireAuth, async (req, res) => {
     try {
-
       const onjnReportData = insertOnjnReportSchema.parse(req.body);
       const onjnReport = await storage.createOnjnReport(onjnReportData);
       res.status(201).json(onjnReport);
     } catch (error) {
       if (error instanceof ZodError) {
-
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
       console.error("Create ONJN report error:", error);

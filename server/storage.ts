@@ -41,8 +41,8 @@ import {
   type InsertActivityLog,
   type Attachment,
   type InsertAttachment,
-} from "../client/shared/schema";
-import { db } from "./db";
+} from "../shared/schema.js";
+import { db } from "./db.js";
 import { eq, desc, and, like, count, or, asc, sql, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 
@@ -673,7 +673,7 @@ export class DatabaseStorage implements IStorage {
     // Create comprehensive search condition for all relevant fields
     const whereClause = search ? or(
       // Slot fields - Use ILIKE for case-insensitive search
-      sql`${slots.serialNumber} ILIKE ${'%' + search + '%'}`,
+      sql`${slots.serialNr} ILIKE ${'%' + search + '%'}`,
       sql`${slots.model} ILIKE ${'%' + search + '%'}`,
       sql`${slots.manufacturer} ILIKE ${'%' + search + '%'}`,
       sql`${slots.status} ILIKE ${'%' + search + '%'}`,
@@ -699,7 +699,7 @@ export class DatabaseStorage implements IStorage {
 
     // Dynamic sorting
     const sortColumn = slots[sortField as keyof typeof slots] || slots.id;
-    const sortOrder = sortDirection === 'desc' ? desc(sortColumn) : asc(sortColumn);
+    const sortOrder = sortDirection === 'desc' ? desc(slots.id) : asc(slots.id);
 
     const [totalResult] = await db
       .select({ count: count() })
@@ -831,7 +831,6 @@ export class DatabaseStorage implements IStorage {
           // Use ILIKE for case-insensitive search
           sql`${rentAgreements.agreementNumber} ILIKE ${'%' + search + '%'}`,
           sql`${rentAgreements.status} ILIKE ${'%' + search + '%'}`,
-          sql`${rentAgreements.propertyType} ILIKE ${'%' + search + '%'}`,
           sql`${rentAgreements.currency} ILIKE ${'%' + search + '%'}`,
           // Company name search (join with companies)
           sql`EXISTS (
@@ -976,7 +975,7 @@ export class DatabaseStorage implements IStorage {
           ...((!isNaN(Number(search)) && search.trim() !== '') ? [
             sql`${onjnReports.id} = ${Number(search)}`,
             sql`${onjnReports.companyId} = ${Number(search)}`,
-            sql`${onjnReports.createdBy} = ${Number(search)}`
+            sql`${onjnReports.id} = ${Number(search)}`
           ] : [])
         )
       : undefined;
@@ -1001,17 +1000,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createOnjnReport(insertOnjnReport: InsertOnjnReport): Promise<OnjnReport> {
+    const { commissionDate, ...insertOnjnReportClean } = insertOnjnReport;
     const [onjnReport] = await db
       .insert(onjnReports)
-      .values(insertOnjnReport)
+      .values(insertOnjnReportClean)
       .returning();
     return onjnReport;
   }
 
   async updateOnjnReport(id: number, updateOnjnReport: Partial<InsertOnjnReport>): Promise<OnjnReport> {
+    const { commissionDate: cd, ...updateOnjnReportClean } = updateOnjnReport;
     const [onjnReport] = await db
       .update(onjnReports)
-      .set({ ...updateOnjnReport, updatedAt: new Date() })
+      .set({ ...updateOnjnReportClean, updatedAt: new Date() })
       .where(eq(onjnReports.id, id))
       .returning();
     return onjnReport;

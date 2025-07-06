@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 
 interface CompanyLogoProps {
   companyId?: number;
