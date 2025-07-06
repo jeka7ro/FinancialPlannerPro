@@ -37,32 +37,39 @@ app.use((req, res, next) => {
   next();
 });
 
-if (process.env.VERCEL) {
-  // Pentru Vercel: exportă handlerul Express cu rutele înregistrate
-  (async () => {
-    await registerRoutes(app);
-  })();
-  module.exports = app;
-} else {
+// Initialize routes
+(async () => {
+  await registerRoutes(app);
+})();
+
+// Error handling middleware
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+  throw err;
+});
+
+// Development setup
+if (!process.env.VERCEL && app.get("env") === "development") {
   (async () => {
     const server = await registerRoutes(app);
-
-    app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-      const status = err.status || err.statusCode || 500;
-      const message = err.message || "Internal Server Error";
-      res.status(status).json({ message });
-      throw err;
-    });
-
-    if (app.get("env") === "development") {
-      await setupVite(app, server);
-    } else {
-      serveStatic(app);
-    }
-
+    await setupVite(app, server);
     const port = parseInt(process.env.PORT || "3001");
     server.listen(port, () => {
       log(`serving on port ${port}`);
     });
   })();
 }
+
+// Production static serving
+if (!process.env.VERCEL && app.get("env") === "production") {
+  serveStatic(app);
+  const port = parseInt(process.env.PORT || "3001");
+  app.listen(port, () => {
+    log(`serving on port ${port}`);
+  });
+}
+
+// Export for Vercel serverless functions
+export default app;
