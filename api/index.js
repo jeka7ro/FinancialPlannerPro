@@ -60,4 +60,6 @@ if (!process.env.VERCEL && app.get("env") === "production") {
     });
 }
 // Export for Vercel serverless functions
-export default app;
+export default function handler(req, res) {
+  res.status(200).json({ message: 'API is working!', path: req.url });
+}
