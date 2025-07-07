@@ -2,9 +2,11 @@ import 'dotenv/config';
 import express from "express";
 import { registerRoutes } from "./routes.js";
 import { setupVite, serveStatic, log } from "./vite.js";
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
 app.use((req, res, next) => {
     const start = Date.now();
     const path = req.path;
@@ -29,10 +31,12 @@ app.use((req, res, next) => {
     });
     next();
 });
+
 // Initialize routes
 (async () => {
     await registerRoutes(app);
 })();
+
 // Error handling middleware
 app.use((err, _req, res, _next) => {
     const status = err.status || err.statusCode || 500;
@@ -40,6 +44,7 @@ app.use((err, _req, res, _next) => {
     res.status(status).json({ message });
     throw err;
 });
+
 // Development setup
 if (!process.env.VERCEL && app.get("env") === "development") {
     (async () => {
@@ -51,6 +56,7 @@ if (!process.env.VERCEL && app.get("env") === "development") {
         });
     })();
 }
+
 // Production static serving
 if (!process.env.VERCEL && app.get("env") === "production") {
     serveStatic(app);
@@ -59,5 +65,8 @@ if (!process.env.VERCEL && app.get("env") === "production") {
         log(`serving on port ${port}`);
     });
 }
+
 // Export for Vercel serverless functions
-export default app;
+export default function handler(req, res) {
+    return app(req, res);
+}
