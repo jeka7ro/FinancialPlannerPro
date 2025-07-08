@@ -982,8 +982,11 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  // Use Vite proxy for API requests
-  const fullUrl = url; // Vite proxy will handle the routing
+  // Use Vite proxy for development, direct URL for production
+  const baseUrl = import.meta.env.PROD 
+    ? 'https://financial-planner-pro.onrender.com' 
+    : '';
+  const fullUrl = `${baseUrl}${url}`;
   
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
@@ -998,7 +1001,7 @@ export async function apiRequest(
   
   if (data && (method === 'POST' || method === 'PUT')) {
     requestOptions.body = JSON.stringify(data);
-      }
+  }
   
   console.log(`Making ${method} request to: ${fullUrl}`, { data, requestOptions });
   
