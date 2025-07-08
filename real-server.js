@@ -502,6 +502,7 @@ app.post('/api/companies', authenticateJWT, async (req, res) => {
 // Update company
 app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
   try {
+    console.log('Update company request:', { id: req.params.id, body: req.body, user: req.user });
 
     const { id } = req.params;
     const { 
@@ -537,13 +538,20 @@ app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
       [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active', id]
     );
 
+    console.log('Company updated successfully:', result.rows[0]);
+
     res.json({
       message: 'Company updated successfully',
       company: result.rows[0]
     });
   } catch (error) {
     console.error('Update company error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      code: error.code
+    });
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
