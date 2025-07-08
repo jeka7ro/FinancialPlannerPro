@@ -185,6 +185,17 @@ app.get('/api/health', async (req, res) => {
   });
 });
 
+// Manual database setup endpoint
+app.post('/api/setup-database', async (req, res) => {
+  try {
+    await setupDatabaseIfEmpty();
+    res.json({ message: 'Database setup completed successfully' });
+  } catch (error) {
+    console.error('Setup endpoint error:', error);
+    res.status(500).json({ message: 'Database setup failed' });
+  }
+});
+
 // Login
 app.post('/api/auth/login', async (req, res) => {
   try {
