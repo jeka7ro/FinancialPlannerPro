@@ -998,7 +998,7 @@ export async function apiRequest(
   
   if (data && (method === 'POST' || method === 'PUT')) {
     requestOptions.body = JSON.stringify(data);
-  }
+      }
   
   console.log(`Making ${method} request to: ${fullUrl}`, { data, requestOptions });
   
@@ -1041,8 +1041,8 @@ export const getQueryFn: <T>(options: {
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
+    }
+
       return await response.json();
     } catch (error) {
       console.error('Query failed:', error);

@@ -1,4 +1,10 @@
 import 'dotenv/config';
+import { config } from 'dotenv';
+import path from 'path';
+
+// Load .env.local if it exists
+config({ path: path.resolve(process.cwd(), '.env.local') });
+
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes.js";
 import { setupVite, serveStatic, log } from "./vite.js";
@@ -37,11 +43,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Initialize routes
-(async () => {
-  await registerRoutes(app);
-})();
-
 // Error handling middleware
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   const status = err.status || err.statusCode || 500;
@@ -52,24 +53,71 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
 // Development setup
 if (!process.env.VERCEL && app.get("env") === "development") {
+  console.log("🚀 Starting development server...");
   (async () => {
-    const server = await registerRoutes(app);
-    await setupVite(app, server);
-    const port = parseInt(process.env.PORT || "3001");
-    server.listen(port, () => {
-      log(`serving on port ${port}`);
-    });
+    try {
+      console.log("📝 Registering routes...");
+      const server = await registerRoutes(app);
+      console.log("✅ Routes registered successfully");
+      
+      console.log("⚡ Setting up Vite...");
+      await setupVite(app, server);
+      console.log("✅ Vite setup completed");
+      
+      const port = parseInt(process.env.PORT || "3001");
+      console.log(`🌐 Starting server on port ${port}...`);
+      server.listen(port, () => {
+        console.log(`✅ Server running on port ${port}`);
+        console.log(`🌐 Health check: http://localhost:${port}/api/health`);
+        console.log(`🔐 Login: POST http://localhost:${port}/api/auth/login`);
+        log(`serving on port ${port}`);
+      });
+    } catch (error) {
+      console.error("❌ Error starting server:", error);
+      process.exit(1);
+    }
   })();
 }
 
 // Production static serving
 if (!process.env.VERCEL && app.get("env") === "production") {
-  serveStatic(app);
-  const port = parseInt(process.env.PORT || "3001");
-  app.listen(port, () => {
-    log(`serving on port ${port}`);
-  });
+  console.log("🚀 Starting production server...");
+  (async () => {
+    try {
+      await registerRoutes(app);
+      serveStatic(app);
+      const port = parseInt(process.env.PORT || "3001");
+      app.listen(port, () => {
+        console.log(`✅ Production server running on port ${port}`);
+        log(`serving on port ${port}`);
+      });
+    } catch (error) {
+      console.error("❌ Error starting production server:", error);
+      process.exit(1);
+    }
+  })();
 }
+
+// Keep the process alive - this is crucial!
+const keepAlive = setInterval(() => {
+  // This keeps the event loop active
+  if (process.env.NODE_ENV === 'development') {
+    console.log('🔄 Server keep-alive tick...');
+  }
+}, 30000); // Every 30 seconds
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n🛑 Shutting down server...');
+  clearInterval(keepAlive);
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Shutting down server...');
+  clearInterval(keepAlive);
+  process.exit(0);
+});
 
 // Export for Vercel serverless functions
 export default app;

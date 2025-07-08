@@ -177,10 +177,10 @@ export default function Cabinets() {
   };
 
   const handleSelectAll = () => {
-    if (selectedCabinets.length === data?.cabinets.length) {
+    if (selectedCabinets.length === data?.data?.length) {
       setSelectedCabinets([]);
     } else {
-      setSelectedCabinets(data?.cabinets.map((cabinet: any) => cabinet.id) || []);
+      setSelectedCabinets(data?.data?.map((cabinet: any) => cabinet.id) || []);
     }
   };
 
@@ -212,8 +212,8 @@ export default function Cabinets() {
     return provider ? provider.name : "Unknown Provider";
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
-  console.log('totalPages calculation:', { total: data?.total, limit, totalPages });
+  const totalPages = data ? Math.ceil(data.pagination?.total / limit) : 0;
+  console.log('totalPages calculation:', { total: data?.pagination?.total, limit, totalPages });
 
   // Force refetch when limit changes
   useEffect(() => {
@@ -313,7 +313,7 @@ export default function Cabinets() {
                 </tr>
               </thead>
               <tbody>
-                {data.cabinets.map((cabinet: any, index: number) => (
+                {data.data.map((cabinet: any, index: number) => (
                   <tr key={cabinet.id}>
                     <td>
                       <Checkbox
@@ -388,13 +388,13 @@ export default function Cabinets() {
       </div>
 
       {/* Advanced Pagination for Large Datasets */}
-      {data && data.cabinets.length > 0 && (
+      {data && data.data && data.data.length > 0 && (
         <div className="space-y-3 mt-4">
           {/* Pagination Info and Controls */}
           <div className="flex items-center justify-between px-4 py-2 bg-slate-800/30 rounded-lg">
             <div className="flex items-center gap-4 text-sm text-slate-400">
               <span>
-                Showing {Math.min((currentPage - 1) * limit + 1, data.total)} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+                Showing {Math.min((currentPage - 1) * limit + 1, data.pagination.total)} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
               </span>
               <div className="flex items-center gap-2">
                 <span>Show:</span>

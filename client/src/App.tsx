@@ -62,27 +62,27 @@ function useAuth() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      try {
+    try {
         // Always check with API first for real authentication
         const response = await apiRequest("GET", "/api/auth/user");
-        if (response.ok) {
-          const userData = await response.json();
+      if (response.ok) {
+        const userData = await response.json();
           if (userData) {
-            setUser(userData);
-            setIsAuthenticated(true);
-          } else {
-            setIsAuthenticated(false);
+        setUser(userData);
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
           }
         } else {
           setIsAuthenticated(false);
-        }
-      } catch (error) {
+      }
+    } catch (error) {
         console.error('Auth check error:', error);
-        setIsAuthenticated(false);
+      setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
-      }
-    };
+    }
+  };
 
     checkAuth();
   }, []);
@@ -126,10 +126,10 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
         password,
         rememberMe,
       });
-      
+
       console.log('Login response received:', response);
       
-      const data = await response.json();
+        const data = await response.json();
       console.log('Login data:', data);
       
       // Save credentials if remember me is checked
@@ -313,7 +313,7 @@ function App() {
         <div className="loading-shimmer w-32 h-32 rounded-xl"></div>
       </div>
     );
-  }
+    }
 
   if (!isAuthenticated) {
     return <LoginPage onLogin={handleLogin} />;

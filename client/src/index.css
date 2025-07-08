@@ -801,7 +801,7 @@ body {
 .light .dropdown-item:hover {
   background: #e0e7ef !important;
   color: #2563eb !important;
-}
+} 
 
 /* Safari Compatibility Fixes */
 @supports not (backdrop-filter: blur(1px)) {
