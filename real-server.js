@@ -529,13 +529,12 @@ app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: 'Company not found' });
     }
 
+    // Try a simpler update first to isolate the issue
     const result = await pool.query(
       `UPDATE companies SET 
-        name = $1, email = $2, phone = $3, address = $4, registration_number = $5, 
-        tax_id = $6, city = $7, country = $8, website = $9, contact_person = $10, 
-        status = $11, updated_at = NOW()
-       WHERE id = $12 RETURNING *`,
-      [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active', id]
+        name = $1, email = $2, updated_at = NOW()
+       WHERE id = $3 RETURNING *`,
+      [name, email, id]
     );
 
     console.log('Company updated successfully:', result.rows[0]);
