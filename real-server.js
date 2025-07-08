@@ -505,34 +505,14 @@ app.post('/api/companies', authenticateJWT, async (req, res) => {
       return res.status(400).json({ message: 'Name and email are required' });
     }
 
-    // Check if contact_person column exists before using it
-    const columnCheck = await pool.query(
-      `SELECT column_name FROM information_schema.columns 
-       WHERE table_name = 'companies' AND column_name = 'contact_person'`
+    // Use minimal insert with only basic fields that definitely exist
+    result = await pool.query(
+      `INSERT INTO companies (
+        name, email, phone, address, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, NOW(), NOW()) 
+      RETURNING *`,
+      [name, email, phone, address]
     );
-    
-    let result;
-    if (columnCheck.rows.length > 0) {
-      // Column exists, use full insert
-      result = await pool.query(
-        `INSERT INTO companies (
-          name, email, phone, address, registration_number, tax_id, 
-          city, country, website, contact_person, status, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()) 
-        RETURNING *`,
-        [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active']
-      );
-    } else {
-      // Column doesn't exist, use simplified insert
-      result = await pool.query(
-        `INSERT INTO companies (
-          name, email, phone, address, registration_number, tax_id, 
-          city, country, website, status, created_at, updated_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW()) 
-        RETURNING *`,
-        [name, email, phone, address, registration_number, tax_id, city, country, website, status || 'active']
-      );
-    }
 
     res.status(201).json({
       message: 'Company created successfully',
@@ -574,34 +554,13 @@ app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: 'Company not found' });
     }
 
-    // Check if contact_person column exists before using it
-    const columnCheck = await pool.query(
-      `SELECT column_name FROM information_schema.columns 
-       WHERE table_name = 'companies' AND column_name = 'contact_person'`
+    // Use minimal update with only basic fields that definitely exist
+    result = await pool.query(
+      `UPDATE companies SET 
+        name = $1, email = $2, phone = $3, address = $4, updated_at = NOW()
+       WHERE id = $5 RETURNING *`,
+      [name, email, phone, address, id]
     );
-    
-    let result;
-    if (columnCheck.rows.length > 0) {
-      // Column exists, use full update
-      result = await pool.query(
-        `UPDATE companies SET 
-          name = $1, email = $2, phone = $3, address = $4, registration_number = $5, 
-          tax_id = $6, city = $7, country = $8, website = $9, contact_person = $10, 
-          status = $11, updated_at = NOW()
-         WHERE id = $12 RETURNING *`,
-        [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active', id]
-      );
-    } else {
-      // Column doesn't exist, use simplified update
-      result = await pool.query(
-        `UPDATE companies SET 
-          name = $1, email = $2, phone = $3, address = $4, registration_number = $5, 
-          tax_id = $6, city = $7, country = $8, website = $9, 
-          status = $10, updated_at = NOW()
-         WHERE id = $11 RETURNING *`,
-        [name, email, phone, address, registration_number, tax_id, city, country, website, status || 'active', id]
-      );
-    }
 
     console.log('Company updated successfully:', result.rows[0]);
 
