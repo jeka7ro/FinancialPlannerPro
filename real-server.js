@@ -20,7 +20,7 @@ app.use(session({
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'lax'
+    sameSite: 'none'
   }
 }));
 
@@ -37,7 +37,9 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:3000',
+    'http://localhost:5174',
     'https://financial-planner-pro-client.vercel.app',
+    'https://financial-planner-pro.vercel.app',
     'https://financial-planner-pro.vercel.app'
   ];
   
