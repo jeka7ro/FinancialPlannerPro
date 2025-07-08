@@ -1,5 +1,6 @@
 import express from 'express';
 import session from 'express-session';
+import jwt from 'jsonwebtoken';
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import path from 'path';
@@ -337,8 +338,16 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
-    req.session.userId = user.id;
-    req.session.userRole = user.role;
+    // Create JWT token
+    const token = jwt.sign(
+      { 
+        userId: user.id, 
+        username: user.username, 
+        role: user.role 
+      },
+      process.env.JWT_SECRET || 'your-jwt-secret-key',
+      { expiresIn: '7d' }
+    );
 
     res.json({
       user: {
@@ -348,7 +357,8 @@ app.post('/api/auth/login', async (req, res) => {
         firstName: user.first_name,
         lastName: user.last_name,
         role: user.role
-      }
+      },
+      token
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -359,13 +369,15 @@ app.post('/api/auth/login', async (req, res) => {
 // Get current user
 app.get('/api/auth/user', async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    
-    if (!userId) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
 
-    const result = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret-key');
+    
+    const result = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.userId]);
     const user = result.rows[0];
 
     if (!user) {
@@ -382,7 +394,7 @@ app.get('/api/auth/user', async (req, res) => {
     });
   } catch (error) {
     console.error('Get user error:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(401).json({ message: 'Not authenticated' });
   }
 });
 

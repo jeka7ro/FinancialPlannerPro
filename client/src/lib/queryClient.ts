@@ -977,6 +977,11 @@ const mockApiResponses: Record<string, any> = {
   "/api/attachments": [],
 };
 
+// Get JWT token from localStorage
+const getAuthToken = () => {
+  return localStorage.getItem('auth_token');
+};
+
 export async function apiRequest(
   method: string,
   url: string,
@@ -992,11 +997,15 @@ export async function apiRequest(
     'Content-Type': 'application/json',
   };
   
-  // Include credentials for session-based authentication
+  // Add JWT token if available
+  const token = getAuthToken();
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   const requestOptions: RequestInit = {
     method,
     headers,
-    credentials: 'include', // This is important for cookies
   };
   
   if (data && (method === 'POST' || method === 'PUT')) {

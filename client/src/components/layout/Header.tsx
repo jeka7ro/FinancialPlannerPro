@@ -25,7 +25,16 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
 
   const handleLogout = async () => {
     try {
-      await apiRequest("POST", "/api/auth/logout", {});
+      // Remove JWT token
+      localStorage.removeItem('auth_token');
+      
+      // Try to call logout endpoint (optional)
+      try {
+        await apiRequest("POST", "/api/auth/logout", {});
+      } catch (error) {
+        // Ignore logout endpoint errors
+      }
+      
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",

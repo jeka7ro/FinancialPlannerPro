@@ -132,6 +132,11 @@ function LoginPage({ onLogin }: { onLogin: (user: any) => void }) {
         const data = await response.json();
       console.log('Login data:', data);
       
+      // Save JWT token
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+      }
+      
       // Save credentials if remember me is checked
       if (rememberMe) {
         localStorage.setItem('cashpot_credentials', JSON.stringify({
