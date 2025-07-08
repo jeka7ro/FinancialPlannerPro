@@ -16,9 +16,12 @@ services:
       cd client
       npm install --legacy-peer-deps
       echo "🔧 Building client..."
-      npm run build
+      npm run build 2>&1
+      echo "🔧 Build exit code: $?"
       echo "🔧 Build completed. Checking dist directory..."
-      ls -la dist/
+      ls -la dist/ 2>&1 || echo "❌ dist directory not found"
+      echo "🔧 Current directory contents:"
+      ls -la
       cd ..
       echo "🔧 Build process completed successfully!"
     startCommand: npm run setup-db && npm start
