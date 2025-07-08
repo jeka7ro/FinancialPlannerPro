@@ -42,16 +42,16 @@ async function setupDatabase() {
     console.log('🔄 Setting up admin user...');
     const hashedPassword = await bcrypt.hash('admin123', 10);
     
-    // Check if admin user exists
-    const existingUser = await db.execute(`
+    // Check if admin user exists using pool directly
+    const existingUser = await pool.query(`
       SELECT id FROM users WHERE username = 'admin'
     `);
 
     if (existingUser.rows.length === 0) {
-      await db.execute(`
+      await pool.query(`
         INSERT INTO users (username, email, password, first_name, last_name, role, created_at, updated_at)
-        VALUES ('admin', 'admin@example.com', $1, 'Admin', 'User', 'admin', NOW(), NOW())
-      `, [hashedPassword]);
+        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+      `, ['admin', 'admin@example.com', hashedPassword, 'Admin', 'User', 'admin']);
       console.log('✅ Admin user created');
     } else {
       console.log('ℹ️ Admin user already exists');
