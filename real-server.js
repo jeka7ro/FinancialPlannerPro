@@ -484,6 +484,87 @@ app.post('/api/companies', async (req, res) => {
   }
 });
 
+// Update company
+app.put('/api/companies/:id', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { id } = req.params;
+    const { 
+      name, 
+      email, 
+      phone, 
+      address, 
+      registration_number, 
+      tax_id, 
+      city, 
+      country, 
+      website, 
+      contact_person, 
+      status 
+    } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required' });
+    }
+
+    // Check if company exists
+    const existingCompany = await pool.query('SELECT * FROM companies WHERE id = $1', [id]);
+    if (existingCompany.rows.length === 0) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    const result = await pool.query(
+      `UPDATE companies SET 
+        name = $1, email = $2, phone = $3, address = $4, registration_number = $5, 
+        tax_id = $6, city = $7, country = $8, website = $9, contact_person = $10, 
+        status = $11, updated_at = NOW()
+       WHERE id = $12 RETURNING *`,
+      [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active', id]
+    );
+
+    res.json({
+      message: 'Company updated successfully',
+      company: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Update company error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Delete company
+app.delete('/api/companies/:id', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { id } = req.params;
+
+    // Check if company exists
+    const existingCompany = await pool.query('SELECT * FROM companies WHERE id = $1', [id]);
+    if (existingCompany.rows.length === 0) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+
+    await pool.query('DELETE FROM companies WHERE id = $1', [id]);
+
+    res.json({
+      message: 'Company deleted successfully'
+    });
+  } catch (error) {
+    console.error('Delete company error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Redirect /companies to /api/companies
 app.get('/companies', (req, res) => {
   res.redirect(301, '/api/companies');
