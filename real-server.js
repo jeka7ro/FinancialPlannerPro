@@ -337,6 +337,31 @@ app.post('/api/populate-database', async (req, res) => {
   }
 });
 
+// Add contact_person column endpoint
+app.post('/api/add-contact-person-column', async (req, res) => {
+  try {
+    console.log('Adding contact_person column to companies table...');
+    
+    // Add the contact_person column if it doesn't exist
+    await pool.query(`
+      ALTER TABLE companies 
+      ADD COLUMN IF NOT EXISTS contact_person VARCHAR(255)
+    `);
+    
+    console.log('✅ contact_person column added successfully');
+    res.json({ 
+      success: true, 
+      message: 'contact_person column added to companies table' 
+    });
+  } catch (error) {
+    console.error('❌ Error adding contact_person column:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: error.message 
+    });
+  }
+});
+
 // Login
 app.post('/api/auth/login', async (req, res) => {
   try {
@@ -529,12 +554,13 @@ app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: 'Company not found' });
     }
 
-    // Try a simpler update first to isolate the issue
     const result = await pool.query(
       `UPDATE companies SET 
-        name = $1, email = $2, updated_at = NOW()
-       WHERE id = $3 RETURNING *`,
-      [name, email, id]
+        name = $1, email = $2, phone = $3, address = $4, registration_number = $5, 
+        tax_id = $6, city = $7, country = $8, website = $9, contact_person = $10, 
+        status = $11, updated_at = NOW()
+       WHERE id = $12 RETURNING *`,
+      [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active', id]
     );
 
     console.log('Company updated successfully:', result.rows[0]);
