@@ -30,6 +30,26 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/cashpot_gaming'
 });
 
+// JWT Authentication middleware
+const authenticateJWT = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const token = authHeader.substring(7);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-jwt-secret-key');
+    
+    // Add user info to request
+    req.user = decoded;
+    next();
+  } catch (error) {
+    console.error('JWT authentication error:', error);
+    res.status(401).json({ message: 'Not authenticated' });
+  }
+};
+
 // Serve static files from client/dist
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
@@ -439,13 +459,8 @@ app.get('/api/companies', async (req, res) => {
 });
 
 // Create company
-app.post('/api/companies', async (req, res) => {
+app.post('/api/companies', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
 
     const { 
       name, 
@@ -485,13 +500,8 @@ app.post('/api/companies', async (req, res) => {
 });
 
 // Update company
-app.put('/api/companies/:id', async (req, res) => {
+app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
 
     const { id } = req.params;
     const { 
@@ -538,13 +548,8 @@ app.put('/api/companies/:id', async (req, res) => {
 });
 
 // Delete company
-app.delete('/api/companies/:id', async (req, res) => {
+app.delete('/api/companies/:id', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    
-    if (!userId) {
-      return res.status(401).json({ message: 'Not authenticated' });
-    }
 
     const { id } = req.params;
 
@@ -601,10 +606,8 @@ app.get('/api/locations', async (req, res) => {
 });
 
 // Create location
-app.post('/api/locations', async (req, res) => {
+app.post('/api/locations', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { name, address, city, country, phone, email, status } = req.body;
     
     // Validate required fields
@@ -659,10 +662,8 @@ app.get('/api/users', async (req, res) => {
 });
 
 // Create user
-app.post('/api/users', async (req, res) => {
+app.post('/api/users', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { username, email, password, first_name, last_name, role } = req.body;
     
     // Validate required fields
@@ -719,10 +720,8 @@ app.get('/api/providers', async (req, res) => {
 });
 
 // Create provider
-app.post('/api/providers', async (req, res) => {
+app.post('/api/providers', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { name, email, phone, address, status } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
     const result = await pool.query(
@@ -768,10 +767,8 @@ app.get('/api/cabinets', async (req, res) => {
 });
 
 // Create cabinet
-app.post('/api/cabinets', async (req, res) => {
+app.post('/api/cabinets', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { name, serial_number, location_id, provider_id, status } = req.body;
     if (!name || !serial_number) return res.status(400).json({ message: 'Name and serial_number are required' });
     const result = await pool.query(
@@ -817,10 +814,8 @@ app.get('/api/game-mixes', async (req, res) => {
 });
 
 // Create game mix
-app.post('/api/game-mixes', async (req, res) => {
+app.post('/api/game-mixes', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { name, description, status } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
     const result = await pool.query(
@@ -866,10 +861,8 @@ app.get('/api/slots', async (req, res) => {
 });
 
 // Create slot
-app.post('/api/slots', async (req, res) => {
+app.post('/api/slots', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { name, cabinet_id, game_mix_id, status } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
     const result = await pool.query(
@@ -915,10 +908,8 @@ app.get('/api/invoices', async (req, res) => {
 });
 
 // Create invoice
-app.post('/api/invoices', async (req, res) => {
+app.post('/api/invoices', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { number, company_id, amount, due_date, status } = req.body;
     if (!number || !company_id || !amount) return res.status(400).json({ message: 'Number, company_id, and amount are required' });
     const result = await pool.query(
@@ -964,10 +955,8 @@ app.get('/api/legal-documents', async (req, res) => {
 });
 
 // Create legal document
-app.post('/api/legal-documents', async (req, res) => {
+app.post('/api/legal-documents', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { title, content, status } = req.body;
     if (!title) return res.status(400).json({ message: 'Title is required' });
     const result = await pool.query(
@@ -1013,10 +1002,8 @@ app.get('/api/rent-agreements', async (req, res) => {
 });
 
 // Create rent agreement
-app.post('/api/rent-agreements', async (req, res) => {
+app.post('/api/rent-agreements', authenticateJWT, async (req, res) => {
   try {
-    const userId = req.session?.userId;
-    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
     const { company_id, location_id, start_date, end_date, amount, status } = req.body;
     if (!company_id || !location_id || !start_date || !end_date) return res.status(400).json({ message: 'company_id, location_id, start_date, end_date are required' });
     const result = await pool.query(
