@@ -40,6 +40,9 @@ services:
       if [ -d "dist" ]; then
         echo "✅ dist directory found"
         ls -la dist/ 2>&1
+        echo "🔧 Dist directory size: $(du -sh dist 2>/dev/null || echo 'unknown')"
+        echo "🔧 Dist directory contents:"
+        find dist -type f 2>&1 | head -20
       else
         echo "❌ dist directory not found"
         echo "🔧 Checking for build errors..."
@@ -48,6 +51,11 @@ services:
       fi
       
       cd ..
+      echo "🔧 Back to root directory: $(pwd)"
+      echo "🔧 Root directory contents:"
+      ls -la 2>&1
+      echo "🔧 Client directory contents:"
+      ls -la client/ 2>&1
       echo "🔧 Build process completed successfully!"
     startCommand: npm run setup-db && npm start
     envVars:

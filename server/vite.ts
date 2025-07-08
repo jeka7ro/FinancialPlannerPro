@@ -71,11 +71,31 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "..", "client", "dist");
+  // Try multiple possible paths for the dist directory
+  const possiblePaths = [
+    path.resolve(import.meta.dirname, "..", "client", "dist"),
+    path.resolve(process.cwd(), "client", "dist"),
+    path.resolve(process.cwd(), "dist"),
+    path.resolve(import.meta.dirname, "..", "dist"),
+  ];
 
-  if (!fs.existsSync(distPath)) {
+  let distPath: string | null = null;
+  
+  for (const testPath of possiblePaths) {
+    if (fs.existsSync(testPath)) {
+      distPath = testPath;
+      console.log(`✅ Found dist directory at: ${distPath}`);
+      break;
+    }
+  }
+
+  if (!distPath) {
+    console.error("❌ Could not find dist directory. Searched paths:");
+    possiblePaths.forEach((p, i) => {
+      console.error(`  ${i + 1}. ${p} - ${fs.existsSync(p) ? 'EXISTS' : 'NOT FOUND'}`);
+    });
     throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
+      `Could not find the build directory. Searched: ${possiblePaths.join(', ')}`,
     );
   }
 
@@ -83,6 +103,6 @@ export function serveStatic(app: Express) {
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    res.sendFile(path.resolve(distPath!, "index.html"));
   });
 }
