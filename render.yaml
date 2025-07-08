@@ -9,8 +9,8 @@ services:
     name: financial-planner-pro
     env: node
     plan: free
-    buildCommand: npm install && npm run setup-db && cd client && npm install --legacy-peer-deps && npm run build
-    startCommand: npm start
+    buildCommand: npm install && cd client && npm install --legacy-peer-deps && npm run build
+    startCommand: npm run setup-db && npm start
     envVars:
       - key: NODE_ENV
         value: production
