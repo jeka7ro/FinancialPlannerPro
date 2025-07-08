@@ -2,6 +2,11 @@ import express from 'express';
 import session from 'express-session';
 import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(express.json());
@@ -23,6 +28,9 @@ app.use(session({
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/cashpot_gaming'
 });
+
+// Serve static files from client/dist
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
 // CORS - allow both localhost and production domains
 app.use((req, res, next) => {
@@ -816,6 +824,11 @@ app.post('/api/rent-agreements', async (req, res) => {
     console.error('Create rent agreement error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
+});
+
+// Serve React app for all non-API routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3001;
