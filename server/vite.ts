@@ -77,15 +77,26 @@ export function serveStatic(app: Express) {
     path.resolve(process.cwd(), "client", "dist"),
     path.resolve(process.cwd(), "dist"),
     path.resolve(import.meta.dirname, "..", "dist"),
+    path.resolve(process.cwd(), "..", "client", "dist"),
+    path.resolve(process.cwd(), "..", "dist"),
+    path.resolve("/opt/render/project/src/client/dist"),
+    path.resolve("/opt/render/project/src/dist"),
   ];
+
+  console.log(`🔧 Current working directory: ${process.cwd()}`);
+  console.log(`🔧 Server directory: ${import.meta.dirname}`);
+  console.log(`🔧 Searching for dist directory...`);
 
   let distPath: string | null = null;
   
   for (const testPath of possiblePaths) {
+    console.log(`🔧 Checking path: ${testPath}`);
     if (fs.existsSync(testPath)) {
       distPath = testPath;
       console.log(`✅ Found dist directory at: ${distPath}`);
       break;
+    } else {
+      console.log(`❌ Path not found: ${testPath}`);
     }
   }
 
@@ -94,6 +105,25 @@ export function serveStatic(app: Express) {
     possiblePaths.forEach((p, i) => {
       console.error(`  ${i + 1}. ${p} - ${fs.existsSync(p) ? 'EXISTS' : 'NOT FOUND'}`);
     });
+    
+    // Let's also check what directories actually exist
+    console.log("🔧 Checking what directories exist:");
+    const rootDir = process.cwd();
+    try {
+      const rootContents = fs.readdirSync(rootDir);
+      console.log(`🔧 Root directory (${rootDir}) contents:`, rootContents);
+      
+      const clientDir = path.resolve(rootDir, "client");
+      if (fs.existsSync(clientDir)) {
+        const clientContents = fs.readdirSync(clientDir);
+        console.log(`🔧 Client directory (${clientDir}) contents:`, clientContents);
+      } else {
+        console.log(`❌ Client directory not found: ${clientDir}`);
+      }
+    } catch (error) {
+      console.error("❌ Error reading directories:", error);
+    }
+    
     throw new Error(
       `Could not find the build directory. Searched: ${possiblePaths.join(', ')}`,
     );

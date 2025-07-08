@@ -9,54 +9,7 @@ services:
     name: financial-planner-pro
     env: node
     plan: free
-    buildCommand: |
-      set -x
-      echo "🔧 Starting build process..."
-      echo "🔧 Current directory: $(pwd)"
-      echo "🔧 Node version: $(node --version)"
-      echo "🔧 NPM version: $(npm --version)"
-      
-      echo "🔧 Installing root dependencies..."
-      npm install 2>&1
-      echo "🔧 Root dependencies installed. Exit code: $?"
-      
-      echo "🔧 Installing client dependencies..."
-      cd client
-      echo "🔧 Client directory: $(pwd)"
-      echo "🔧 Client package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
-      npm install --legacy-peer-deps 2>&1
-      echo "🔧 Client dependencies installed. Exit code: $?"
-      
-      echo "🔧 Checking TypeScript configuration..."
-      npx tsc --noEmit 2>&1
-      echo "🔧 TypeScript check exit code: $?"
-      
-      echo "🔧 Building client..."
-      npm run build 2>&1
-      echo "🔧 Build exit code: $?"
-      
-      echo "🔧 Build completed. Checking dist directory..."
-      ls -la 2>&1
-      if [ -d "dist" ]; then
-        echo "✅ dist directory found"
-        ls -la dist/ 2>&1
-        echo "🔧 Dist directory size: $(du -sh dist 2>/dev/null || echo 'unknown')"
-        echo "🔧 Dist directory contents:"
-        find dist -type f 2>&1 | head -20
-      else
-        echo "❌ dist directory not found"
-        echo "🔧 Checking for build errors..."
-        echo "🔧 Current directory contents:"
-        ls -la
-      fi
-      
-      cd ..
-      echo "🔧 Back to root directory: $(pwd)"
-      echo "🔧 Root directory contents:"
-      ls -la 2>&1
-      echo "🔧 Client directory contents:"
-      ls -la client/ 2>&1
-      echo "🔧 Build process completed successfully!"
+    buildCommand: npm install && cd client && npm install --legacy-peer-deps && npm run build
     startCommand: npm run setup-db && npm start
     envVars:
       - key: NODE_ENV
