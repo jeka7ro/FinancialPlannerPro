@@ -13,21 +13,40 @@ services:
       set -x
       echo "🔧 Starting build process..."
       echo "🔧 Current directory: $(pwd)"
+      echo "🔧 Node version: $(node --version)"
+      echo "🔧 NPM version: $(npm --version)"
+      
       echo "🔧 Installing root dependencies..."
       npm install 2>&1
       echo "🔧 Root dependencies installed. Exit code: $?"
+      
       echo "🔧 Installing client dependencies..."
       cd client
       echo "🔧 Client directory: $(pwd)"
+      echo "🔧 Client package.json exists: $(test -f package.json && echo 'YES' || echo 'NO')"
       npm install --legacy-peer-deps 2>&1
       echo "🔧 Client dependencies installed. Exit code: $?"
+      
+      echo "🔧 Checking TypeScript configuration..."
+      npx tsc --noEmit 2>&1
+      echo "🔧 TypeScript check exit code: $?"
+      
       echo "🔧 Building client..."
       npm run build 2>&1
       echo "🔧 Build exit code: $?"
+      
       echo "🔧 Build completed. Checking dist directory..."
-      ls -la dist/ 2>&1 || echo "❌ dist directory not found"
-      echo "🔧 Current directory contents:"
-      ls -la
+      ls -la 2>&1
+      if [ -d "dist" ]; then
+        echo "✅ dist directory found"
+        ls -la dist/ 2>&1
+      else
+        echo "❌ dist directory not found"
+        echo "🔧 Checking for build errors..."
+        echo "🔧 Current directory contents:"
+        ls -la
+      fi
+      
       cd ..
       echo "🔧 Build process completed successfully!"
     startCommand: npm run setup-db && npm start
