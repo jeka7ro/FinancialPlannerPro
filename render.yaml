@@ -10,11 +10,17 @@ services:
     env: node
     plan: free
     buildCommand: |
+      set -x
+      echo "🔧 Starting build process..."
+      echo "🔧 Current directory: $(pwd)"
       echo "🔧 Installing root dependencies..."
-      npm install
+      npm install 2>&1
+      echo "🔧 Root dependencies installed. Exit code: $?"
       echo "🔧 Installing client dependencies..."
       cd client
-      npm install --legacy-peer-deps
+      echo "🔧 Client directory: $(pwd)"
+      npm install --legacy-peer-deps 2>&1
+      echo "🔧 Client dependencies installed. Exit code: $?"
       echo "🔧 Building client..."
       npm run build 2>&1
       echo "🔧 Build exit code: $?"
