@@ -280,10 +280,10 @@ export default function Slots() {
   };
 
   const handleSelectAll = () => {
-    if (selectedSlots.length === data?.slots.length) {
+    if (selectedSlots.length === data?.data.length) {
       setSelectedSlots([]);
     } else {
-      setSelectedSlots(data?.slots.map((s: any) => s.id) || []);
+      setSelectedSlots(data?.data.map((s: any) => s.id) || []);
     }
   };
 
@@ -312,7 +312,7 @@ export default function Slots() {
     });
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   return (
     <div className="space-y-4 w-full max-w-none">
@@ -341,7 +341,7 @@ export default function Slots() {
           <p className="text-slate-400 mt-1">Slot machine and gaming device management</p>
         </div>
         <div className="text-sm text-slate-400">
-          {data?.total || 0} total slots
+          {data?.pagination.total || 0} total slots
         </div>
       </div>
 
@@ -389,7 +389,7 @@ export default function Slots() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load slots</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.slots?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🎰</div>
             <h3 className="text-xl font-semibold text-white mb-2">No slot machines found</h3>
@@ -403,7 +403,7 @@ export default function Slots() {
                   <tr>
                     <th className="w-12">
                       <Checkbox
-                        checked={selectedSlots.length === data?.slots.length && data?.slots.length > 0}
+                        checked={selectedSlots.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -423,7 +423,7 @@ export default function Slots() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.slots.map((slot: any, index: number) => (
+                  {data.data.map((slot: any, index: number) => (
                     <tr key={slot.id}>
                       <td>
                         <Checkbox
@@ -544,10 +544,10 @@ export default function Slots() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.slots?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

@@ -285,7 +285,7 @@ export default function Cabinets() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load cabinets</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.cabinets?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🎰</div>
             <h3 className="text-xl font-semibold text-white mb-2">No cabinets found</h3>
@@ -298,7 +298,7 @@ export default function Cabinets() {
                 <tr>
                   <th className="w-12">
                     <Checkbox
-                      checked={selectedCabinets.length === data?.cabinets.length && data?.cabinets.length > 0}
+                      checked={selectedCabinets.length === data?.data?.length && data?.data?.length > 0}
                       onCheckedChange={handleSelectAll}
                       className="border-white/30"
                     />

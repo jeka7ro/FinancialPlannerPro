@@ -153,6 +153,57 @@ app.get('/api/companies', async (req, res) => {
   }
 });
 
+// Create company
+app.post('/api/companies', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    
+    if (!userId) {
+      return res.status(401).json({ message: 'Not authenticated' });
+    }
+
+    const { 
+      name, 
+      email, 
+      phone, 
+      address, 
+      registration_number, 
+      tax_id, 
+      city, 
+      country, 
+      website, 
+      contact_person, 
+      status 
+    } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ message: 'Name and email are required' });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO companies (
+        name, email, phone, address, registration_number, tax_id, 
+        city, country, website, contact_person, status, created_at, updated_at
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW()) 
+      RETURNING *`,
+      [name, email, phone, address, registration_number, tax_id, city, country, website, contact_person, status || 'active']
+    );
+
+    res.status(201).json({
+      message: 'Company created successfully',
+      company: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Create company error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Redirect /companies to /api/companies
+app.get('/companies', (req, res) => {
+  res.redirect(301, '/api/companies');
+});
+
 // Locations
 app.get('/api/locations', async (req, res) => {
   try {
@@ -180,6 +231,34 @@ app.get('/api/locations', async (req, res) => {
   } catch (error) {
     console.error('Locations error:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create location
+app.post('/api/locations', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { name, address, city, country, phone, email, status } = req.body;
+    
+    // Validate required fields
+    if (!name || !address || !city || !country) {
+      return res.status(400).json({ 
+        message: 'Missing required fields', 
+        required: ['name', 'address', 'city', 'country'],
+        received: { name, address, city, country }
+      });
+    }
+    
+    const result = await pool.query(
+      `INSERT INTO locations (name, address, city, country, phone, email, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
+      [name, address, city, country, phone, email, status || 'active']
+    );
+    res.status(201).json({ message: 'Location created', location: result.rows[0] });
+  } catch (error) {
+    console.error('Create location error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 
@@ -213,6 +292,36 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// Create user
+app.post('/api/users', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { username, email, password, first_name, last_name, role } = req.body;
+    
+    // Validate required fields
+    if (!username || !email || !password) {
+      return res.status(400).json({ 
+        message: 'Missing required fields', 
+        required: ['username', 'email', 'password'],
+        received: { username, email, password: password ? '[HIDDEN]' : null }
+      });
+    }
+    
+    const bcrypt = (await import('bcrypt')).default;
+    const hashed = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      `INSERT INTO users (username, email, password, first_name, last_name, role)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, username, email, first_name, last_name, role`,
+      [username, email, hashed, first_name, last_name, role || 'user']
+    );
+    res.status(201).json({ message: 'User created', user: result.rows[0] });
+  } catch (error) {
+    console.error('Create user error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
 // Providers
 app.get('/api/providers', async (req, res) => {
   try {
@@ -239,6 +348,25 @@ app.get('/api/providers', async (req, res) => {
     });
   } catch (error) {
     console.error('Providers error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create provider
+app.post('/api/providers', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { name, email, phone, address, status } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const result = await pool.query(
+      `INSERT INTO providers (name, email, phone, address, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
+      [name, email, phone, address, status || 'active']
+    );
+    res.status(201).json({ message: 'Provider created', provider: result.rows[0] });
+  } catch (error) {
+    console.error('Create provider error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -273,6 +401,25 @@ app.get('/api/cabinets', async (req, res) => {
   }
 });
 
+// Create cabinet
+app.post('/api/cabinets', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { name, serial_number, location_id, provider_id, status } = req.body;
+    if (!name || !serial_number) return res.status(400).json({ message: 'Name and serial_number are required' });
+    const result = await pool.query(
+      `INSERT INTO cabinets (name, serial_number, location_id, provider_id, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
+      [name, serial_number, location_id, provider_id, status || 'active']
+    );
+    res.status(201).json({ message: 'Cabinet created', cabinet: result.rows[0] });
+  } catch (error) {
+    console.error('Create cabinet error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Game Mixes
 app.get('/api/game-mixes', async (req, res) => {
   try {
@@ -299,6 +446,25 @@ app.get('/api/game-mixes', async (req, res) => {
     });
   } catch (error) {
     console.error('Game mixes error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create game mix
+app.post('/api/game-mixes', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { name, description, status } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const result = await pool.query(
+      `INSERT INTO game_mixes (name, description, status, created_at, updated_at)
+       VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
+      [name, description, status || 'active']
+    );
+    res.status(201).json({ message: 'Game mix created', game_mix: result.rows[0] });
+  } catch (error) {
+    console.error('Create game mix error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
@@ -333,6 +499,25 @@ app.get('/api/slots', async (req, res) => {
   }
 });
 
+// Create slot
+app.post('/api/slots', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { name, cabinet_id, game_mix_id, status } = req.body;
+    if (!name) return res.status(400).json({ message: 'Name is required' });
+    const result = await pool.query(
+      `INSERT INTO slots (name, cabinet_id, game_mix_id, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, NOW(), NOW()) RETURNING *`,
+      [name, cabinet_id, game_mix_id, status || 'active']
+    );
+    res.status(201).json({ message: 'Slot created', slot: result.rows[0] });
+  } catch (error) {
+    console.error('Create slot error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Invoices
 app.get('/api/invoices', async (req, res) => {
   try {
@@ -363,6 +548,25 @@ app.get('/api/invoices', async (req, res) => {
   }
 });
 
+// Create invoice
+app.post('/api/invoices', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { number, company_id, amount, due_date, status } = req.body;
+    if (!number || !company_id || !amount) return res.status(400).json({ message: 'Number, company_id, and amount are required' });
+    const result = await pool.query(
+      `INSERT INTO invoices (number, company_id, amount, due_date, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
+      [number, company_id, amount, due_date, status || 'pending']
+    );
+    res.status(201).json({ message: 'Invoice created', invoice: result.rows[0] });
+  } catch (error) {
+    console.error('Create invoice error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 // Legal Documents
 app.get('/api/legal-documents', async (req, res) => {
   try {
@@ -389,6 +593,74 @@ app.get('/api/legal-documents', async (req, res) => {
     });
   } catch (error) {
     console.error('Legal documents error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create legal document
+app.post('/api/legal-documents', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { title, content, status } = req.body;
+    if (!title) return res.status(400).json({ message: 'Title is required' });
+    const result = await pool.query(
+      `INSERT INTO legal_documents (title, content, status, created_at, updated_at)
+       VALUES ($1, $2, $3, NOW(), NOW()) RETURNING *`,
+      [title, content, status || 'active']
+    );
+    res.status(201).json({ message: 'Legal document created', legal_document: result.rows[0] });
+  } catch (error) {
+    console.error('Create legal document error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Rent Agreements
+app.get('/api/rent-agreements', async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const result = await pool.query(
+      'SELECT * FROM rent_agreements ORDER BY id LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+
+    const countResult = await pool.query('SELECT COUNT(*) FROM rent_agreements');
+    const total = parseInt(countResult.rows[0].count);
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('Rent agreements error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Create rent agreement
+app.post('/api/rent-agreements', async (req, res) => {
+  try {
+    const userId = req.session?.userId;
+    if (!userId) return res.status(401).json({ message: 'Not authenticated' });
+    const { company_id, location_id, start_date, end_date, amount, status } = req.body;
+    if (!company_id || !location_id || !start_date || !end_date) return res.status(400).json({ message: 'company_id, location_id, start_date, end_date are required' });
+    const result = await pool.query(
+      `INSERT INTO rent_agreements (company_id, location_id, start_date, end_date, amount, status, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING *`,
+      [company_id, location_id, start_date, end_date, amount, status || 'active']
+    );
+    res.status(201).json({ message: 'Rent agreement created', rent_agreement: result.rows[0] });
+  } catch (error) {
+    console.error('Create rent agreement error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });

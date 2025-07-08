@@ -1,22 +1,21 @@
-databases:
-  - name: cashpot-db
-    databaseName: cashpot_gaming
-    user: cashpot_user
-    plan: free
-
 services:
   - type: web
-    name: financial-planner-pro
+    name: cashpot-backend
     env: node
     plan: free
-    buildCommand: npm install && cd client && npm install --legacy-peer-deps && npm run build
-    startCommand: npm run setup-db && npm start
+    buildCommand: npm install
+    startCommand: node real-server.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: PORT
+        value: 10000
       - key: DATABASE_URL
         fromDatabase:
-          name: cashpot-db
+          name: cashpot-gaming-db
           property: connectionString
-    healthCheckPath: /api/health
-    autoDeploy: true 
+
+databases:
+  - name: cashpot-gaming-db
+    plan: free
+    region: oregon 

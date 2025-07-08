@@ -99,7 +99,7 @@ export default function Companies() {
   });
 
   const form = useForm<InsertCompany>({
-    resolver: zodResolver(insertCompanySchema),
+    resolver: zodResolver(insertCompanySchema as any),
     defaultValues: {
       name: "",
       registrationNumber: "",
@@ -115,7 +115,7 @@ export default function Companies() {
   });
 
   const editForm = useForm<InsertCompany>({
-    resolver: zodResolver(insertCompanySchema),
+    resolver: zodResolver(insertCompanySchema as any),
     defaultValues: {
       name: "",
       registrationNumber: "",
@@ -169,10 +169,10 @@ export default function Companies() {
   };
 
   const handleSelectAll = () => {
-    if (selectedCompanies.length === data?.companies.length) {
+    if (selectedCompanies.length === data?.data?.length) {
       setSelectedCompanies([]);
     } else {
-      setSelectedCompanies(data?.companies.map((c: any) => c.id) || []);
+      setSelectedCompanies(data?.data?.map((c: any) => c.id) || []);
     }
   };
 
@@ -201,7 +201,7 @@ export default function Companies() {
     });
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil((data.pagination?.total || 0) / limit) : 0;
 
   return (
     <div className="space-y-4 w-full max-w-none">
@@ -267,7 +267,7 @@ export default function Companies() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load companies</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.companies?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🏢</div>
             <h3 className="text-xl font-semibold text-white mb-2">No companies found</h3>
@@ -281,7 +281,7 @@ export default function Companies() {
                   <tr>
                     <th className="w-12">
                       <Checkbox
-                        checked={selectedCompanies.length === data?.companies.length && data?.companies.length > 0}
+                        checked={selectedCompanies.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -296,7 +296,7 @@ export default function Companies() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.companies.map((company: any, index: number) => (
+                  {data.data.map((company: any, index: number) => (
                     <tr key={company.id}>
                       <td>
                         <Checkbox
@@ -382,10 +382,10 @@ export default function Companies() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.companies?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination?.total)} of {data.pagination?.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

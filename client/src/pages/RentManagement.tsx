@@ -198,10 +198,10 @@ export default function RentManagement() {
   };
 
   const handleSelectAll = () => {
-    if (selectedAgreements.length === data?.rentAgreements?.length) {
+    if (selectedAgreements.length === data?.data?.length) {
       setSelectedAgreements([]);
     } else {
-      setSelectedAgreements(data?.rentAgreements?.map((item: any) => item.id) || []);
+      setSelectedAgreements(data?.data?.map((item: any) => item.id) || []);
     }
   };
 
@@ -230,7 +230,7 @@ export default function RentManagement() {
     });
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   return (
     <div className="space-y-6">
@@ -461,7 +461,7 @@ export default function RentManagement() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load rent agreements</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.rentAgreements?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🏠</div>
             <h3 className="text-xl font-semibold text-white mb-2">No rent agreements found</h3>
@@ -475,7 +475,7 @@ export default function RentManagement() {
                   <tr>
                     <th className="w-12">
                       <Checkbox
-                        checked={selectedAgreements.length === data?.rentAgreements.length && data?.rentAgreements.length > 0}
+                        checked={selectedAgreements.length === data?.data?.length && data?.data?.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -491,7 +491,7 @@ export default function RentManagement() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.rentAgreements.map((agreement: any, index: number) => (
+                  {data.data.map((agreement: any, index: number) => (
                     <tr key={agreement.id}>
                       <td>
                         <Checkbox
@@ -571,10 +571,10 @@ export default function RentManagement() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.rentAgreements?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

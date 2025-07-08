@@ -50,7 +50,7 @@ export default function GameMixes() {
   });
 
   // Calculate total pages
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   const createMutation = useMutation({
     mutationFn: async (data: InsertGameMix) => {
@@ -171,10 +171,10 @@ export default function GameMixes() {
   };
 
   const handleSelectAll = () => {
-    if (selectedGameMixes.length === data?.gameMixes.length) {
+    if (selectedGameMixes.length === data?.data.length) {
       setSelectedGameMixes([]);
     } else {
-      setSelectedGameMixes(data?.gameMixes.map((g: any) => g.id) || []);
+      setSelectedGameMixes(data?.data.map((g: any) => g.id) || []);
     }
   };
 
@@ -306,7 +306,7 @@ export default function GameMixes() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load game mixes</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.gameMixes?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🍒</div>
             <h3 className="text-xl font-semibold text-white mb-2">No game mixes found</h3>
@@ -320,7 +320,7 @@ export default function GameMixes() {
                   <tr className="border-b border-white/10">
                     <th className="w-12 px-4 py-3 text-left">
                       <Checkbox
-                        checked={selectedGameMixes.length === data?.gameMixes.length && data?.gameMixes.length > 0}
+                        checked={selectedGameMixes.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -336,7 +336,7 @@ export default function GameMixes() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.gameMixes.map((gameMix: any, index: number) => (
+                  {data.data.map((gameMix: any, index: number) => (
                     <tr key={gameMix.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="px-4 py-4">
                         <Checkbox
@@ -513,10 +513,10 @@ export default function GameMixes() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.gameMixes?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

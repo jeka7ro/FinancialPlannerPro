@@ -52,7 +52,7 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 });
 
 // Development setup
-if (!process.env.VERCEL && app.get("env") === "development") {
+if (!process.env.VERCEL && (process.env.NODE_ENV === "development" || app.get("env") === "development")) {
   console.log("🚀 Starting development server...");
   (async () => {
     try {

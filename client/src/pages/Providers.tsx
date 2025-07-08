@@ -377,10 +377,10 @@ export default function Providers() {
   };
 
   const handleSelectAll = () => {
-    if (selectedProviders.length === data?.providers.length) {
+    if (selectedProviders.length === data?.data.length) {
       setSelectedProviders([]);
     } else {
-      setSelectedProviders(data?.providers.map((p: any) => p.id) || []);
+      setSelectedProviders(data?.data.map((p: any) => p.id) || []);
     }
   };
 
@@ -426,7 +426,7 @@ export default function Providers() {
     }
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   return (
     <div className="space-y-4 w-full max-w-none">
@@ -492,7 +492,7 @@ export default function Providers() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load providers</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.providers?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">🚚</div>
             <h3 className="text-xl font-semibold text-white mb-2">No providers found</h3>
@@ -506,7 +506,7 @@ export default function Providers() {
                   <tr>
                     <th className="w-12">
                       <Checkbox
-                        checked={selectedProviders.length === data?.providers.length && data?.providers.length > 0}
+                        checked={selectedProviders.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -521,7 +521,7 @@ export default function Providers() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.providers.map((provider: any, index: number) => (
+                  {data.data.map((provider: any, index: number) => (
                     <tr key={provider.id}>
                       <td>
                         <Checkbox
@@ -609,10 +609,10 @@ export default function Providers() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.providers?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

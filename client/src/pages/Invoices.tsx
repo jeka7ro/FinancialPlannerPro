@@ -352,10 +352,10 @@ export default function Invoices() {
   };
 
   const handleSelectAll = () => {
-    if (selectedInvoices.length === data?.invoices?.length) {
+    if (selectedInvoices.length === data?.data?.length) {
       setSelectedInvoices([]);
     } else {
-      setSelectedInvoices(data?.invoices?.map((item: any) => item.id) || []);
+      setSelectedInvoices(data?.data?.map((item: any) => item.id) || []);
     }
   };
 
@@ -397,7 +397,7 @@ export default function Invoices() {
     }
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   return (
     <div className="space-y-4 w-full max-w-none">
@@ -463,7 +463,7 @@ export default function Invoices() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load invoices</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.invoices?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">📄</div>
             <h3 className="text-xl font-semibold text-white mb-2">No invoices found</h3>
@@ -477,7 +477,7 @@ export default function Invoices() {
                   <tr className="border-b border-white/10">
                     <th className="w-12 px-4 py-3 text-left">
                       <Checkbox
-                        checked={selectedInvoices.length === data?.invoices.length && data?.invoices.length > 0}
+                        checked={selectedInvoices.length === data?.data?.length && data?.data?.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -497,7 +497,7 @@ export default function Invoices() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.invoices.map((invoice: any, index: number) => {
+                  {data.data.map((invoice: any, index: number) => {
                     const buyer = Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === invoice.companyId) : undefined;
                     const seller = Array.isArray(companies?.companies) ? companies.companies.find((c: any) => c.id === invoice.sellerCompanyId) : undefined;
                     return (
@@ -641,10 +641,10 @@ export default function Invoices() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.invoices?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -665,7 +665,7 @@ export default function Invoices() {
             <Button
               variant="ghost"
               size="sm"
-              disabled={currentPage === Math.ceil((data.total || 0) / limit)}
+              disabled={currentPage === Math.ceil((data.pagination.total || 0) / limit)}
               onClick={() => setCurrentPage(currentPage + 1)}
               className="h-8 min-w-[40px] px-3"
             >

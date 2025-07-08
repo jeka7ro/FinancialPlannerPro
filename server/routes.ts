@@ -1306,99 +1306,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Import/Export routes
-  app.post("/api/:module/import", requireAuth, upload.single('file'), async (req: any, res: any) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
 
-      const module = req.params.module;
-      const result = await importExportService.importFromExcel(module, req.file.buffer);
-      
-      res.json(result);
-    } catch (error: any) {
-      console.error("Import error:", error);
-      res.status(500).json({ message: "Import failed", error: error.message });
-    }
-  });
 
-  // 1. Template and export routes FIRST (move these to the very top)
-  app.get("/api/:module/template", requireAuth, async (req: any, res: any) => {
-    try {
-      const module = req.params.module;
-      const buffer = exportTemplateService.getTemplate(module);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename=${module}-template.xlsx`);
-      res.send(buffer);
-    } catch (error: any) {
-      console.error("Template export error:", error);
-      res.status(500).json({ message: "Template export failed", error: error.message });
-    }
-  });
 
-  app.get("/api/:module/export/excel", requireAuth, async (req, res) => {
-    try {
-      const module = req.params.module;
-      const buffer = await importExportService.exportToExcel(module);
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename=${module}-export.xlsx`);
-      res.send(buffer);
-    } catch (error: any) {
-      console.error("Excel export error:", error);
-      res.status(500).json({ message: "Export failed", error: error.message });
-    }
-  });
-
-  app.get("/api/:module/export/pdf", requireAuth, async (req, res) => {
-    try {
-      const module = req.params.module;
-      const buffer = await importExportService.exportToPDF(module);
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `attachment; filename=${module}-report.pdf`);
-      res.send(buffer);
-    } catch (error: any) {
-      console.error("PDF export error:", error);
-      res.status(500).json({ message: "Export failed", error: error.message });
-    }
-  });
-
-  // File attachment routes
-  app.post("/api/:entityType/:entityId/attachments", requireAuth, uploadAttachment.single('file'), async (req: any, res: any) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-
-      const { entityType, entityId } = req.params;
-      const { description } = req.body;
-      const userId = (req.session as any).userId;
-
-      const attachment = await fileService.saveFile(
-        req.file,
-        entityType,
-        parseInt(entityId),
-        userId,
-        description
-      );
-
-      res.json(attachment);
-    } catch (error: any) {
-      console.error("File upload error:", error);
-      res.status(500).json({ message: "Upload failed", error: error.message });
-    }
-  });
-
-  app.get("/api/:entityType/:entityId/attachments", requireAuth, async (req: any, res: any) => {
-    try {
-      const { entityType, entityId } = req.params;
-      const attachments = await storage.getAttachments(entityType, parseInt(entityId));
-      res.json(attachments);
-    } catch (error: any) {
-      console.error("Get attachments error:", error);
-      res.status(500).json({ message: "Failed to fetch attachments", error: error.message });
-    }
-  });
 
   app.get("/api/attachments/:id/download", requireAuth, async (req: any, res: any) => {
     try {
@@ -1462,6 +1372,99 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Tutorial export error:", error);
       res.status(500).json({ message: "Tutorial export failed", error: error.message });
+    }
+  });
+
+  // Import/Export routes - MUST be at the end to avoid interfering with specific routes
+  app.post("/api/:module/import", requireAuth, upload.single('file'), async (req: any, res: any) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const module = req.params.module;
+      const result = await importExportService.importFromExcel(module, req.file.buffer);
+      
+      res.json(result);
+    } catch (error: any) {
+      console.error("Import error:", error);
+      res.status(500).json({ message: "Import failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:module/template", requireAuth, async (req: any, res: any) => {
+    try {
+      const module = req.params.module;
+      const buffer = exportTemplateService.getTemplate(module);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-template.xlsx`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Template export error:", error);
+      res.status(500).json({ message: "Template export failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:module/export/excel", requireAuth, async (req, res) => {
+    try {
+      const module = req.params.module;
+      const buffer = await importExportService.exportToExcel(module);
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-export.xlsx`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Excel export error:", error);
+      res.status(500).json({ message: "Export failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:module/export/pdf", requireAuth, async (req, res) => {
+    try {
+      const module = req.params.module;
+      const buffer = await importExportService.exportToPDF(module);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=${module}-report.pdf`);
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("PDF export error:", error);
+      res.status(500).json({ message: "Export failed", error: error.message });
+    }
+  });
+
+  // File attachment routes - MUST be at the end to avoid interfering with specific routes
+  app.post("/api/:entityType/:entityId/attachments", requireAuth, uploadAttachment.single('file'), async (req: any, res: any) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { entityType, entityId } = req.params;
+      const { description } = req.body;
+      const userId = (req.session as any).userId;
+
+      const attachment = await fileService.saveFile(
+        req.file,
+        entityType,
+        parseInt(entityId),
+        userId,
+        description
+      );
+
+      res.json(attachment);
+    } catch (error: any) {
+      console.error("File upload error:", error);
+      res.status(500).json({ message: "Upload failed", error: error.message });
+    }
+  });
+
+  app.get("/api/:entityType/:entityId/attachments", requireAuth, async (req: any, res: any) => {
+    try {
+      const { entityType, entityId } = req.params;
+      const attachments = await storage.getAttachments(entityType, parseInt(entityId));
+      res.json(attachments);
+    } catch (error: any) {
+      console.error("Get attachments error:", error);
+      res.status(500).json({ message: "Failed to fetch attachments", error: error.message });
     }
   });
 

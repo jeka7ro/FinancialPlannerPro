@@ -181,22 +181,6 @@ const romanianCities = [
   "Băile Sărata Monteoru",
   "Băile Slănic",
   "Băile Ștefănești",
-  "Băile Tușnad",
-  "Băile Vâlcele",
-  "Băile Vișeu",
-  "Băile Ștefănești",
-  "Băile Govora",
-  "Băile Olănești",
-  "Băile Tușnad",
-  "Băile Eforie",
-  "Băile Felix",
-  "Băile 1 Mai",
-  "Băile Herculane",
-  "Băile Olănești",
-  "Băile Sărata Monteoru",
-  "Băile Slănic",
-  "Băile Ștefănești",
-  "Băile Tușnad",
   "Băile Vâlcele",
   "Băile Vișeu"
 ].sort();
@@ -534,10 +518,10 @@ export default function Locations() {
   };
 
   const handleSelectAll = () => {
-    if (selectedLocations.length === data?.locations.length) {
+    if (selectedLocations.length === data?.data.length) {
       setSelectedLocations([]);
     } else {
-      setSelectedLocations(data?.locations.map((l: any) => l.id) || []);
+      setSelectedLocations(data?.data.map((l: any) => l.id) || []);
     }
   };
 
@@ -572,7 +556,7 @@ export default function Locations() {
     return manager ? `${manager.firstName} ${manager.lastName}` : "Unknown Manager";
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   return (
     <div className="space-y-4 w-full max-w-none">
@@ -638,7 +622,7 @@ export default function Locations() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load locations</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.locations?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">📍</div>
             <h3 className="text-xl font-semibold text-white mb-2">No locations found</h3>
@@ -652,7 +636,7 @@ export default function Locations() {
                   <tr>
                     <th className="w-12">
                       <Checkbox
-                        checked={selectedLocations.length === data?.locations.length && data?.locations.length > 0}
+                        checked={selectedLocations.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -668,7 +652,7 @@ export default function Locations() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.locations.map((location: any, index: number) => (
+                  {data.data.map((location: any, index: number) => (
                     <tr key={location.id}>
                       <td>
                         <Checkbox
@@ -757,10 +741,10 @@ export default function Locations() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.locations?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button

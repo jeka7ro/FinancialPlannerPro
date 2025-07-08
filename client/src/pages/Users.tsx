@@ -216,10 +216,10 @@ export default function Users() {
   };
 
   const handleSelectAll = () => {
-    if (selectedUsers.length === data?.users.length) {
+    if (selectedUsers.length === data?.data.length) {
       setSelectedUsers([]);
     } else {
-      setSelectedUsers(data?.users.map((u: any) => u.id) || []);
+      setSelectedUsers(data?.data.map((u: any) => u.id) || []);
     }
   };
 
@@ -261,7 +261,7 @@ export default function Users() {
     }
   };
 
-  const totalPages = data ? Math.ceil(data.total / limit) : 0;
+  const totalPages = data ? Math.ceil(data.pagination.total / limit) : 0;
 
   const getRoleColor = (role: string) => {
     switch (role) {
@@ -342,7 +342,7 @@ export default function Users() {
             <h3 className="text-xl font-semibold text-white mb-2">Failed to load users</h3>
             <p>Please try refreshing the page or check your connection.</p>
           </div>
-        ) : !data?.users?.length ? (
+        ) : !data?.data?.length ? (
           <div className="empty-state-container">
             <div className="text-6xl mb-4">👥</div>
             <h3 className="text-xl font-semibold text-white mb-2">No users found</h3>
@@ -356,7 +356,7 @@ export default function Users() {
                   <tr className="border-b border-white/10">
                     <th className="w-12 px-4 py-3 text-left">
                       <Checkbox
-                        checked={selectedUsers.length === data?.users.length && data?.users.length > 0}
+                        checked={selectedUsers.length === data?.data.length && data?.data.length > 0}
                         onCheckedChange={handleSelectAll}
                         className="border-white/30"
                       />
@@ -373,7 +373,7 @@ export default function Users() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.users.map((user: any, index: number) => (
+                  {data.data.map((user: any, index: number) => (
                     <tr key={user.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                       <td className="px-4 py-4">
                         <Checkbox
@@ -466,10 +466,10 @@ export default function Users() {
       </div>
 
       {/* Pagination and entries info - SUB tabel */}
-      {data?.users?.length > 0 && (
+      {data?.data?.length > 0 && (
         <div className="flex items-center justify-between mt-2 px-2 text-sm text-slate-400">
           <span>
-            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.total)} of {data.total} entries
+            Showing {((currentPage - 1) * limit) + 1} to {Math.min(currentPage * limit, data.pagination.total)} of {data.pagination.total} entries
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -490,7 +490,7 @@ export default function Users() {
             <Button
               variant="ghost"
               size="sm"
-              disabled={currentPage === Math.ceil((data.total || 0) / limit)}
+              disabled={currentPage === Math.ceil((data.pagination.total || 0) / limit)}
               onClick={() => setCurrentPage(currentPage + 1)}
               className="h-8 min-w-[40px] px-3"
             >
