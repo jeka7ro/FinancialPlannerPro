@@ -8,25 +8,36 @@ app.use(express.json());
 
 // Session configuration
 app.use(session({
-  secret: 'your-secret-key-here',
+  secret: process.env.SESSION_SECRET || 'your-secret-key-here',
   resave: true,
   saveUninitialized: true,
   cookie: {
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 7 * 24 * 60 * 60 * 1000,
     sameSite: 'lax'
   }
 }));
 
-// Database connection
+// Database connection - use environment variable for Render
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:password@localhost:5432/cashpot_gaming'
+  connectionString: process.env.DATABASE_URL || 'postgresql://postgres:password@localhost:5432/cashpot_gaming'
 });
 
-// CORS
+// CORS - allow both localhost and production domains
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://financial-planner-pro-client.vercel.app',
+    'https://financial-planner-pro.vercel.app'
+  ];
+  
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -38,9 +49,28 @@ app.use((req, res, next) => {
   }
 });
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// Test database connection
+async function testDatabaseConnection() {
+  try {
+    const client = await pool.connect();
+    await client.query('SELECT NOW()');
+    client.release();
+    console.log('✅ Database: Connected to PostgreSQL');
+    return true;
+  } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    return false;
+  }
+}
+
+// Health check with database status
+app.get('/api/health', async (req, res) => {
+  const dbConnected = await testDatabaseConnection();
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    database: dbConnected ? 'connected' : 'disconnected'
+  });
 });
 
 // Login
@@ -667,12 +697,14 @@ app.post('/api/rent-agreements', async (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`✅ Real server running on port ${PORT}`);
   console.log(`Health check: http://localhost:${PORT}/api/health`);
-  console.log(`Database: Connected to PostgreSQL`);
   console.log(`Login: POST http://localhost:${PORT}/api/auth/login`);
   console.log(`Credențiale: admin / admin123`);
+  
+  // Test database connection on startup
+  await testDatabaseConnection();
 });
 
 // Keep process alive
