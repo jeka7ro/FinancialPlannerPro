@@ -1,1 +1,1 @@
-ALTER TABLE "locations" ADD COLUMN "county" varchar(100);
+-- Column added in this migration is now in the initial migration. No-op.
