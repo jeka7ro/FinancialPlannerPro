@@ -76,20 +76,25 @@ async function setupDatabaseIfEmpty() {
   try {
     const client = await pool.connect();
     
-    // Check if admin user exists
-    const userResult = await client.query('SELECT COUNT(*) FROM users WHERE username = $1', ['admin']);
+    // Check if companies exist
+    const companiesResult = await client.query('SELECT COUNT(*) FROM companies');
+    const companiesCount = parseInt(companiesResult.rows[0].count);
     
-    if (parseInt(userResult.rows[0].count) === 0) {
+    if (companiesCount === 0) {
       console.log('🔧 Setting up database with sample data...');
       
-      // Create admin user
-      const bcrypt = await import('bcrypt');
-      const adminPassword = await bcrypt.hash('admin123', 10);
+      // Create admin user if it doesn't exist
+      const userResult = await client.query('SELECT COUNT(*) FROM users WHERE username = $1', ['admin']);
       
-      await client.query(`
-        INSERT INTO users (username, email, password, first_name, last_name, role, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-      `, ['admin', 'admin@example.com', adminPassword, 'Admin', 'User', 'admin']);
+      if (parseInt(userResult.rows[0].count) === 0) {
+        const bcrypt = await import('bcrypt');
+        const adminPassword = await bcrypt.hash('admin123', 10);
+        
+        await client.query(`
+          INSERT INTO users (username, email, password, first_name, last_name, role, created_at, updated_at)
+          VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+        `, ['admin', 'admin@example.com', adminPassword, 'Admin', 'User', 'admin']);
+      }
       
       // Create sample companies
       await client.query(`
