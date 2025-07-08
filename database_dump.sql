@@ -16,8 +16,105 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+ALTER TABLE IF EXISTS ONLY public.user_locations DROP CONSTRAINT IF EXISTS user_locations_user_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.user_locations DROP CONSTRAINT IF EXISTS user_locations_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_provider_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_invoice_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_game_mix_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_cabinet_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.rent_agreements DROP CONSTRAINT IF EXISTS rent_agreements_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.rent_agreements DROP CONSTRAINT IF EXISTS rent_agreements_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.rent_agreements DROP CONSTRAINT IF EXISTS rent_agreements_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.onjn_reports DROP CONSTRAINT IF EXISTS onjn_reports_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.onjn_reports DROP CONSTRAINT IF EXISTS onjn_reports_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.onjn_reports DROP CONSTRAINT IF EXISTS onjn_reports_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.locations DROP CONSTRAINT IF EXISTS locations_manager_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.locations DROP CONSTRAINT IF EXISTS locations_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.legal_documents DROP CONSTRAINT IF EXISTS legal_documents_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.legal_documents DROP CONSTRAINT IF EXISTS legal_documents_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.legal_documents DROP CONSTRAINT IF EXISTS legal_documents_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.invoices DROP CONSTRAINT IF EXISTS invoices_seller_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.invoices DROP CONSTRAINT IF EXISTS invoices_created_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.invoices DROP CONSTRAINT IF EXISTS invoices_company_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.game_mixes DROP CONSTRAINT IF EXISTS game_mixes_provider_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.cabinets DROP CONSTRAINT IF EXISTS cabinets_provider_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.cabinets DROP CONSTRAINT IF EXISTS cabinets_location_id_fkey;
+ALTER TABLE IF EXISTS ONLY public.attachments DROP CONSTRAINT IF EXISTS attachments_uploaded_by_fkey;
+ALTER TABLE IF EXISTS ONLY public.activity_logs DROP CONSTRAINT IF EXISTS activity_logs_user_id_fkey;
+DROP INDEX IF EXISTS public.idx_users_username;
+DROP INDEX IF EXISTS public.idx_users_email;
+DROP INDEX IF EXISTS public.idx_slots_location_id;
+DROP INDEX IF EXISTS public.idx_locations_company_id;
+DROP INDEX IF EXISTS public.idx_invoices_company_id;
+DROP INDEX IF EXISTS public.idx_companies_name;
+DROP INDEX IF EXISTS public.idx_activity_logs_user_id;
+DROP INDEX IF EXISTS public.idx_activity_logs_created_at;
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_username_key;
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_pkey;
+ALTER TABLE IF EXISTS ONLY public.users DROP CONSTRAINT IF EXISTS users_email_key;
+ALTER TABLE IF EXISTS ONLY public.user_locations DROP CONSTRAINT IF EXISTS user_locations_pkey;
+ALTER TABLE IF EXISTS ONLY public.slots DROP CONSTRAINT IF EXISTS slots_pkey;
+ALTER TABLE IF EXISTS ONLY public.rent_agreements DROP CONSTRAINT IF EXISTS rent_agreements_pkey;
+ALTER TABLE IF EXISTS ONLY public.rent_agreements DROP CONSTRAINT IF EXISTS rent_agreements_agreement_number_key;
+ALTER TABLE IF EXISTS ONLY public.providers DROP CONSTRAINT IF EXISTS providers_pkey;
+ALTER TABLE IF EXISTS ONLY public.onjn_reports DROP CONSTRAINT IF EXISTS onjn_reports_report_number_key;
+ALTER TABLE IF EXISTS ONLY public.onjn_reports DROP CONSTRAINT IF EXISTS onjn_reports_pkey;
+ALTER TABLE IF EXISTS ONLY public.locations DROP CONSTRAINT IF EXISTS locations_pkey;
+ALTER TABLE IF EXISTS ONLY public.legal_documents DROP CONSTRAINT IF EXISTS legal_documents_pkey;
+ALTER TABLE IF EXISTS ONLY public.invoices DROP CONSTRAINT IF EXISTS invoices_pkey;
+ALTER TABLE IF EXISTS ONLY public.invoices DROP CONSTRAINT IF EXISTS invoices_invoice_number_key;
+ALTER TABLE IF EXISTS ONLY public.game_mixes DROP CONSTRAINT IF EXISTS game_mixes_pkey;
+ALTER TABLE IF EXISTS ONLY public.companies DROP CONSTRAINT IF EXISTS companies_pkey;
+ALTER TABLE IF EXISTS ONLY public.cabinets DROP CONSTRAINT IF EXISTS cabinets_pkey;
+ALTER TABLE IF EXISTS ONLY public.attachments DROP CONSTRAINT IF EXISTS attachments_pkey;
+ALTER TABLE IF EXISTS ONLY public.activity_logs DROP CONSTRAINT IF EXISTS activity_logs_pkey;
+ALTER TABLE IF EXISTS public.users ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.user_locations ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.slots ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.rent_agreements ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.providers ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.onjn_reports ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.locations ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.legal_documents ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.invoices ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.game_mixes ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.companies ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.cabinets ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.attachments ALTER COLUMN id DROP DEFAULT;
+ALTER TABLE IF EXISTS public.activity_logs ALTER COLUMN id DROP DEFAULT;
+DROP SEQUENCE IF EXISTS public.users_id_seq;
+DROP TABLE IF EXISTS public.users;
+DROP SEQUENCE IF EXISTS public.user_locations_id_seq;
+DROP TABLE IF EXISTS public.user_locations;
+DROP SEQUENCE IF EXISTS public.slots_id_seq;
+DROP TABLE IF EXISTS public.slots;
+DROP SEQUENCE IF EXISTS public.rent_agreements_id_seq;
+DROP TABLE IF EXISTS public.rent_agreements;
+DROP SEQUENCE IF EXISTS public.providers_id_seq;
+DROP TABLE IF EXISTS public.providers;
+DROP SEQUENCE IF EXISTS public.onjn_reports_id_seq;
+DROP TABLE IF EXISTS public.onjn_reports;
+DROP SEQUENCE IF EXISTS public.locations_id_seq;
+DROP TABLE IF EXISTS public.locations;
+DROP SEQUENCE IF EXISTS public.legal_documents_id_seq;
+DROP TABLE IF EXISTS public.legal_documents;
+DROP SEQUENCE IF EXISTS public.invoices_id_seq;
+DROP TABLE IF EXISTS public.invoices;
+DROP SEQUENCE IF EXISTS public.game_mixes_id_seq;
+DROP TABLE IF EXISTS public.game_mixes;
+DROP SEQUENCE IF EXISTS public.companies_id_seq;
+DROP TABLE IF EXISTS public.companies;
+DROP SEQUENCE IF EXISTS public.cabinets_id_seq;
+DROP TABLE IF EXISTS public.cabinets;
+DROP SEQUENCE IF EXISTS public.attachments_id_seq;
+DROP TABLE IF EXISTS public.attachments;
+DROP SEQUENCE IF EXISTS public.activity_logs_id_seq;
+DROP TABLE IF EXISTS public.activity_logs;
+DROP TYPE IF EXISTS public.user_role;
+DROP TYPE IF EXISTS public.status;
 --
--- Name: status; Type: TYPE; Schema: public; Owner: eugeniucazmal
+-- Name: status; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.status AS ENUM (
@@ -28,10 +125,8 @@ CREATE TYPE public.status AS ENUM (
 );
 
 
-ALTER TYPE public.status OWNER TO eugeniucazmal;
-
 --
--- Name: user_role; Type: TYPE; Schema: public; Owner: eugeniucazmal
+-- Name: user_role; Type: TYPE; Schema: public; Owner: -
 --
 
 CREATE TYPE public.user_role AS ENUM (
@@ -40,14 +135,12 @@ CREATE TYPE public.user_role AS ENUM (
 );
 
 
-ALTER TYPE public.user_role OWNER TO eugeniucazmal;
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
 
 --
--- Name: activity_logs; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.activity_logs (
@@ -63,10 +156,8 @@ CREATE TABLE public.activity_logs (
 );
 
 
-ALTER TABLE public.activity_logs OWNER TO eugeniucazmal;
-
 --
--- Name: activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.activity_logs_id_seq
@@ -78,17 +169,15 @@ CREATE SEQUENCE public.activity_logs_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.activity_logs_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: activity_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.activity_logs_id_seq OWNED BY public.activity_logs.id;
 
 
 --
--- Name: attachments; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: attachments; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.attachments (
@@ -105,10 +194,8 @@ CREATE TABLE public.attachments (
 );
 
 
-ALTER TABLE public.attachments OWNER TO eugeniucazmal;
-
 --
--- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: attachments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.attachments_id_seq
@@ -120,17 +207,15 @@ CREATE SEQUENCE public.attachments_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.attachments_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: attachments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: attachments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.attachments_id_seq OWNED BY public.attachments.id;
 
 
 --
--- Name: cabinets; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.cabinets (
@@ -154,10 +239,8 @@ CREATE TABLE public.cabinets (
 );
 
 
-ALTER TABLE public.cabinets OWNER TO eugeniucazmal;
-
 --
--- Name: cabinets_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.cabinets_id_seq
@@ -169,17 +252,15 @@ CREATE SEQUENCE public.cabinets_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.cabinets_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: cabinets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.cabinets_id_seq OWNED BY public.cabinets.id;
 
 
 --
--- Name: companies; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: companies; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.companies (
@@ -201,10 +282,8 @@ CREATE TABLE public.companies (
 );
 
 
-ALTER TABLE public.companies OWNER TO eugeniucazmal;
-
 --
--- Name: companies_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: companies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.companies_id_seq
@@ -216,17 +295,15 @@ CREATE SEQUENCE public.companies_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.companies_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: companies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: companies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.companies_id_seq OWNED BY public.companies.id;
 
 
 --
--- Name: game_mixes; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.game_mixes (
@@ -245,10 +322,8 @@ CREATE TABLE public.game_mixes (
 );
 
 
-ALTER TABLE public.game_mixes OWNER TO eugeniucazmal;
-
 --
--- Name: game_mixes_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.game_mixes_id_seq
@@ -260,17 +335,15 @@ CREATE SEQUENCE public.game_mixes_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.game_mixes_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: game_mixes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.game_mixes_id_seq OWNED BY public.game_mixes.id;
 
 
 --
--- Name: invoices; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: invoices; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.invoices (
@@ -297,10 +370,8 @@ CREATE TABLE public.invoices (
 );
 
 
-ALTER TABLE public.invoices OWNER TO eugeniucazmal;
-
 --
--- Name: invoices_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: invoices_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.invoices_id_seq
@@ -312,17 +383,15 @@ CREATE SEQUENCE public.invoices_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.invoices_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: invoices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: invoices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.invoices_id_seq OWNED BY public.invoices.id;
 
 
 --
--- Name: legal_documents; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.legal_documents (
@@ -343,10 +412,8 @@ CREATE TABLE public.legal_documents (
 );
 
 
-ALTER TABLE public.legal_documents OWNER TO eugeniucazmal;
-
 --
--- Name: legal_documents_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.legal_documents_id_seq
@@ -358,17 +425,15 @@ CREATE SEQUENCE public.legal_documents_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.legal_documents_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: legal_documents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.legal_documents_id_seq OWNED BY public.legal_documents.id;
 
 
 --
--- Name: locations; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: locations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.locations (
@@ -392,10 +457,8 @@ CREATE TABLE public.locations (
 );
 
 
-ALTER TABLE public.locations OWNER TO eugeniucazmal;
-
 --
--- Name: locations_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: locations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.locations_id_seq
@@ -407,17 +470,15 @@ CREATE SEQUENCE public.locations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.locations_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.locations_id_seq OWNED BY public.locations.id;
 
 
 --
--- Name: onjn_reports; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.onjn_reports (
@@ -440,10 +501,8 @@ CREATE TABLE public.onjn_reports (
 );
 
 
-ALTER TABLE public.onjn_reports OWNER TO eugeniucazmal;
-
 --
--- Name: onjn_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.onjn_reports_id_seq
@@ -455,17 +514,15 @@ CREATE SEQUENCE public.onjn_reports_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.onjn_reports_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: onjn_reports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.onjn_reports_id_seq OWNED BY public.onjn_reports.id;
 
 
 --
--- Name: providers; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: providers; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.providers (
@@ -486,10 +543,8 @@ CREATE TABLE public.providers (
 );
 
 
-ALTER TABLE public.providers OWNER TO eugeniucazmal;
-
 --
--- Name: providers_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: providers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.providers_id_seq
@@ -501,17 +556,15 @@ CREATE SEQUENCE public.providers_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.providers_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: providers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: providers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.providers_id_seq OWNED BY public.providers.id;
 
 
 --
--- Name: rent_agreements; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.rent_agreements (
@@ -536,10 +589,8 @@ CREATE TABLE public.rent_agreements (
 );
 
 
-ALTER TABLE public.rent_agreements OWNER TO eugeniucazmal;
-
 --
--- Name: rent_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.rent_agreements_id_seq
@@ -551,17 +602,15 @@ CREATE SEQUENCE public.rent_agreements_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.rent_agreements_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: rent_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.rent_agreements_id_seq OWNED BY public.rent_agreements.id;
 
 
 --
--- Name: slots; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: slots; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.slots (
@@ -592,10 +641,8 @@ CREATE TABLE public.slots (
 );
 
 
-ALTER TABLE public.slots OWNER TO eugeniucazmal;
-
 --
--- Name: slots_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: slots_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.slots_id_seq
@@ -607,17 +654,15 @@ CREATE SEQUENCE public.slots_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.slots_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: slots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: slots_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.slots_id_seq OWNED BY public.slots.id;
 
 
 --
--- Name: user_locations; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.user_locations (
@@ -628,10 +673,8 @@ CREATE TABLE public.user_locations (
 );
 
 
-ALTER TABLE public.user_locations OWNER TO eugeniucazmal;
-
 --
--- Name: user_locations_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.user_locations_id_seq
@@ -643,17 +686,15 @@ CREATE SEQUENCE public.user_locations_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.user_locations_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: user_locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.user_locations_id_seq OWNED BY public.user_locations.id;
 
 
 --
--- Name: users; Type: TABLE; Schema: public; Owner: eugeniucazmal
+-- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.users (
@@ -671,10 +712,8 @@ CREATE TABLE public.users (
 );
 
 
-ALTER TABLE public.users OWNER TO eugeniucazmal;
-
 --
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: eugeniucazmal
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
 CREATE SEQUENCE public.users_id_seq
@@ -686,115 +725,113 @@ CREATE SEQUENCE public.users_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.users_id_seq OWNER TO eugeniucazmal;
-
 --
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: eugeniucazmal
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: activity_logs id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activity_logs ALTER COLUMN id SET DEFAULT nextval('public.activity_logs_id_seq'::regclass);
 
 
 --
--- Name: attachments id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: attachments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.attachments ALTER COLUMN id SET DEFAULT nextval('public.attachments_id_seq'::regclass);
 
 
 --
--- Name: cabinets id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cabinets ALTER COLUMN id SET DEFAULT nextval('public.cabinets_id_seq'::regclass);
 
 
 --
--- Name: companies id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: companies id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.companies ALTER COLUMN id SET DEFAULT nextval('public.companies_id_seq'::regclass);
 
 
 --
--- Name: game_mixes id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.game_mixes ALTER COLUMN id SET DEFAULT nextval('public.game_mixes_id_seq'::regclass);
 
 
 --
--- Name: invoices id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices ALTER COLUMN id SET DEFAULT nextval('public.invoices_id_seq'::regclass);
 
 
 --
--- Name: legal_documents id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_documents ALTER COLUMN id SET DEFAULT nextval('public.legal_documents_id_seq'::regclass);
 
 
 --
--- Name: locations id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: locations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.locations ALTER COLUMN id SET DEFAULT nextval('public.locations_id_seq'::regclass);
 
 
 --
--- Name: onjn_reports id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports ALTER COLUMN id SET DEFAULT nextval('public.onjn_reports_id_seq'::regclass);
 
 
 --
--- Name: providers id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: providers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.providers ALTER COLUMN id SET DEFAULT nextval('public.providers_id_seq'::regclass);
 
 
 --
--- Name: rent_agreements id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements ALTER COLUMN id SET DEFAULT nextval('public.rent_agreements_id_seq'::regclass);
 
 
 --
--- Name: slots id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: slots id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots ALTER COLUMN id SET DEFAULT nextval('public.slots_id_seq'::regclass);
 
 
 --
--- Name: user_locations id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_locations ALTER COLUMN id SET DEFAULT nextval('public.user_locations_id_seq'::regclass);
 
 
 --
--- Name: users id; Type: DEFAULT; Schema: public; Owner: eugeniucazmal
+-- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
 
 
 --
--- Data for Name: activity_logs; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: activity_logs; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.activity_logs (id, user_id, action, entity_type, entity_id, details, ip_address, user_agent, created_at) FROM stdin;
@@ -802,7 +839,7 @@ COPY public.activity_logs (id, user_id, action, entity_type, entity_id, details,
 
 
 --
--- Data for Name: attachments; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: attachments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.attachments (id, entity_type, entity_id, original_name, file_path, file_size, mime_type, description, uploaded_by, created_at) FROM stdin;
@@ -810,7 +847,7 @@ COPY public.attachments (id, entity_type, entity_id, original_name, file_path, f
 
 
 --
--- Data for Name: cabinets; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: cabinets; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.cabinets (id, serial_number, model, manufacturer, provider_id, location_id, status, web_link, last_maintenance_date, next_maintenance_date, daily_revenue, specifications, technical_info, is_active, created_at, updated_at, name) FROM stdin;
@@ -821,7 +858,7 @@ COPY public.cabinets (id, serial_number, model, manufacturer, provider_id, locat
 
 
 --
--- Data for Name: companies; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: companies; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.companies (id, name, registration_number, tax_id, address, city, country, phone, email, website, is_active, created_at, updated_at, contact_person, status) FROM stdin;
@@ -836,7 +873,7 @@ COPY public.companies (id, name, registration_number, tax_id, address, city, cou
 
 
 --
--- Data for Name: game_mixes; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: game_mixes; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.game_mixes (id, name, description, provider_id, games, game_count, web_link, configuration, is_active, created_at, updated_at, status) FROM stdin;
@@ -848,7 +885,7 @@ COPY public.game_mixes (id, name, description, provider_id, games, game_count, w
 
 
 --
--- Data for Name: invoices; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: invoices; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.invoices (id, invoice_number, company_id, seller_company_id, location_ids, invoice_date, due_date, subtotal, tax_amount, total_amount, status, paid_date, serial_numbers, amortization_months, property_type, currency, notes, created_by, created_at, updated_at) FROM stdin;
@@ -858,7 +895,7 @@ COPY public.invoices (id, invoice_number, company_id, seller_company_id, locatio
 
 
 --
--- Data for Name: legal_documents; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: legal_documents; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.legal_documents (id, title, document_type, file_path, file_size, mime_type, description, company_id, location_id, is_active, created_at, updated_at, status, created_by) FROM stdin;
@@ -869,7 +906,7 @@ COPY public.legal_documents (id, title, document_type, file_path, file_size, mim
 
 
 --
--- Data for Name: locations; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: locations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.locations (id, company_id, name, address, city, county, country, phone, email, manager_id, latitude, longitude, is_active, created_at, updated_at, postal_code, status) FROM stdin;
@@ -882,7 +919,7 @@ COPY public.locations (id, company_id, name, address, city, county, country, pho
 
 
 --
--- Data for Name: onjn_reports; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: onjn_reports; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.onjn_reports (id, report_number, report_date, company_id, location_id, submission_date, notification_date, notification_type, notification_authority, commission_type, type, is_active, created_at, updated_at, status, created_by) FROM stdin;
@@ -890,7 +927,7 @@ COPY public.onjn_reports (id, report_number, report_date, company_id, location_i
 
 
 --
--- Data for Name: providers; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: providers; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.providers (id, name, company_name, contact_person, email, phone, address, city, country, website, is_active, created_at, updated_at, status) FROM stdin;
@@ -902,7 +939,7 @@ COPY public.providers (id, name, company_name, contact_person, email, phone, add
 
 
 --
--- Data for Name: rent_agreements; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: rent_agreements; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.rent_agreements (id, agreement_number, company_id, location_id, start_date, end_date, monthly_rent, security_deposit, terms, status, created_at, updated_at, landlord_name, tenant_name, property_address, currency, notes, created_by) FROM stdin;
@@ -912,7 +949,7 @@ COPY public.rent_agreements (id, agreement_number, company_id, location_id, star
 
 
 --
--- Data for Name: slots; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: slots; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.slots (id, cabinet_id, game_mix_id, provider_id, location_id, exciter_type, denomination, max_bet, rtp, property_type, owner_id, serial_nr, invoice_id, commission_date, onjn_report_id, daily_revenue, year, gaming_places, is_active, created_at, updated_at, model, manufacturer, status) FROM stdin;
@@ -923,7 +960,7 @@ COPY public.slots (id, cabinet_id, game_mix_id, provider_id, location_id, excite
 
 
 --
--- Data for Name: user_locations; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: user_locations; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.user_locations (id, user_id, location_id, created_at) FROM stdin;
@@ -931,7 +968,7 @@ COPY public.user_locations (id, user_id, location_id, created_at) FROM stdin;
 
 
 --
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: eugeniucazmal
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
 --
 
 COPY public.users (id, username, email, telephone, password, first_name, last_name, role, is_active, created_at, updated_at) FROM stdin;
@@ -940,105 +977,105 @@ COPY public.users (id, username, email, telephone, password, first_name, last_na
 
 
 --
--- Name: activity_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.activity_logs_id_seq', 1, false);
 
 
 --
--- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: attachments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.attachments_id_seq', 1, false);
 
 
 --
--- Name: cabinets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.cabinets_id_seq', 4, true);
 
 
 --
--- Name: companies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: companies_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.companies_id_seq', 7, true);
 
 
 --
--- Name: game_mixes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.game_mixes_id_seq', 4, true);
 
 
 --
--- Name: invoices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: invoices_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.invoices_id_seq', 2, true);
 
 
 --
--- Name: legal_documents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.legal_documents_id_seq', 3, true);
 
 
 --
--- Name: locations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: locations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.locations_id_seq', 6, true);
 
 
 --
--- Name: onjn_reports_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.onjn_reports_id_seq', 1, false);
 
 
 --
--- Name: providers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: providers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.providers_id_seq', 4, true);
 
 
 --
--- Name: rent_agreements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.rent_agreements_id_seq', 2, true);
 
 
 --
--- Name: slots_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: slots_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.slots_id_seq', 3, true);
 
 
 --
--- Name: user_locations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.user_locations_id_seq', 1, false);
 
 
 --
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: eugeniucazmal
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.users_id_seq', 1, true);
 
 
 --
--- Name: activity_logs activity_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs activity_logs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activity_logs
@@ -1046,7 +1083,7 @@ ALTER TABLE ONLY public.activity_logs
 
 
 --
--- Name: attachments attachments_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: attachments attachments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.attachments
@@ -1054,7 +1091,7 @@ ALTER TABLE ONLY public.attachments
 
 
 --
--- Name: cabinets cabinets_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets cabinets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cabinets
@@ -1062,7 +1099,7 @@ ALTER TABLE ONLY public.cabinets
 
 
 --
--- Name: companies companies_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: companies companies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.companies
@@ -1070,7 +1107,7 @@ ALTER TABLE ONLY public.companies
 
 
 --
--- Name: game_mixes game_mixes_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes game_mixes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.game_mixes
@@ -1078,7 +1115,7 @@ ALTER TABLE ONLY public.game_mixes
 
 
 --
--- Name: invoices invoices_invoice_number_key; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices invoices_invoice_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices
@@ -1086,7 +1123,7 @@ ALTER TABLE ONLY public.invoices
 
 
 --
--- Name: invoices invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices invoices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices
@@ -1094,7 +1131,7 @@ ALTER TABLE ONLY public.invoices
 
 
 --
--- Name: legal_documents legal_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents legal_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_documents
@@ -1102,7 +1139,7 @@ ALTER TABLE ONLY public.legal_documents
 
 
 --
--- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.locations
@@ -1110,7 +1147,7 @@ ALTER TABLE ONLY public.locations
 
 
 --
--- Name: onjn_reports onjn_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports onjn_reports_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports
@@ -1118,7 +1155,7 @@ ALTER TABLE ONLY public.onjn_reports
 
 
 --
--- Name: onjn_reports onjn_reports_report_number_key; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports onjn_reports_report_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports
@@ -1126,7 +1163,7 @@ ALTER TABLE ONLY public.onjn_reports
 
 
 --
--- Name: providers providers_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: providers providers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.providers
@@ -1134,7 +1171,7 @@ ALTER TABLE ONLY public.providers
 
 
 --
--- Name: rent_agreements rent_agreements_agreement_number_key; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements rent_agreements_agreement_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements
@@ -1142,7 +1179,7 @@ ALTER TABLE ONLY public.rent_agreements
 
 
 --
--- Name: rent_agreements rent_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements rent_agreements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements
@@ -1150,7 +1187,7 @@ ALTER TABLE ONLY public.rent_agreements
 
 
 --
--- Name: slots slots_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1158,7 +1195,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: user_locations user_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations user_locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_locations
@@ -1166,7 +1203,7 @@ ALTER TABLE ONLY public.user_locations
 
 
 --
--- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -1174,7 +1211,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -1182,7 +1219,7 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: users users_username_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users
@@ -1190,63 +1227,63 @@ ALTER TABLE ONLY public.users
 
 
 --
--- Name: idx_activity_logs_created_at; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_activity_logs_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_activity_logs_created_at ON public.activity_logs USING btree (created_at);
 
 
 --
--- Name: idx_activity_logs_user_id; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_activity_logs_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_activity_logs_user_id ON public.activity_logs USING btree (user_id);
 
 
 --
--- Name: idx_companies_name; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_companies_name; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_companies_name ON public.companies USING btree (name);
 
 
 --
--- Name: idx_invoices_company_id; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_invoices_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_invoices_company_id ON public.invoices USING btree (company_id);
 
 
 --
--- Name: idx_locations_company_id; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_locations_company_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_locations_company_id ON public.locations USING btree (company_id);
 
 
 --
--- Name: idx_slots_location_id; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_slots_location_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_slots_location_id ON public.slots USING btree (location_id);
 
 
 --
--- Name: idx_users_email; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_users_email; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_users_email ON public.users USING btree (email);
 
 
 --
--- Name: idx_users_username; Type: INDEX; Schema: public; Owner: eugeniucazmal
+-- Name: idx_users_username; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_users_username ON public.users USING btree (username);
 
 
 --
--- Name: activity_logs activity_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: activity_logs activity_logs_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.activity_logs
@@ -1254,7 +1291,7 @@ ALTER TABLE ONLY public.activity_logs
 
 
 --
--- Name: attachments attachments_uploaded_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: attachments attachments_uploaded_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.attachments
@@ -1262,7 +1299,7 @@ ALTER TABLE ONLY public.attachments
 
 
 --
--- Name: cabinets cabinets_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets cabinets_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cabinets
@@ -1270,7 +1307,7 @@ ALTER TABLE ONLY public.cabinets
 
 
 --
--- Name: cabinets cabinets_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: cabinets cabinets_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.cabinets
@@ -1278,7 +1315,7 @@ ALTER TABLE ONLY public.cabinets
 
 
 --
--- Name: game_mixes game_mixes_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: game_mixes game_mixes_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.game_mixes
@@ -1286,7 +1323,7 @@ ALTER TABLE ONLY public.game_mixes
 
 
 --
--- Name: invoices invoices_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices invoices_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices
@@ -1294,7 +1331,7 @@ ALTER TABLE ONLY public.invoices
 
 
 --
--- Name: invoices invoices_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices invoices_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices
@@ -1302,7 +1339,7 @@ ALTER TABLE ONLY public.invoices
 
 
 --
--- Name: invoices invoices_seller_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: invoices invoices_seller_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.invoices
@@ -1310,7 +1347,7 @@ ALTER TABLE ONLY public.invoices
 
 
 --
--- Name: legal_documents legal_documents_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents legal_documents_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_documents
@@ -1318,7 +1355,7 @@ ALTER TABLE ONLY public.legal_documents
 
 
 --
--- Name: legal_documents legal_documents_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents legal_documents_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_documents
@@ -1326,7 +1363,7 @@ ALTER TABLE ONLY public.legal_documents
 
 
 --
--- Name: legal_documents legal_documents_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: legal_documents legal_documents_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.legal_documents
@@ -1334,7 +1371,7 @@ ALTER TABLE ONLY public.legal_documents
 
 
 --
--- Name: locations locations_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: locations locations_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.locations
@@ -1342,7 +1379,7 @@ ALTER TABLE ONLY public.locations
 
 
 --
--- Name: locations locations_manager_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: locations locations_manager_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.locations
@@ -1350,7 +1387,7 @@ ALTER TABLE ONLY public.locations
 
 
 --
--- Name: onjn_reports onjn_reports_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports onjn_reports_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports
@@ -1358,7 +1395,7 @@ ALTER TABLE ONLY public.onjn_reports
 
 
 --
--- Name: onjn_reports onjn_reports_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports onjn_reports_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports
@@ -1366,7 +1403,7 @@ ALTER TABLE ONLY public.onjn_reports
 
 
 --
--- Name: onjn_reports onjn_reports_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: onjn_reports onjn_reports_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.onjn_reports
@@ -1374,7 +1411,7 @@ ALTER TABLE ONLY public.onjn_reports
 
 
 --
--- Name: rent_agreements rent_agreements_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements rent_agreements_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements
@@ -1382,7 +1419,7 @@ ALTER TABLE ONLY public.rent_agreements
 
 
 --
--- Name: rent_agreements rent_agreements_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements rent_agreements_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements
@@ -1390,7 +1427,7 @@ ALTER TABLE ONLY public.rent_agreements
 
 
 --
--- Name: rent_agreements rent_agreements_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: rent_agreements rent_agreements_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.rent_agreements
@@ -1398,7 +1435,7 @@ ALTER TABLE ONLY public.rent_agreements
 
 
 --
--- Name: slots slots_cabinet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_cabinet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1406,7 +1443,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: slots slots_game_mix_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_game_mix_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1414,7 +1451,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: slots slots_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_invoice_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1422,7 +1459,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: slots slots_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1430,7 +1467,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: slots slots_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: slots slots_provider_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.slots
@@ -1438,7 +1475,7 @@ ALTER TABLE ONLY public.slots
 
 
 --
--- Name: user_locations user_locations_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations user_locations_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_locations
@@ -1446,7 +1483,7 @@ ALTER TABLE ONLY public.user_locations
 
 
 --
--- Name: user_locations user_locations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: eugeniucazmal
+-- Name: user_locations user_locations_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.user_locations
