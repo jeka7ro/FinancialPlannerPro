@@ -10,11 +10,17 @@ services:
     env: node
     plan: free
     buildCommand: |
+      echo "🔧 Installing root dependencies..."
       npm install
+      echo "🔧 Installing client dependencies..."
       cd client
       npm install --legacy-peer-deps
+      echo "🔧 Building client..."
       npm run build
+      echo "🔧 Build completed. Checking dist directory..."
+      ls -la dist/
       cd ..
+      echo "🔧 Build process completed successfully!"
     startCommand: npm run setup-db && npm start
     envVars:
       - key: NODE_ENV
