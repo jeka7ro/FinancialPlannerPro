@@ -4,14 +4,16 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "cd client && npm install && npm run build",
-    "vercel-build": "cd client && npm install && npm run build",
-    "start": "NODE_ENV=production tsx server/index.ts"
+    "build": "cd client && npm install --legacy-peer-deps && npm run build",
+    "vercel-build": "cd client && npm install --legacy-peer-deps && npm run build",
+    "start": "NODE_ENV=production PORT=$PORT tsx server/index.ts",
+    "setup-db": "node setup-database.js"
   },
   "dependencies": {
     "@vercel/node": "^3.0.0",
     "bcrypt": "^5.1.0",
     "dotenv": "^16.3.1",
+    "drizzle-orm": "^0.44.2",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "pg": "^8.11.3",
