@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "cd client && npm run build",
-    "vercel-build": "cd client && npm run build",
+    "build": "cd client && npm install && npm run build",
+    "vercel-build": "cd client && npm install && npm run build",
     "start": "NODE_ENV=production tsx server/index.ts"
   },
   "dependencies": {
