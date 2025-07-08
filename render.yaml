@@ -4,7 +4,7 @@ services:
     env: node
     plan: free
     buildCommand: npm install
-    startCommand: node real-server.js
+    startCommand: node setup-render-db.js && node real-server.js
     envVars:
       - key: NODE_ENV
         value: production
