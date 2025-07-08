@@ -506,7 +506,7 @@ app.post('/api/companies', authenticateJWT, async (req, res) => {
     }
 
     // Use minimal insert with only basic fields that definitely exist
-    result = await pool.query(
+    const result = await pool.query(
       `INSERT INTO companies (
         name, email, phone, address, created_at, updated_at
       ) VALUES ($1, $2, $3, $4, NOW(), NOW()) 
@@ -555,7 +555,7 @@ app.put('/api/companies/:id', authenticateJWT, async (req, res) => {
     }
 
     // Use minimal update with only basic fields that definitely exist
-    result = await pool.query(
+    const result = await pool.query(
       `UPDATE companies SET 
         name = $1, email = $2, phone = $3, address = $4, updated_at = NOW()
        WHERE id = $5 RETURNING *`,
