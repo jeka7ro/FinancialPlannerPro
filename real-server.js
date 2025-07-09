@@ -61,7 +61,8 @@ app.use((req, res, next) => {
     'http://localhost:5174',
     'https://financial-planner-pro-client.vercel.app',
     'https://financial-planner-pro.vercel.app',
-    'https://financial-planner-pro.vercel.app'
+    'https://client-ten-peach.vercel.app',
+    'https://client-phyjb421a-jeka7ros-projects.vercel.app'
   ];
   
   const origin = req.headers.origin;
