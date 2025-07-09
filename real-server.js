@@ -64,7 +64,8 @@ app.use((req, res, next) => {
     'https://financial-planner-pro-client.vercel.app',
     'https://financial-planner-pro.vercel.app',
     'https://client-ten-peach.vercel.app',
-    'https://client-phyjb421a-jeka7ros-projects.vercel.app'
+    'https://client-phyjb421a-jeka7ros-projects.vercel.app',
+    'https://client-oxq747bhm-jeka7ros-projects.vercel.app'
   ];
   
   const origin = req.headers.origin;
