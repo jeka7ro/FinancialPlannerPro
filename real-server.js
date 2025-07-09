@@ -108,18 +108,8 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({ 
-  storage: storage,
+const upload = multer({
+  storage: multer.memoryStorage(), // Use memory storage instead of disk storage
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
   }
@@ -258,6 +248,7 @@ async function setupDatabaseIfEmpty() {
           original_name VARCHAR(255) NOT NULL,
           mime_type VARCHAR(100),
           file_size INTEGER,
+          file_data BYTEA,
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP DEFAULT NOW()
         )
@@ -1125,9 +1116,9 @@ app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.singl
 
     // Save attachment info to database
     const result = await pool.query(
-      `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING *`,
-      [entityType, entityId, filename, originalname, mimetype, size]
+      `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, file_data, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
+      [entityType, entityId, filename, originalname, mimetype, size, req.file.buffer]
     );
 
     res.status(201).json({ 
@@ -1166,13 +1157,17 @@ app.get('/api/attachments/:id/download', authenticateJWT, async (req, res) => {
     }
 
     const attachment = result.rows[0];
-    const filePath = path.join(uploadsDir, attachment.filename);
     
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ message: 'File not found' });
-    }
-
-    res.download(filePath, attachment.original_name);
+    // Convert buffer to base64 for sending
+    const base64Data = attachment.file_data.toString('base64');
+    
+    // Set appropriate headers
+    res.setHeader('Content-Type', attachment.mime_type);
+    res.setHeader('Content-Disposition', `attachment; filename="${attachment.original_name}"`);
+    res.setHeader('Content-Length', attachment.file_size);
+    
+    // Send the file data directly
+    res.send(Buffer.from(base64Data, 'base64'));
   } catch (error) {
     console.error('Download error:', error);
     res.status(500).json({ message: 'Failed to download file' });
@@ -1188,15 +1183,7 @@ app.delete('/api/attachments/:id', authenticateJWT, async (req, res) => {
       return res.status(404).json({ message: 'Attachment not found' });
     }
 
-    const attachment = result.rows[0];
-    const filePath = path.join(uploadsDir, attachment.filename);
-    
-    // Delete file from filesystem
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-    }
-
-    // Delete from database
+    // Delete from database (file data is stored in database, no filesystem cleanup needed)
     await pool.query('DELETE FROM attachments WHERE id = $1', [id]);
 
     res.json({ message: 'Attachment deleted successfully' });
