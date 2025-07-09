@@ -286,6 +286,38 @@ app.post('/api/setup-database', async (req, res) => {
   }
 });
 
+// Force recreate attachments table
+app.post('/api/recreate-attachments-table', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    
+    // Drop existing table if it exists
+    await client.query('DROP TABLE IF EXISTS attachments');
+    
+    // Create new table with file_data column
+    await client.query(`
+      CREATE TABLE attachments (
+        id SERIAL PRIMARY KEY,
+        entity_type VARCHAR(50) NOT NULL,
+        entity_id INTEGER NOT NULL,
+        filename VARCHAR(255) NOT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        mime_type VARCHAR(100),
+        file_size INTEGER,
+        file_data BYTEA,
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    
+    client.release();
+    res.json({ message: 'Attachments table recreated successfully' });
+  } catch (error) {
+    console.error('Recreate attachments table error:', error);
+    res.status(500).json({ message: 'Failed to recreate attachments table' });
+  }
+});
+
 // Force populate database endpoint
 app.post('/api/populate-database', async (req, res) => {
   try {
