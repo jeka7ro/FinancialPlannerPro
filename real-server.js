@@ -68,12 +68,26 @@ app.use((req, res, next) => {
     'https://client-oxq747bhm-jeka7ros-projects.vercel.app',
     'https://client-3ld9xzpoz-jeka7ros-projects.vercel.app',
     'https://client-3amkbkv5g-jeka7ros-projects.vercel.app',
-    'https://client-b1yherjta-jeka7ros-projects.vercel.app'
+    'https://client-b1yherjta-jeka7ros-projects.vercel.app',
+    // Wildcard for all Vercel deployments of this project
+    /^https:\/\/client-.*-jeka7ros-projects\.vercel\.app$/
   ];
   
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
+  if (origin) {
+    // Check if origin is in allowedOrigins (string or regex)
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return allowed === origin;
+      } else if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
