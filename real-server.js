@@ -1139,15 +1139,21 @@ app.post('/api/rent-agreements', authenticateJWT, async (req, res) => {
 // Attachments routes
 app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.single('file'), async (req, res) => {
   try {
+    console.log('Upload request received:', req.params, req.file);
+    
     if (!req.file) {
+      console.log('No file in request');
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
     const { entityType, entityId } = req.params;
     const { originalname, filename, mimetype, size } = req.file;
 
+    console.log('File details:', { originalname, filename, mimetype, size });
+
     // Convert buffer to base64 string
     const base64Data = req.file.buffer.toString('base64');
+    console.log('Base64 data length:', base64Data.length);
 
     // Save attachment info to database
     const result = await pool.query(
@@ -1156,13 +1162,15 @@ app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.singl
       [entityType, entityId, filename, originalname, mimetype, size, base64Data]
     );
 
+    console.log('File saved successfully:', result.rows[0].id);
+
     res.status(201).json({ 
       message: 'File uploaded successfully', 
       attachment: result.rows[0] 
     });
   } catch (error) {
     console.error('File upload error:', error);
-    res.status(500).json({ message: 'Failed to upload file' });
+    res.status(500).json({ message: 'Failed to upload file', error: error.message });
   }
 });
 
