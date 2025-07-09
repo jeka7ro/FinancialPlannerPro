@@ -1152,18 +1152,25 @@ app.post('/api/test-upload', authenticateJWT, async (req, res) => {
 });
 
 // Attachments routes
-app.post('/api/:entityType/:entityId/attachments', authenticateJWT, async (req, res) => {
+app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.single('file'), async (req, res) => {
   try {
-    console.log('Upload request received:', req.params);
-    console.log('Request headers:', req.headers);
-    console.log('Request body:', req.body);
-    
-    // For now, just return success to test if the route works
-    res.status(200).json({ 
-      message: 'Route works, but file processing not implemented yet',
-      params: req.params,
-      body: req.body
-    });
+    console.log('--- Upload request ---');
+    console.log('Params:', req.params);
+    console.log('Body:', req.body);
+    console.log('File:', req.file);
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded', debug: { body: req.body } });
+    }
+    const { entityType, entityId } = req.params;
+    const { originalname, mimetype, size, buffer } = req.file;
+    const base64Data = buffer.toString('base64');
+    const result = await pool.query(
+      `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, file_data, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
+      [entityType, entityId, originalname, originalname, mimetype, size, base64Data]
+    );
+    console.log('File saved in DB:', result.rows[0].id);
+    res.status(201).json({ message: 'File uploaded successfully', attachment: result.rows[0] });
   } catch (error) {
     console.error('File upload error:', error);
     res.status(500).json({ message: 'Failed to upload file', error: error.message });
