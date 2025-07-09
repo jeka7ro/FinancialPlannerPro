@@ -112,6 +112,10 @@ const upload = multer({
   storage: multer.memoryStorage(), // Use memory storage instead of disk storage
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    console.log('Multer fileFilter called with:', file);
+    cb(null, true);
   }
 });
 
@@ -1148,7 +1152,12 @@ app.post('/api/test-upload', authenticateJWT, async (req, res) => {
 });
 
 // Attachments routes
-app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.single('file'), async (req, res) => {
+app.post('/api/:entityType/:entityId/attachments', authenticateJWT, (req, res, next) => {
+  console.log('Request headers:', req.headers);
+  console.log('Request body:', req.body);
+  console.log('Request files:', req.files);
+  next();
+}, upload.single('file'), async (req, res) => {
   try {
     console.log('Upload request received:', req.params, req.file);
     
