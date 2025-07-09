@@ -1152,42 +1152,17 @@ app.post('/api/test-upload', authenticateJWT, async (req, res) => {
 });
 
 // Attachments routes
-app.post('/api/:entityType/:entityId/attachments', authenticateJWT, (req, res, next) => {
-  console.log('Request headers:', req.headers);
-  console.log('Request body:', req.body);
-  console.log('Request files:', req.files);
-  next();
-}, upload.any(), async (req, res) => {
+app.post('/api/:entityType/:entityId/attachments', authenticateJWT, async (req, res) => {
   try {
-    console.log('Upload request received:', req.params, req.files);
+    console.log('Upload request received:', req.params);
+    console.log('Request headers:', req.headers);
+    console.log('Request body:', req.body);
     
-    if (!req.files || req.files.length === 0) {
-      console.log('No files in request');
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    const file = req.files[0]; // Get the first file
-    const { entityType, entityId } = req.params;
-    const { originalname, filename, mimetype, size } = file;
-
-    console.log('File details:', { originalname, filename, mimetype, size });
-
-    // Convert buffer to base64 string
-    const base64Data = file.buffer.toString('base64');
-    console.log('Base64 data length:', base64Data.length);
-
-    // Save attachment info to database
-    const result = await pool.query(
-      `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, file_data, created_at, updated_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
-      [entityType, entityId, filename, originalname, mimetype, size, base64Data]
-    );
-
-    console.log('File saved successfully:', result.rows[0].id);
-
-    res.status(201).json({ 
-      message: 'File uploaded successfully', 
-      attachment: result.rows[0] 
+    // For now, just return success to test if the route works
+    res.status(200).json({ 
+      message: 'Route works, but file processing not implemented yet',
+      params: req.params,
+      body: req.body
     });
   } catch (error) {
     console.error('File upload error:', error);
