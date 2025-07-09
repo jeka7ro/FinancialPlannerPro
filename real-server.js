@@ -248,7 +248,7 @@ async function setupDatabaseIfEmpty() {
           original_name VARCHAR(255) NOT NULL,
           mime_type VARCHAR(100),
           file_size INTEGER,
-          file_data BYTEA,
+          file_data TEXT,
           created_at TIMESTAMP DEFAULT NOW(),
           updated_at TIMESTAMP DEFAULT NOW()
         )
@@ -304,7 +304,7 @@ app.post('/api/recreate-attachments-table', async (req, res) => {
         original_name VARCHAR(255) NOT NULL,
         mime_type VARCHAR(100),
         file_size INTEGER,
-        file_data BYTEA,
+        file_data TEXT,
         created_at TIMESTAMP DEFAULT NOW(),
         updated_at TIMESTAMP DEFAULT NOW()
       )
@@ -1146,11 +1146,14 @@ app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.singl
     const { entityType, entityId } = req.params;
     const { originalname, filename, mimetype, size } = req.file;
 
+    // Convert buffer to base64 string
+    const base64Data = req.file.buffer.toString('base64');
+
     // Save attachment info to database
     const result = await pool.query(
       `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, file_data, created_at, updated_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW()) RETURNING *`,
-      [entityType, entityId, filename, originalname, mimetype, size, req.file.buffer]
+      [entityType, entityId, filename, originalname, mimetype, size, base64Data]
     );
 
     res.status(201).json({ 
