@@ -1157,7 +1157,7 @@ app.post('/api/:entityType/:entityId/attachments', authenticateJWT, (req, res, n
   console.log('Request body:', req.body);
   console.log('Request files:', req.files);
   next();
-}, upload.single('file'), async (req, res) => {
+}, upload.single('attachment'), async (req, res) => {
   try {
     console.log('Upload request received:', req.params, req.file);
     
