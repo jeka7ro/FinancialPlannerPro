@@ -1136,6 +1136,17 @@ app.post('/api/rent-agreements', authenticateJWT, async (req, res) => {
   }
 });
 
+// Test route without multer
+app.post('/api/test-upload', authenticateJWT, async (req, res) => {
+  try {
+    console.log('Test upload request received:', req.body);
+    res.json({ message: 'Test route works', body: req.body });
+  } catch (error) {
+    console.error('Test upload error:', error);
+    res.status(500).json({ message: 'Test upload failed', error: error.message });
+  }
+});
+
 // Attachments routes
 app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.single('file'), async (req, res) => {
   try {
