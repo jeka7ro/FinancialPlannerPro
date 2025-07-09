@@ -5,6 +5,8 @@ import { Pool } from 'pg';
 import bcrypt from 'bcrypt';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import multer from 'multer';
+import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -80,6 +82,33 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Serve uploaded files
+app.use('/uploads', express.static(uploadsDir));
 
 // Test database connection
 async function testDatabaseConnection() {
@@ -199,6 +228,21 @@ async function setupDatabaseIfEmpty() {
           (1, 1, '2025-01-01', '2025-12-31', 5000.00, 'active', NOW(), NOW()),
           (2, 2, '2025-01-01', '2025-12-31', 6000.00, 'active', NOW(), NOW()),
           (3, 3, '2025-01-01', '2025-12-31', 4500.00, 'active', NOW(), NOW())
+      `);
+      
+      // Create attachments table if it doesn't exist
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS attachments (
+          id SERIAL PRIMARY KEY,
+          entity_type VARCHAR(50) NOT NULL,
+          entity_id INTEGER NOT NULL,
+          filename VARCHAR(255) NOT NULL,
+          original_name VARCHAR(255) NOT NULL,
+          mime_type VARCHAR(100),
+          file_size INTEGER,
+          created_at TIMESTAMP DEFAULT NOW(),
+          updated_at TIMESTAMP DEFAULT NOW()
+        )
       `);
       
       console.log('✅ Database setup completed!');
@@ -1048,6 +1092,99 @@ app.post('/api/rent-agreements', authenticateJWT, async (req, res) => {
   } catch (error) {
     console.error('Create rent agreement error:', error);
     res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+// Attachments routes
+app.post('/api/:entityType/:entityId/attachments', authenticateJWT, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const { entityType, entityId } = req.params;
+    const { originalname, filename, mimetype, size } = req.file;
+
+    // Save attachment info to database
+    const result = await pool.query(
+      `INSERT INTO attachments (entity_type, entity_id, filename, original_name, mime_type, file_size, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW()) RETURNING *`,
+      [entityType, entityId, filename, originalname, mimetype, size]
+    );
+
+    res.status(201).json({ 
+      message: 'File uploaded successfully', 
+      attachment: result.rows[0] 
+    });
+  } catch (error) {
+    console.error('File upload error:', error);
+    res.status(500).json({ message: 'Failed to upload file' });
+  }
+});
+
+app.get('/api/:entityType/:entityId/attachments', authenticateJWT, async (req, res) => {
+  try {
+    const { entityType, entityId } = req.params;
+    
+    const result = await pool.query(
+      'SELECT * FROM attachments WHERE entity_type = $1 AND entity_id = $2 ORDER BY created_at DESC',
+      [entityType, entityId]
+    );
+
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Get attachments error:', error);
+    res.status(500).json({ message: 'Failed to fetch attachments' });
+  }
+});
+
+app.get('/api/attachments/:id/download', authenticateJWT, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query('SELECT * FROM attachments WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Attachment not found' });
+    }
+
+    const attachment = result.rows[0];
+    const filePath = path.join(uploadsDir, attachment.filename);
+    
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    res.download(filePath, attachment.original_name);
+  } catch (error) {
+    console.error('Download error:', error);
+    res.status(500).json({ message: 'Failed to download file' });
+  }
+});
+
+app.delete('/api/attachments/:id', authenticateJWT, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query('SELECT * FROM attachments WHERE id = $1', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Attachment not found' });
+    }
+
+    const attachment = result.rows[0];
+    const filePath = path.join(uploadsDir, attachment.filename);
+    
+    // Delete file from filesystem
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Delete from database
+    await pool.query('DELETE FROM attachments WHERE id = $1', [id]);
+
+    res.json({ message: 'Attachment deleted successfully' });
+  } catch (error) {
+    console.error('Delete attachment error:', error);
+    res.status(500).json({ message: 'Failed to delete attachment' });
   }
 });
 
