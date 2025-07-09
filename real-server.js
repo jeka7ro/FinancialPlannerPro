@@ -1157,22 +1157,23 @@ app.post('/api/:entityType/:entityId/attachments', authenticateJWT, (req, res, n
   console.log('Request body:', req.body);
   console.log('Request files:', req.files);
   next();
-}, upload.single('attachment'), async (req, res) => {
+}, upload.any(), async (req, res) => {
   try {
-    console.log('Upload request received:', req.params, req.file);
+    console.log('Upload request received:', req.params, req.files);
     
-    if (!req.file) {
-      console.log('No file in request');
+    if (!req.files || req.files.length === 0) {
+      console.log('No files in request');
       return res.status(400).json({ message: 'No file uploaded' });
     }
 
+    const file = req.files[0]; // Get the first file
     const { entityType, entityId } = req.params;
-    const { originalname, filename, mimetype, size } = req.file;
+    const { originalname, filename, mimetype, size } = file;
 
     console.log('File details:', { originalname, filename, mimetype, size });
 
     // Convert buffer to base64 string
-    const base64Data = req.file.buffer.toString('base64');
+    const base64Data = file.buffer.toString('base64');
     console.log('Base64 data length:', base64Data.length);
 
     // Save attachment info to database
