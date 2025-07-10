@@ -26,16 +26,22 @@ export class FileService {
     description?: string
   ) {
     const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}-${file.originalname}`;
-    const filePath = path.join(this.uploadDir, filename);
-
-    await fs.writeFile(filePath, file.buffer);
+    
+    // Convert file buffer to base64 for online storage
+    const fileData = file.buffer.toString('base64');
+    
+    // For local development, also save to disk
+    if (process.env.NODE_ENV === 'development') {
+      const filePath = path.join(this.uploadDir, filename);
+      await fs.writeFile(filePath, file.buffer);
+    }
 
     const attachment: InsertAttachment = {
       filename,
       originalName: file.originalname,
       mimeType: file.mimetype,
       fileSize: file.size,
-      filePath: `/uploads/${filename}`,
+      filePath: fileData, // Store base64 data in filePath field
       entityType,
       entityId,
       uploadedBy,
@@ -46,10 +52,24 @@ export class FileService {
   }
 
   async getFile(filename: string) {
-    const filePath = path.join(this.uploadDir, filename);
     try {
-      const data = await fs.readFile(filePath);
-      return data;
+      // Get file from database (base64 stored in filePath)
+      const attachment = await storage.getAttachmentByFilename(filename);
+      if (attachment && attachment.filePath) {
+        // Check if filePath contains base64 data (starts with data: or is long base64 string)
+        if (attachment.filePath.length > 100 && !attachment.filePath.startsWith('/')) {
+          return Buffer.from(attachment.filePath, 'base64');
+        }
+      }
+      
+      // Fallback to disk for local development
+      if (process.env.NODE_ENV === 'development') {
+        const filePath = path.join(this.uploadDir, filename);
+        const data = await fs.readFile(filePath);
+        return data;
+      }
+      
+      throw new Error('File not found');
     } catch (error) {
       throw new Error('File not found');
     }

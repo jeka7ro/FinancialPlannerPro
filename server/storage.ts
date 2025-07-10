@@ -137,6 +137,7 @@ export interface IStorage {
 
   // File attachment operations
   getAttachment(id: number): Promise<Attachment | undefined>;
+  getAttachmentByFilename(filename: string): Promise<Attachment | undefined>;
   getAttachments(entityType: string, entityId: number): Promise<Attachment[]>;
   createAttachment(attachment: InsertAttachment): Promise<Attachment>;
   deleteAttachment(id: number): Promise<void>;
@@ -1081,6 +1082,11 @@ export class DatabaseStorage implements IStorage {
   // File attachment operations
   async getAttachment(id: number): Promise<Attachment | undefined> {
     const [attachment] = await db.select().from(attachments).where(eq(attachments.id, id));
+    return attachment || undefined;
+  }
+
+  async getAttachmentByFilename(filename: string): Promise<Attachment | undefined> {
+    const [attachment] = await db.select().from(attachments).where(eq(attachments.filename, filename));
     return attachment || undefined;
   }
 

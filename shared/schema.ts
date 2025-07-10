@@ -523,6 +523,7 @@ export const attachments = pgTable("attachments", {
   mimeType: varchar("mime_type", { length: 100 }).notNull(),
   fileSize: integer("file_size").notNull(),
   filePath: varchar("file_path", { length: 500 }).notNull(),
+  fileData: text("file_data"), // Base64 encoded file data for online sync
   entityType: varchar("entity_type", { length: 50 }).notNull(), // 'company', 'location', 'user', etc.
   entityId: integer("entity_id").notNull(),
   uploadedBy: integer("uploaded_by").notNull(),

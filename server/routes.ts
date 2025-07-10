@@ -1319,8 +1319,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Attachment not found" });
       }
 
-      const filename = attachment.filePath.split('/').pop();
-      const fileData = await fileService.getFile(filename!);
+      const fileData = await fileService.getFile(attachment.filename);
 
       res.setHeader('Content-Type', attachment.mimeType);
       
