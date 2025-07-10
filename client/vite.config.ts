@@ -10,17 +10,22 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name]-${Date.now()}.js`,
+        chunkFileNames: `assets/[name]-${Date.now()}.js`,
+        assetFileNames: `assets/[name]-${Date.now()}.[ext]`
+      }
+    }
+  },
   server: {
     proxy: {
       '/api': {
-        target: process.env.VITE_API_URL || 'http://localhost:3001',
+        target: 'https://financial-planner-pro.onrender.com',
         changeOrigin: true,
-        secure: false,
+        secure: true,
       },
     },
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
   },
 })

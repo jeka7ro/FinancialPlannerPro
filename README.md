@@ -28,17 +28,17 @@ Sistem complet de management pentru industria gaming cu backend Node.js/Express 
 ## 🏃‍♂️ Rulare Locală
 
 ### Backend
-```bash
-npm install
+   ```bash
+   npm install
 node real-server.js
-```
+   ```
 
 ### Frontend
-```bash
+   ```bash
 cd client
 npm install
-npm run dev
-```
+   npm run dev
+   ```
 
 ## 📊 Baza de Date
 - PostgreSQL cu toate tabelele necesare

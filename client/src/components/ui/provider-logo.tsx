@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAttachments } from "../../hooks/useAttachments";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "../../lib/queryClient";
 
 interface ProviderLogoProps {
   providerId: number;
@@ -12,8 +13,15 @@ export function ProviderLogo({ providerId, size = "md", className = "", provider
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
 
-  // Use the useAttachments hook for live updates
-  const attachments = useAttachments('providers', providerId);
+  const { data: attachments = [] } = useQuery({
+    queryKey: [`/api/providers/${providerId}/attachments`],
+    queryFn: async () => {
+      if (!providerId) return [];
+      const response = await apiRequest('GET', `/api/providers/${providerId}/attachments`);
+      return response.json();
+    },
+    enabled: !!providerId,
+  });
 
   const sizeClasses = {
     sm: "w-6 h-6",

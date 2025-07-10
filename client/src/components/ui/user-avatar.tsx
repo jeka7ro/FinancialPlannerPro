@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { useAttachments } from "../../hooks/useAttachments";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "../../lib/queryClient";
 
 interface UserAvatarProps {
   user: {
@@ -16,9 +17,16 @@ interface UserAvatarProps {
 export function UserAvatar({ user, size = "md", className = "" }: UserAvatarProps) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [hasError, setHasError] = useState(false);
-  
-  // Always call the hook, even if user is null
-  const attachments = useAttachments('users', user?.id ?? 0);
+
+  const { data: attachments = [] } = useQuery({
+    queryKey: [`/api/users/${user?.id}/attachments`],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const response = await apiRequest('GET', `/api/users/${user.id}/attachments`);
+      return response.json();
+    },
+    enabled: !!user?.id,
+  });
   
   const sizeClasses = {
     sm: "w-8 h-8 text-xs",

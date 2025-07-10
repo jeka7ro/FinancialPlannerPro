@@ -3,12 +3,11 @@ import { Button } from "../../components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from "../../components/ui/dialog";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { queryClient, apiRequest } from "../../lib/queryClient";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "../../lib/queryClient";
 import { useToast } from "../../hooks/use-toast";
 import { Paperclip, Download, Eye, Trash2, Upload, File, Image, FileText, Archive } from "lucide-react";
 import { Badge } from "../../components/ui/badge";
-import { attachmentManager } from "../../lib/mockAttachments";
 import { useAttachments } from "../../hooks/useAttachments";
 import type { EntityType } from "../../hooks/useAttachments";
 
@@ -23,91 +22,46 @@ export function AttachmentButton({ entityType, entityId, entityName }: Attachmen
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const attachments = useAttachments(entityType as EntityType, entityId);
-  const isLoading = false;
+  const { data: attachments = [], isLoading } = useQuery({
+    queryKey: [`/api/${entityType}/${entityId}/attachments`],
+    queryFn: async () => {
+      const response = await apiRequest('GET', `/api/${entityType}/${entityId}/attachments`);
+      return response.json();
+    },
+  });
 
   const uploadMutation = useMutation({
     mutationFn: async (file: File) => {
-      try {
-        // Simulate upload delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Create mock attachment object with real data URL for images
-        let url: string;
-        if (file.type.startsWith('image/')) {
-          // For images, create a data URL that can be displayed
-          const reader = new FileReader();
-          const dataUrl = await new Promise<string>((resolve, reject) => {
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (e) => reject(reader.error || e);
-            reader.readAsDataURL(file);
-          });
-          url = dataUrl;
-        } else {
-          // For non-images, use mock download URL
-          url = `/api/attachments/${Date.now()}/download`;
-        }
-        
-        const newAttachment = {
-          id: Date.now(),
-          filename: file.name,
-          mimeType: file.type,
-          fileSize: file.size,
-          createdAt: new Date().toISOString(),
-          url: url
-        };
-        console.log('[AttachmentButton] Upload success:', newAttachment);
-        return newAttachment;
-      } catch (err) {
-        console.error('[AttachmentButton] Upload error:', err);
-        throw new Error('Failed to process file for upload.');
-      }
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await apiRequest('POST', `/api/${entityType}/${entityId}/attachments`, formData);
+      return response.json();
     },
-    onSuccess: (newAttachment) => {
-      // Add to attachment manager (this will automatically trigger updates)
-      attachmentManager.addAttachment(entityType as any, entityId, newAttachment);
-      
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
       setSelectedFile(null);
       setPreviewUrl(null);
-      setIsOpen(false); // Close dialog after successful upload
-      toast({
-        title: "Success",
-        description: "File uploaded successfully.",
-      });
+      setIsOpen(false);
+      toast({ title: "Success", description: "File uploaded successfully." });
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to upload file. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to upload file. Please try again.", variant: "destructive" });
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (attachmentId: number) => {
-      // Simulate delete delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-      return { success: true };
+      const response = await apiRequest('DELETE', `/api/attachments/${attachmentId}`);
+      return response.json();
     },
-    onSuccess: (_, attachmentId) => {
-      // Remove from attachment manager (this will automatically trigger updates)
-      attachmentManager.removeAttachment(entityType as any, entityId, attachmentId);
-      
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/${entityType}/${entityId}/attachments`] });
-      toast({
-        title: "Success",
-        description: "File deleted successfully.",
-      });
+      toast({ title: "Success", description: "File deleted successfully." });
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to delete file. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to delete file. Please try again.", variant: "destructive" });
     },
   });
 

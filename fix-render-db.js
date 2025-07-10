@@ -1,9 +1,25 @@
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  connectionString: 'postgresql://cashpot_gaming_user:password@dpg-cp8j8v6n7h1c73f8v8q0-a.oregon-postgres.render.com/cashpot_gaming',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
+
+async function addContactPersonColumn() {
+  try {
+    const client = await pool.connect();
+    console.log('✅ Connected to Render DB');
+    await client.query(`ALTER TABLE companies ADD COLUMN IF NOT EXISTS contact_person VARCHAR(255);`);
+    console.log('✅ contact_person column added (if it did not exist)');
+    client.release();
+  } catch (err) {
+    console.error('❌ Error:', err);
+  } finally {
+    await pool.end();
+  }
+}
+
+addContactPersonColumn();
 
 async function populateRenderDB() {
   try {

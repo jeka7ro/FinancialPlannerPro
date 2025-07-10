@@ -30,7 +30,7 @@ export default function Header({ title, subtitle, onMenuToggle }: HeaderProps) {
       
       // Try to call logout endpoint (optional)
       try {
-        await apiRequest("POST", "/api/auth/logout", {});
+      await apiRequest("POST", "/api/auth/logout", {});
       } catch (error) {
         // Ignore logout endpoint errors
       }
