@@ -9,8 +9,9 @@
     "start": "node real-server.js",
     "build": "cd client && npm run build",
     "deploy:render": "git add . && git commit -m 'Deploy to Render' && git push",
-    "deploy:vercel": "cd client && vercel --prod",
-    "setup-db": "node setup-database.js"
+    "setup-db": "node setup-database.js",
+    "setup-render": "node setup-render-complete.js",
+    "render:deploy": "npm run setup-render && npm start"
   },
   "keywords": [
     "financial",
@@ -45,7 +46,9 @@
     "@types/multer": "^1.4.11",
     "@types/node": "^20.10.5",
     "@types/pg": "^8.10.9",
+    "drizzle-kit": "^0.31.4",
     "tsx": "^4.6.2",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vite": "^7.0.4"
   }
 }

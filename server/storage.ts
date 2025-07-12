@@ -147,6 +147,7 @@ export interface IStorage {
   assignUserToLocations(userId: number, locationIds: number[]): Promise<void>;
   removeUserFromLocation(userId: number, locationId: number): Promise<void>;
   getUserAccessibleLocationIds(userId: number): Promise<number[]>;
+  getUserLocationsWithDetails(userId: number): Promise<Location[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -402,6 +403,33 @@ export class DatabaseStorage implements IStorage {
   // User Location operations
   async getUserLocations(userId: number): Promise<UserLocation[]> {
     return await db.select().from(userLocations).where(eq(userLocations.userId, userId));
+  }
+
+  // Returns full location details for a user
+  async getUserLocationsWithDetails(userId: number): Promise<Location[]> {
+    return await db
+      .select({
+        id: locations.id,
+        companyId: locations.companyId,
+        name: locations.name,
+        address: locations.address,
+        city: locations.city,
+        county: locations.county,
+        country: locations.country,
+        phone: locations.phone,
+        email: locations.email,
+        managerId: locations.managerId,
+        latitude: locations.latitude,
+        longitude: locations.longitude,
+        isActive: locations.isActive,
+        createdAt: locations.createdAt,
+        updatedAt: locations.updatedAt,
+        postalCode: locations.postalCode,
+        status: locations.status
+      })
+      .from(userLocations)
+      .innerJoin(locations, eq(userLocations.locationId, locations.id))
+      .where(eq(userLocations.userId, userId));
   }
 
   async assignUserToLocations(userId: number, locationIds: number[]): Promise<void> {

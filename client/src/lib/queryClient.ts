@@ -7,8 +7,8 @@ const getAuthToken = () => {
 
 // Get backend URL from environment or fallback
 const getBackendUrl = () => {
-  // Always use Render backend for now to avoid environment variable conflicts
-  return 'https://financial-planner-pro.onrender.com';
+  // Use environment variable if available, otherwise fallback to Render backend
+  return import.meta.env.VITE_API_URL || 'https://cashpot-backend.onrender.com';
 };
 
 export async function apiRequest(

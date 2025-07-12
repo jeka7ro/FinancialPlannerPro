@@ -1076,12 +1076,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User location routes
+  // User location routes - MUST be before generic attachment routes
   app.get("/api/users/:id/locations", requireAuth, async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
-      const userLocations = await storage.getUserLocations(userId);
-      res.json(userLocations);
+      const locations = await storage.getUserLocationsWithDetails(userId);
+      res.json(locations);
     } catch (error) {
       console.error("Get user locations error:", error);
       res.status(500).json({ message: "Failed to fetch user locations" });
