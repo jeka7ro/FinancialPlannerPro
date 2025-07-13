@@ -7,8 +7,9 @@ Financial Planner Pro este o aplicație web pentru gestionarea companiilor de ga
 
 ### 1. Pornește Serverul
 ```bash
-cd /Users/eugeniucazmal/dev/FinancialPlannerPro
-PORT=3002 npm run dev
+# Pornește serverul real care se conectează la baza de date
+node real-server.js
+# Serverul va rula pe portul 3001
 ```
 
 ### 2. Pornește Clientul (în alt terminal)
@@ -47,12 +48,12 @@ Deschide browser-ul și navighează la: `http://localhost:5173`
 - ✅ Poate vedea și gestiona datele din locațiile atribuite
 
 ## 💾 Persistența Datelor
-Aplicația folosește date mock (simulate) care se salvează în localStorage-ul browser-ului. Aceasta înseamnă că:
+Aplicația folosește o bază de date PostgreSQL pentru a stoca datele. Toate datele sunt persistente și partajate între toți utilizatorii.
 
-✅ **Datele se salvează** între sesiuni  
-✅ **Poți adăuga, edita, șterge** toate tipurile de date  
-✅ **Modificările persistă** după refresh-ul paginii  
-✅ **Fiecare browser** are propriile date  
+✅ **Datele se salvează** în baza de date
+✅ **Poți adăuga, edita, șterge** toate tipurile de date
+✅ **Modificările persistă** și sunt vizibile pentru toți utilizatorii
+✅ **Datele sunt centralizate** într-o singură bază de date
 
 ## 📋 Funcționalități Disponibile
 
@@ -165,30 +166,28 @@ Aplicația folosește date mock (simulate) care se salvează în localStorage-ul
 - Sanitizare input
 
 ## 💡 Sfaturi de Utilizare
-1. **Salvează-ți munca** - datele se salvează automat în localStorage
-2. **Folosește căutarea** - pentru a găsi rapid informațiile
-3. **Verifică statusul** - pentru a urmări progresul operațiunilor
-4. **Exportă datele** - pentru backup sau analiză
+1. **Folosește căutarea** - pentru a găsi rapid informațiile
+2. **Verifică statusul** - pentru a urmări progresul operațiunilor
+3. **Exportă datele** - pentru backup sau analiză
 
 ## 🆘 Suport
 Dacă întâmpini probleme:
-1. Verifică dacă serverul rulează pe portul 3002
-2. Verifică dacă clientul rulează pe portul 5173
-3. Șterge localStorage-ul pentru a reseta datele mock
-4. Repornește aplicația
+1. Asigură-te că serverul (`real-server.js`) rulează pe portul 3001.
+2. Asigură-te că clientul (`npm run dev` în directorul `client`) rulează pe portul 5173.
+3. Verifică consola browser-ului pentru erori.
+4. Repornește serverul și clientul.
 
-## 🎯 Următorii Pași
-Pentru a conecta aplicația la o bază de date reală:
-1. Configurează o bază de date PostgreSQL
-2. Modifică `apiRequest` pentru a face call-uri reale
-3. Implementează autentificarea reală
-4. Adaugă validări server-side
+## 🎯 Arhitectura Aplicației
+Aplicația este complet funcțională și folosește o arhitectură client-server:
+- **Backend:** `real-server.js` (Node.js, Express, PostgreSQL)
+- **Frontend:** `client` (React, TypeScript, Vite)
+- **Baza de date:** PostgreSQL
 
 ---
 
-**Versiunea curentă:** Mock Data cu Persistență Local  
-**Ultima actualizare:** Decembrie 2024  
-**Status:** Funcțional pentru demo și testare 
+**Versiunea curentă:** Aplicație completă cu bază de date reală
+**Ultima actualizare:** Iulie 2024
+**Status:** Funcțional pentru dezvoltare și producție
 
 ## 👥 Gestionarea Utilizatorilor
 
@@ -313,5 +312,4 @@ Pentru probleme sau întrebări:
 - ✅ Sistem de permisiuni pentru manageri
 - ✅ Câmp pentru parolă în editarea utilizatorilor
 - ✅ Filtrare automată a datelor în funcție de rol
-- ✅ Persistența datelor în localStorage
 - ✅ Interfață îmbunătățită și responsive 
