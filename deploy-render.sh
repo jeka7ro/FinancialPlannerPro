@@ -57,8 +57,7 @@ git push
 
 print_success "Deploy initiated! Your services will be available at:"
 echo ""
-echo "🌐 Backend API: https://cashpot-backend.onrender.com"
-echo "🎨 Frontend: https://cashpot-frontend.onrender.com"
+echo "🌐 Full Application: https://cashpot-app.onrender.com"
 echo ""
 echo "📊 Database: PostgreSQL hosted on Render (persistent)"
 echo "🔐 Admin login: admin / admin123"

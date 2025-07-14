@@ -7,8 +7,8 @@ const getAuthToken = () => {
 
 // Get backend URL from environment or fallback
 const getBackendUrl = () => {
-  // Use environment variable if available, otherwise fallback to Render backend
-  return import.meta.env.VITE_API_URL || 'https://cashpot-backend.onrender.com';
+  // Use environment variable if available, otherwise fallback to Render app
+  return import.meta.env.VITE_API_URL || 'https://cashpot-app.onrender.com';
 };
 
 export async function apiRequest(
