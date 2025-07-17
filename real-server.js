@@ -757,7 +757,7 @@ app.post('/api/locations', authenticateJWT, async (req, res) => {
 app.put('/api/locations/:id', authenticateJWT, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, address, city, country, company_id, phone, email, status } = req.body;
+    const { name, address, city, country, company_id, phone, email } = req.body;
     
     const result = await pool.query(
       `UPDATE locations 
@@ -768,10 +768,9 @@ app.put('/api/locations/:id', authenticateJWT, async (req, res) => {
            company_id = COALESCE($5, company_id),
            phone = COALESCE($6, phone),
            email = COALESCE($7, email),
-           status = COALESCE($8, status),
            updated_at = NOW()
-       WHERE id = $9 RETURNING *`,
-      [name, address, city, country, company_id, phone, email, status, id]
+       WHERE id = $8 RETURNING *`,
+      [name, address, city, country, company_id, phone, email, id]
     );
     
     if (result.rows.length === 0) {
