@@ -753,6 +753,38 @@ app.post('/api/locations', authenticateJWT, async (req, res) => {
   }
 });
 
+// Update location
+app.put('/api/locations/:id', authenticateJWT, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, address, city, country, company_id, phone, email, status } = req.body;
+    
+    const result = await pool.query(
+      `UPDATE locations 
+       SET name = COALESCE($1, name), 
+           address = COALESCE($2, address), 
+           city = COALESCE($3, city), 
+           country = COALESCE($4, country), 
+           company_id = COALESCE($5, company_id),
+           phone = COALESCE($6, phone),
+           email = COALESCE($7, email),
+           status = COALESCE($8, status),
+           updated_at = NOW()
+       WHERE id = $9 RETURNING *`,
+      [name, address, city, country, company_id, phone, email, status, id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+    
+    res.json({ message: 'Location updated', location: result.rows[0] });
+  } catch (error) {
+    console.error('Update location error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
 // Users
 app.get('/api/users', async (req, res) => {
   try {
