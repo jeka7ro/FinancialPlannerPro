@@ -1215,6 +1215,30 @@ app.post('/api/fix-relationships', async (req, res) => {
   }
 });
 
+// Simple update location company endpoint
+app.post('/api/locations/:id/company', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { company_id } = req.body;
+    
+    const result = await pool.query(
+      `UPDATE locations 
+       SET company_id = $1, updated_at = NOW()
+       WHERE id = $2 RETURNING *`,
+      [company_id, id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Location not found' });
+    }
+    
+    res.json({ message: 'Location company updated', location: result.rows[0] });
+  } catch (error) {
+    console.error('Update location company error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+});
+
 // Test route without multer
 app.post('/api/test-upload', authenticateJWT, async (req, res) => {
   try {
