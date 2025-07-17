@@ -1140,6 +1140,50 @@ app.post('/api/rent-agreements', authenticateJWT, async (req, res) => {
   }
 });
 
+// Fix relationships endpoint
+app.post('/api/fix-relationships', async (req, res) => {
+  try {
+    console.log('🔧 Fixing database relationships...');
+    
+    // Associate locations with companies
+    await pool.query(`
+      UPDATE locations 
+      SET company_id = 1 
+      WHERE id IN (1, 4, 5)
+    `);
+    await pool.query(`
+      UPDATE locations 
+      SET company_id = 2 
+      WHERE id = 2
+    `);
+    await pool.query(`
+      UPDATE locations 
+      SET company_id = 3 
+      WHERE id = 3
+    `);
+    
+    // Associate users with locations
+    try {
+      await pool.query(`
+        INSERT INTO user_locations (user_id, location_id, created_at, updated_at)
+        VALUES 
+          (1, 1, NOW(), NOW()),
+          (1, 2, NOW(), NOW()),
+          (1, 3, NOW(), NOW())
+        ON CONFLICT (user_id, location_id) DO NOTHING
+      `);
+    } catch (error) {
+      console.log('User-location associations already exist');
+    }
+    
+    console.log('✅ Relationships fixed successfully');
+    res.json({ message: 'Database relationships fixed successfully' });
+  } catch (error) {
+    console.error('Fix relationships error:', error);
+    res.status(500).json({ message: 'Failed to fix relationships', error: error.message });
+  }
+});
+
 // Test route without multer
 app.post('/api/test-upload', authenticateJWT, async (req, res) => {
   try {
